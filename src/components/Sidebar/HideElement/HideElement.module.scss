@@ -1,0 +1,14 @@
+.hide-element {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .5s var(--transition-power--in-out);
+  overflow: hidden;
+  &__container {
+    min-height: 0;
+  }
+
+  &_open {
+    grid-template-rows: 1fr;
+  }
+}

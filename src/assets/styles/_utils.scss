@@ -1,0 +1,21 @@
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.no-scroll {
+  overflow-y: hidden;
+}
+
+.theme-transition {
+  transition: background-color 0s ease, color 0s ease, stroke 0s var(--transition-power--in-out), fill 0s var(--transition-power--in-out) !important;
+}
+.colorfull-theme-transition {
+  transition: background-color 1s var(--transition-power--in-out), color 1s var(--transition-power--in-out), stroke 1s var(--transition-power--in-out), fill 1s var(--transition-power--in-out) !important;
+}
+

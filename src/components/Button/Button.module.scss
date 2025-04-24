@@ -1,0 +1,38 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+ 
+  font-size: 14px;
+  letter-spacing: .5px;
+  cursor: pointer;
+
+  &__icon-wrapper {
+
+  }
+
+  &__title-wrapper {
+    
+  }
+
+  &[data-style="primary"] {
+    color: white;
+    border-radius: 8px;
+    background-color: var(--color-primary);
+    padding: 8px 15px;
+  }
+  &[data-style="outline"] {
+    color: var(--color-neutral-contrast);
+    background-color: transparent;
+    border-radius: 8px;
+    border: 1px solid var(--color-neutral-contrast--lighten);
+    padding: 8px 15px;
+  }
+  &[data-style="ghost"] {
+    color: var(--color-neutral-contrast);
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 8px 15px;
+  }
+}

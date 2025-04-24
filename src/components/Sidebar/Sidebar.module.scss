@@ -1,0 +1,38 @@
+.sidebar {
+  width: 86px;
+  padding-right: 40px;
+  position: relative;
+  transition: width .5s var(--transition-power--in-out);
+
+  &__container {
+    width: 100%;
+  }
+  &__content {
+
+  }
+
+  &__logo {
+    width: 150px;
+    margin-bottom: 20px;
+  }
+
+  &_open {
+    width: 300px;
+  }
+}
+
+.sidebar-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  &__block {
+
+  }
+  &__label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-neutral-contrast--light);
+    margin-bottom: 5px;
+  }
+}

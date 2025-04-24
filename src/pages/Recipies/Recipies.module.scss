@@ -1,0 +1,36 @@
+.recipies {
+
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.search-panel {
+  margin-top: 20px;
+
+  &__search {
+    flex: 1 1 auto;
+    max-width: 300px;
+  }
+}
+
+.search-panel-searching {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

@@ -1,0 +1,142 @@
+.menu-item {
+  position: relative;
+}
+
+.link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--color-neutral-contrast);
+  font-size: 14px;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px;
+    aspect-ratio: 1;
+  }
+
+  &__title {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
+  }
+
+  &_active {
+    background-color: var(--color-neutral-main--dark);
+    color: var(--color-primary);
+
+    .menu-item__icon {
+      fill: var(--color-primary);
+    }
+  }
+}
+
+.button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--color-secondary--light);
+  font-size: 14px;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px;
+    aspect-ratio: 1;
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    display: flex;
+    transform: rotate(180deg);
+    transition: transform 0.5s var(--transition-power--in-out);
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
+  }
+
+  &_open {
+    .button__arrow {
+      transform: rotate(0);
+    }
+  }
+  &_active {
+    background-color: var(--color-neutral-main--dark);
+    color: var(--color-primary);
+
+    .menu-item__icon {
+      fill: var(--color-primary);
+    }
+  }
+}
+
+.dropdown {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s var(--transition-power--in-out);
+  overflow: hidden;
+  margin-top: 3px;
+
+  &__container {
+    width: 100%;
+    min-height: 0;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &_open {
+    grid-template-rows: 1fr;
+  }
+}
+
+.dropdown-absolute {
+  position: absolute;
+  width: 200px;
+  z-index: 10;
+  left: calc(100% + 10px);
+  top: 0;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px var(--color-secondary--lighten);
+
+  &_open {
+    display: flex;
+  }
+}

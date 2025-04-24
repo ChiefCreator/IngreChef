@@ -1,0 +1,41 @@
+@mixin font-awesome {
+  font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+  font-weight: 900;
+}
+@mixin theme-light {
+  --color-neutral-main: #f0f0f0;
+  --color-neutral-main--light: #fefefe;
+  --color-neutral-main--lighten: #f0f0f0;
+  --color-neutral-main--dark: #a3a3a3;
+  --color-neutral-main--darken: #f0f0f0;
+
+  --color-neutral-contrast: #242424;
+  --color-neutral-contrast--light: #333333;
+  --color-neutral-contrast--lighten: #292929;
+  --color-neutral-contrast--dark: #333333;
+  --color-neutral-contrast--darken: #292929;
+
+  --color-neutral-additional: #959595;
+
+  --color-scroll-thumb: #1d1c1c;
+  --color-scroll-track: #dedede;
+}
+
+@mixin parameter-tracker-theme-novice {
+  --color-primary-parameter-tracker-novice: rgb(255, 0, 106);
+  --color-secondary-parameter-tracker-novice: rgb(240, 92, 154);
+}
+
+@mixin resume-template-1 {
+  --font-title: "Helvetica";
+  --font-sub-title: "Helvetica";
+  --font-text: "Roboto", sans-serif;
+
+  --font-title-size: 32px;
+  --font-sub-title-size: 28px;
+  --font-text-size: 18px;
+
+  --color-neutral-main: white;
+  --color-neutral-contrast: #242424;
+  --color-neutral-contrast--light: #3f3f3f;
+}
