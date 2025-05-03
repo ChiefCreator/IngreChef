@@ -1,0 +1,36 @@
+.search-panel {
+  &__searching {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  &__search {
+    flex: 1 1 auto;
+    max-width: 300px;
+  }
+}
+
+.filters {
+  margin-top: 10px;
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.filters-toggle-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .3s var(--transition-power--in-out);
+  
+  .filters__container {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &_open {
+    grid-template-rows: 1fr;
+  }
+}

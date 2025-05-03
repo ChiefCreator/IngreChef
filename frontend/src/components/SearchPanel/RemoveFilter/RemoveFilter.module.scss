@@ -1,0 +1,12 @@
+.remove-filter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
+  }
+}

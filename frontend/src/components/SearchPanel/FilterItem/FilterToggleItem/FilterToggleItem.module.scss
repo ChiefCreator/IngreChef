@@ -1,0 +1,12 @@
+.button {
+  &_icon {
+
+  }
+
+  &_active {
+    .button__icon {
+      fill: red !important;
+      color: red !important;
+    }
+  }
+}

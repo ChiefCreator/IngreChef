@@ -1,0 +1,27 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &__title {
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
+  }
+
+  &_active {
+    background-color: var(--color-neutral-main--dark);
+    color: var(--color-primary);
+  }
+}

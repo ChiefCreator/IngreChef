@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserCredentials {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  passwordHash   String      @map("password_hash")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  userProfile    UserProfile?
+}
+
+model UserProfile {
+  id                String           @id @default(uuid())
+
+  userCredentialsId String?          @unique @map("user_credentials_id")
+  userCredentials   UserCredentials? @relation(fields: [userCredentialsId], references: [id], onDelete: Cascade)
+
+  recipes           Recipe[]         @relation("UserRecipes") 
+  favoriteRecipes   FavoriteRecipes[]
+}
+
+model Recipe {
+  id                String     @id @default(uuid())
+  title             String
+  description       String?
+  imageUrl          String?
+  category          Category?
+  difficulty        Difficulty?
+  cuisine           Cuisine?
+  cookingTime       Int
+  ingredients       String[]
+  steps             Json
+  createdAt         DateTime    @default(now())
+
+  author            UserProfile @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId          String
+
+  likedBy           FavoriteRecipes[]
+}
+
+model FavoriteRecipes {
+  id         String      @id @default(uuid())
+  likedAt    DateTime    @default(now())
+
+  user       UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+
+  recipe     Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId   String
+
+  @@unique([userId, recipeId])
+}
+
+enum Category {
+  SOUPS
+  MAIN_DISHES
+  SIDE_DISHES
+  SALADS
+  SNACKS
+  DESSERTS
+  BAKERY_PRODUCTS
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Cuisine {
+  RUSSIAN
+  BELARUSIAN
+}
