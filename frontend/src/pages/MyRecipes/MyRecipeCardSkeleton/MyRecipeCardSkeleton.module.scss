@@ -1,0 +1,52 @@
+.card {
+  width: 100%;
+  &__img-wrapper {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  &__image {
+    width: 100%;
+    aspect-ratio: 1/0.8;
+    object-fit: cover;
+  }
+}
+
+.body {
+  &__container {
+    padding-top: 10px;
+  }
+}
+
+.title {
+  display: block;
+  width: 70%;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.illustration {
+  width: 100%;
+  aspect-ratio: 1/0.8;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &__icon {
+    color: #c8ccca;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.illustration-skeleton {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}

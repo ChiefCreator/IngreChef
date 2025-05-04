@@ -13,6 +13,7 @@ model UserCredentials {
   passwordHash   String      @map("password_hash")
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
+  
   userProfile    UserProfile?
 }
 
@@ -20,40 +21,69 @@ model UserProfile {
   id                String           @id @default(uuid())
 
   userCredentialsId String?          @unique @map("user_credentials_id")
-  userCredentials   UserCredentials? @relation(fields: [userCredentialsId], references: [id], onDelete: Cascade)
 
+  userCredentials   UserCredentials? @relation(fields: [userCredentialsId], references: [id], onDelete: Cascade)
   recipes           Recipe[]         @relation("UserRecipes") 
   favoriteRecipes   FavoriteRecipes[]
+  savedRecipes      UserSavedRecipe[]
+  recipeBooks       RecipeBook[]
 }
 
 model Recipe {
-  id                String     @id @default(uuid())
+  id                String      @id @default(uuid())
   title             String
   description       String?
-  imageUrl          String?
+  imageUrl          String?     @map("image_url")
   category          Category?
   difficulty        Difficulty?
   cuisine           Cuisine?
-  cookingTime       Int
+  cookingTime       Int         @map("cooking_time")
   ingredients       String[]
   steps             Json
-  createdAt         DateTime    @default(now())
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  authorId          String      @map("author_id")
 
   author            UserProfile @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId          String
-
   likedBy           FavoriteRecipes[]
+  savedByUsers      UserSavedRecipe[]
 }
+
+model UserSavedRecipe {
+  id           String        @id @default(uuid())
+  recipeBookId String?       @unique @map("recipe_book_id")
+
+  userId        String       @map("user_id")
+  recipeId      String       @map("recipe_id")
+
+  user          UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe        Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeBook    RecipeBook?  @relation(fields: [recipeBookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+}
+
+model RecipeBook {
+  id         String       @id @default(uuid())
+  name       String
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  userId     String       @map("user_id")
+
+  user       UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes    UserSavedRecipe[]
+}
+
 
 model FavoriteRecipes {
   id         String      @id @default(uuid())
-  likedAt    DateTime    @default(now())
+  likedAt    DateTime    @default(now()) @map("liked_at")
+
+  userId     String      @map("user_id")
+  recipeId   String      @map("recipe_id")
 
   user       UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-
   recipe     Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId   String
 
   @@unique([userId, recipeId])
 }

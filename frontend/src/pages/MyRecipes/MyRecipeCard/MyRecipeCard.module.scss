@@ -1,0 +1,45 @@
+.card {
+  width: 100%;
+  transition: opacity .3s var(--transition-power--in-out);
+  &__img-wrapper {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+
+    &:hover {
+      .card__image {
+        scale: 1.05;
+      }
+    }
+  }
+  &__image {
+    width: 100%;
+    aspect-ratio: 1/0.8;
+    object-fit: cover;
+    transition: scale .3s var(--transition-power--in-out);
+  }
+
+  &_fetching {
+    opacity: .5;
+  }
+}
+
+.body {
+  &__container {
+    padding-top: 10px;
+  }
+}
+
+.title {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: 500;
+  &__link {
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  &:hover &__link {
+    text-decoration: underline;
+  }
+}

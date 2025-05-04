@@ -1,41 +1,43 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useCallback, useMemo } from "react";
-import { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery } from "../../features/api/apiSlice";
+import { useGetUserRecipesQuery } from "../../features/api/apiSlice";
 
 import type { Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
 import type { RecipeQuery } from "../../types/queryTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
-import CardsPanel from "./CardsPanel/CardsPanel";
-import SearchPanel from "../../components/SearchPanel/SearchPanel";
+import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import { Rocket, ListCheck, Clock, Heart } from "lucide-react";
 
-import styles from "./Discover.module.scss";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCompass } from "@fortawesome/free-regular-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/Button/Button";
+import SearchPanel from "../../components/SearchPanel/SearchPanel";
+
+import styles from "./MyRecipes.module.scss";
 
 const defaultFilters: RecipeQuery = { page: 1, limit: 10, userId: "author_1" };
 
-export default function Discover() {
+export default function MyRecipes() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters);
 
-  const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters);
-  const { data: favoriteRecipesIds, isSuccess: isFavRecIdsSuccess, isError: isFavRecIdsError, isLoading: isFavRecIdsLoading, isFetching: isFavRecIdsFetching } = useGetFavoriteRecipesIdsQuery({ userId: "author_1" });
+  console.log(isLoading, isFetching)
 
-  const isSuccess = isRecSuccess || isFavRecIdsSuccess;
-  const isError = isRecError || isFavRecIdsError;
-  const isLoading = isRecipesLoading || isRecipesFetching;
-  const isFetching = isFavRecIdsLoading || isFavRecIdsFetching;
-
-  const changeFilter: ChangeFilter = useCallback((key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }, []);
-  const removeFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, [defaultFilters]);
-  const toggleFiltersPanel = useCallback(() => {
-    setIsFiltersPanelOpen(prev => !prev);
-  }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
-
+    const changeFilter: ChangeFilter = useCallback((key, value) => {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }, []);
+    const removeFilters = useCallback(() => {
+      setFilters(defaultFilters);
+    }, [defaultFilters]);
+    const toggleFiltersPanel = useCallback(() => {
+      setIsFiltersPanelOpen(prev => !prev);
+    }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
+  
   const filterItemsData = useMemo<FilterItemProps[]>(() => (
     [
       {
@@ -119,11 +121,29 @@ export default function Discover() {
 
   return (
     <section className={styles.page}>
+      <header className={styles.header}>
+        <h2 className={styles.headerTitle}>Мои рецепты</h2>
+
+        <div className={styles.headerControls}>
+          <Button
+            type="outline"
+            className={styles.recipiesButtonLine}
+            icon={<FontAwesomeIcon icon={faCompass} />}
+          >
+            Лента
+          </Button>
+
+          <Button
+            type="primary"
+            className={styles.recipiesButtonLine}
+            icon={<FontAwesomeIcon icon={faPlus} />}
+          >
+            Добавить рецепт
+          </Button>
+        </div>
+      </header>
       <div className={styles.body}>
         <header className={styles.bodyHeader}>
-          <h1 className={styles.bodyTitle}>Откройте для себя новые рецепты</h1>
-          <p className={styles.bodyDescription}>Ознакомьтесь с нашей коллекцией рецептов, присланных пользователями. Найдите свое новое кулинарное вдохновение!</p>
-
           <SearchPanel
             className={styles.bodySearchPanel}
             filterItemsData={filterItemsData}
@@ -136,9 +156,8 @@ export default function Discover() {
           />
         </header>
 
-        <CardsPanel
+        <MyRecipeCardsPanel
           recipes={recipes}
-          favoriteRecipesIds={favoriteRecipesIds}
           isSuccess={isSuccess}
           isError={isError}
           isLoading={isLoading}

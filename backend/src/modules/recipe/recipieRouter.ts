@@ -8,7 +8,9 @@ const router = Router();
 const recipeController = new RecipeController();
 
 router.get("/", transformQueryGetAllRecipesParams, recipeController.getAllRecipes);
-router.get("/favorite-ids", recipeController.getFavoriteRecipesIds);
-router.post("/favorite-ids", recipeController.toggleFavoriteRecipesIds);
+router.get("/user/:userId", transformQueryGetAllRecipesParams, recipeController.getUserRecipes);
+
+router.get("/favorite/user/:userId/ids", recipeController.getFavoriteRecipesIds);
+router.post("/favorite/user/:userId/ids", recipeController.toggleFavoriteRecipesIds);
 
 export default router;

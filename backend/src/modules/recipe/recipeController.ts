@@ -43,9 +43,46 @@ export default class RecipeController {
       res.status(500).json({ message: 'Ошибка получения рецептов' });
     }
   }
+  async getUserRecipes(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.params.userId;
+      const {
+        page,
+        limit,
+        titleStartsWith,
+        category,
+        difficulty,
+        cuisine,
+        cookingTime,
+        ingredients,
+        isFavorite,
+      } = req.query;
+
+      const filters: RecipeFilters = {
+        userId: userId as string,
+        page: Number(page),
+        limit: Number(limit),
+        titleStartsWith: titleStartsWith as string | undefined,
+        category: category as string | undefined,
+        difficulty: difficulty as string | undefined,
+        cuisine: cuisine as string | undefined,
+        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as RecipeFilters["cookingTime"] : undefined,
+        ingredients: ingredients ? ingredients as string[] : undefined,
+        isFavorite: isFavorite === "true",
+      };
+
+      const userRecipes = await recipeService.getUserRecipes(filters);
+      console.log(userRecipes)
+      res.status(200).json(userRecipes);
+    } catch(error) {
+      console.error(error);
+      res.status(500).json({ message: "Ошибка получения рецептов пользователя" });
+    }
+  }
+
   async getFavoriteRecipesIds(req: Request, res: Response): Promise<void> {
     try {
-      const userId = String(req.query.userId);
+      const userId = req.params.userId;
 
       const recipesIds = await recipeService.getFavoriteRecipesIds(userId);
       res.status(200).json(recipesIds);
@@ -56,7 +93,7 @@ export default class RecipeController {
   }
   async toggleFavoriteRecipesIds(req: Request, res: Response): Promise<void> {
     try {
-      const userId = String(req.body.userId);
+      const userId = req.params.userId;
       const recipeId = String(req.body.recipeId);
 
       const recipe = await recipeService.toggleFavoriteRecipe(userId, recipeId);

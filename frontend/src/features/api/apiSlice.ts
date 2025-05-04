@@ -48,17 +48,46 @@ export const clientApi = createApi({
       },
       providesTags: (_, __, { userId }) => [{ type: "FavoriteRecipe", id: userId }],
     }),
+    getUserRecipes: builder.query<Recipe[], RecipeQuery>({
+      query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
+        let query = `/recipes/user/${userId}?page=${page}&limit=${limit}`;
+
+        if (titleStartsWith) {
+          query += `&titleStartsWith=${titleStartsWith}`;
+        }
+        if (category) {
+          query += `&category=${category}`;
+        }
+        if (difficulty) {
+          query += `&difficulty=${difficulty}`;
+        }
+        if (cuisine) {
+          query += `&cuisine=${cuisine}`;
+        }
+        if (cookingTime) {
+          query += `&cookingTime=${JSON.stringify(cookingTime)}`;
+        }
+        if (ingredients && ingredients.length) {
+          query += `&ingredients=${ingredients.join(",")}`;
+        }
+        if (isFavorite) {
+          query += `&isFavorite=${isFavorite}`;
+        }
+
+        return query;
+      },
+    }),
     getFavoriteRecipesIds: builder.query<string[], FavoriteRecipeQuery>({
       query: ({ userId }) => {
-        return `/recipes/favorite-ids?userId=${userId}`;
+        return `/recipes/favorite/user/${userId}/ids`;
       },
       providesTags: (_, __, { userId }) => [{ type: "FavoriteRecipe", id: userId }],
     }),
     toggleRecipesIds: builder.mutation<string[], { userId: string, recipeId: string }>({
       query: ({ userId, recipeId }) => ({
-        url: `/recipes/favorite-ids`,
+        url: `/recipes/favorite/user/${userId}/ids`,
         method: "POST",
-        body: { userId, recipeId }
+        body: { recipeId }
       }),
       async onQueryStarted({ userId, recipeId }, lifecycleApi) {
         const getFavoriteRecipesIdsPatchResult = lifecycleApi.dispatch(
@@ -80,8 +109,8 @@ export const clientApi = createApi({
         }
       },
       invalidatesTags: (_, __, { userId }) => [{ type: "FavoriteRecipe", id: userId }],
-    })
+    }),
   }),
 });
 
-export const { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery, useToggleRecipesIdsMutation } = clientApi;
+export const { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery, useToggleRecipesIdsMutation, useGetUserRecipesQuery } = clientApi;

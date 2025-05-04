@@ -5,6 +5,12 @@
   overflow: hidden;
   &__img-wrapper {
     width: 100%;
+    overflow: hidden;
+    &:hover {
+      .card__image {
+        scale: 1.05;
+      }
+    }
   }
 
   &__image {
@@ -12,6 +18,7 @@
     max-height: 450px;
     aspect-ratio: 1/.8;
     object-fit: cover;
+    transition: scale .3s var(--transition-power--in-out);
   }
 }
 

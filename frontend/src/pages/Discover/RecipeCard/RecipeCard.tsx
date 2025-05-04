@@ -1,6 +1,7 @@
 import styles from "./RecipeCard.module.scss";
 import { getTimeAgo } from "../../../lib/dateUtils";
 import { Heart, BookMarked } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { useToggleRecipesIdsMutation } from "../../../features/api/apiSlice";
 
@@ -44,8 +45,10 @@ export default function RecipeCard({ userId, recipeId, title, description, image
   return (
     <div className={styles.card}>
       <div className={styles.cardImgWrapper}>
-        {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
-        {!imageUrl && <div className={styles.illustration}></div>}
+        <Link className={styles.cardImageLink} to="/">
+          {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
+          {!imageUrl && <div className={styles.illustration}></div>}
+        </Link>
       </div>
 
       <div className={styles.body}>
