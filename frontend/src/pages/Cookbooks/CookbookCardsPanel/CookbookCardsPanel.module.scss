@@ -1,0 +1,6 @@
+.cards-list {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 6fr);
+  gap: 60px 50px;
+}

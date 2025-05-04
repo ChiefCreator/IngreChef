@@ -4,6 +4,7 @@ import HomeLayout from "../layouts/HomeLayout/HomeLayout";
 import MyRecipes from "../pages/MyRecipes/MyRecipes";
 import RecipesList from "../pages/RecipesList/RecipesList";
 import Discover from "../pages/Discover/Discover";
+import Cookbooks from "../pages/Cookbooks/Cookbooks";
 
 function ProtectedRoute() {
   return <Outlet />;
@@ -22,7 +23,7 @@ export default function Router() {
 
           <Route path="recipies" element={<MyRecipes />} />
           <Route path="shopping-list" element={<MyRecipes />} />
-          <Route path="cookbooks" element={<MyRecipes />} />
+          <Route path="cookbooks" element={<Cookbooks />} />
           <Route path="favorites" element={<MyRecipes />} />
         </Route>
 

@@ -26,7 +26,7 @@ model UserProfile {
   recipes           Recipe[]         @relation("UserRecipes") 
   favoriteRecipes   FavoriteRecipes[]
   savedRecipes      UserSavedRecipe[]
-  recipeBooks       RecipeBook[]
+  cookbooks         Cookbook[]
 }
 
 model Recipe {
@@ -50,20 +50,20 @@ model Recipe {
 }
 
 model UserSavedRecipe {
-  id           String        @id @default(uuid())
-  recipeBookId String?       @unique @map("recipe_book_id")
+  id            String        @id @default(uuid())
+  cookbookId    String?       @map("cookbook_id")
 
   userId        String       @map("user_id")
   recipeId      String       @map("recipe_id")
 
   user          UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe        Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeBook    RecipeBook?  @relation(fields: [recipeBookId], references: [id], onDelete: Cascade)
+  cookbook      Cookbook?  @relation(fields: [cookbookId], references: [id], onDelete: Cascade)
 
   @@unique([userId, recipeId])
 }
 
-model RecipeBook {
+model Cookbook {
   id         String       @id @default(uuid())
   name       String
   createdAt  DateTime     @default(now()) @map("created_at")

@@ -10,11 +10,10 @@ import type { FilterListItemProps, FilterItemProps } from "../../components/Sear
 import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import { Rocket, ListCheck, Clock, Heart } from "lucide-react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCompass } from "@fortawesome/free-regular-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import SearchPanel from "../../components/SearchPanel/SearchPanel";
+import { Compass, Plus } from "lucide-react";
 
 import styles from "./MyRecipes.module.scss";
 
@@ -26,17 +25,15 @@ export default function MyRecipes() {
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters);
 
-  console.log(isLoading, isFetching)
-
-    const changeFilter: ChangeFilter = useCallback((key, value) => {
-      setFilters(prev => ({ ...prev, [key]: value }));
-    }, []);
-    const removeFilters = useCallback(() => {
-      setFilters(defaultFilters);
-    }, [defaultFilters]);
-    const toggleFiltersPanel = useCallback(() => {
-      setIsFiltersPanelOpen(prev => !prev);
-    }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
+  const changeFilter: ChangeFilter = useCallback((key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  }, []);
+  const removeFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, [defaultFilters]);
+  const toggleFiltersPanel = useCallback(() => {
+    setIsFiltersPanelOpen(prev => !prev);
+  }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
   
   const filterItemsData = useMemo<FilterItemProps[]>(() => (
     [
@@ -121,27 +118,26 @@ export default function MyRecipes() {
 
   return (
     <section className={styles.page}>
-      <header className={styles.header}>
-        <h2 className={styles.headerTitle}>Мои рецепты</h2>
-
-        <div className={styles.headerControls}>
+      <Header
+        className={styles.header}
+        title="Мои рецепты"
+        controls={[
           <Button
             type="outline"
             className={styles.recipiesButtonLine}
-            icon={<FontAwesomeIcon icon={faCompass} />}
+            icon={<Compass size={16} />}
           >
             Лента
-          </Button>
-
+          </Button>,
           <Button
             type="primary"
             className={styles.recipiesButtonLine}
-            icon={<FontAwesomeIcon icon={faPlus} />}
+            icon={<Plus size={16} />}
           >
             Добавить рецепт
           </Button>
-        </div>
-      </header>
+        ]}
+      />
       <div className={styles.body}>
         <header className={styles.bodyHeader}>
           <SearchPanel

@@ -2,6 +2,8 @@ import { prisma } from "./../server";
 
 async function main() {
   await prisma.$transaction(async (tx) => {
+    await tx.userSavedRecipe.deleteMany();
+    await tx.cookbook.deleteMany();
     await tx.favoriteRecipes.deleteMany();
     await tx.recipe.deleteMany();
     await tx.userProfile.deleteMany();
@@ -349,6 +351,41 @@ async function main() {
           recipeId: "recipe_2",
         },
       ],
+    });
+
+    const cookbooks = await tx.cookbook.createMany({
+      data: [
+        {
+          id: "cookbook_1",
+          name: "Кулинарная книга №1",
+          userId: "author_1",
+        },
+        {
+          id: "cookbook_2",
+          name: "Кулинарная книга №2",
+          userId: "author_1",
+        },
+      ],
+    });
+
+    const userSavedRecipes = await tx.userSavedRecipe.createMany({
+      data: [
+        {
+          cookbookId: "cookbook_1",
+          userId: "author_1",
+          recipeId: "recipe_1",
+        },
+        {
+          cookbookId: "cookbook_1",
+          userId: "author_1",
+          recipeId: "recipe_2",
+        },
+        {
+          cookbookId: "cookbook_1",
+          userId: "author_1",
+          recipeId: "recipe_3",
+        },
+      ]
     });
       
     console.log("All data seeded");

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { ChefHat } from "lucide-react";
+
 import styles from "./MyRecipeCard.module.scss";
 
 interface MyRecipeCardProps {
@@ -16,7 +18,7 @@ export default function MyRecipeCard({ title, imageUrl, isFetching }: MyRecipeCa
       <div className={styles.cardImgWrapper}>
         <Link className={styles.cardImageLink} to="/">
           {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
-          {!imageUrl && <div className={styles.illustration}></div>}
+          {!imageUrl && <div className={styles.illustration}><ChefHat className={styles.illustrationIcon} size={"50%"} /></div>}
         </Link>
       </div>
 

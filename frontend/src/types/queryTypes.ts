@@ -12,3 +12,7 @@ export interface RecipeQuery extends PaginationOptions, Filter {
 export interface FavoriteRecipeQuery extends Filter {
   userId: string;
 };
+
+export interface CookbookQuery {
+  userId: string;
+}

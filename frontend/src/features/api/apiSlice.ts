@@ -3,6 +3,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Recipe } from "../../types/recipeTypes";
 import type { RecipeQuery, FavoriteRecipeQuery } from "../../types/queryTypes";
 
+import type { Cookbook } from "../../types/cookBookTypes";
+import type { CookbookQuery } from "../../types/queryTypes";
+
 import { delay } from "../../lib/functionsUtils";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -110,7 +113,13 @@ export const clientApi = createApi({
       },
       invalidatesTags: (_, __, { userId }) => [{ type: "FavoriteRecipe", id: userId }],
     }),
+
+    getCookBooks: builder.query<Cookbook[], CookbookQuery>({
+      query: ({ userId }) => {
+        return `/cookbooks/user/${userId}`;
+      },
+    })
   }),
 });
 
-export const { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery, useToggleRecipesIdsMutation, useGetUserRecipesQuery } = clientApi;
+export const { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery, useToggleRecipesIdsMutation, useGetUserRecipesQuery, useGetCookBooksQuery } = clientApi;
