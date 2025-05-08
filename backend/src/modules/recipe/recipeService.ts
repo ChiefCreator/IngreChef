@@ -138,6 +138,21 @@ export default class RecipeService {
     });
   }
 
+  async getCookbookIdsOfUserRecipe(recipeId: string) {
+    const userSavedRecipes = await prisma.userSavedRecipe.findMany({
+      where: {
+        recipeId,
+      },
+      select: {
+        cookbook: true,
+      }
+    });
+
+    const cookbookIds = userSavedRecipes?.map(userSavedRecipe => userSavedRecipe.cookbook?.id).filter(Boolean);;
+
+    return cookbookIds;
+  }
+
   async getFavoriteRecipesIds(userId: string) {
     const favorites = await prisma.favoriteRecipes.findMany({
       where: {

@@ -1,0 +1,28 @@
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+
+  transition: background-color 0.3s var(--transition-power--in-out);
+
+  &__icon-wrapper {
+    display: flex;
+  }
+  &__checkbox-wrapper {
+    display: flex;
+    width: 16px;
+    aspect-ratio: 1;
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--darken);
+  }
+
+  &__arrow {
+    margin-left: auto;
+  }
+}

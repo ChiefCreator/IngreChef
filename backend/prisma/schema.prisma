@@ -50,17 +50,17 @@ model Recipe {
 }
 
 model UserSavedRecipe {
-  id            String        @id @default(uuid())
-  cookbookId    String?       @map("cookbook_id")
+  id            String       @id @default(uuid())
+  cookbookId    String?      @map("cookbook_id")
 
   userId        String       @map("user_id")
   recipeId      String       @map("recipe_id")
 
   user          UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipe        Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  cookbook      Cookbook?  @relation(fields: [cookbookId], references: [id], onDelete: Cascade)
+  cookbook      Cookbook?    @relation(fields: [cookbookId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, recipeId])
+  @@unique([userId, recipeId, cookbookId])
 }
 
 model Cookbook {
@@ -73,7 +73,6 @@ model Cookbook {
   user       UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipes    UserSavedRecipe[]
 }
-
 
 model FavoriteRecipes {
   id         String      @id @default(uuid())

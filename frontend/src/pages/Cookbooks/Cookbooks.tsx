@@ -10,6 +10,8 @@ import styles from "./Cookbooks.module.scss";
 export default function Cookbooks() {
   const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId: "author_1" });
 
+  console.log(cookbooks)
+
   return (
     <section className={styles.page}>
       <Header

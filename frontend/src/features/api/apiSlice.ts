@@ -4,7 +4,7 @@ import type { Recipe } from "../../types/recipeTypes";
 import type { RecipeQuery, FavoriteRecipeQuery } from "../../types/queryTypes";
 
 import type { Cookbook } from "../../types/cookBookTypes";
-import type { CookbookQuery } from "../../types/queryTypes";
+import type { CookbookQuery, SingleCookbookQuery } from "../../types/queryTypes";
 
 import { delay } from "../../lib/functionsUtils";
 
@@ -18,7 +18,7 @@ export const delayedBaseQuery = (ms: number = 1000) => async (...args: Parameter
 
 export const clientApi = createApi({
   reducerPath: "clientApi",
-  baseQuery: delayedBaseQuery(2000),
+  baseQuery: delayedBaseQuery(0),
   tagTypes: ["FavoriteRecipe"],
   endpoints: (builder) => ({
     getRecipes: builder.query<Recipe[], RecipeQuery>({
@@ -80,6 +80,7 @@ export const clientApi = createApi({
         return query;
       },
     }),
+
     getFavoriteRecipesIds: builder.query<string[], FavoriteRecipeQuery>({
       query: ({ userId }) => {
         return `/recipes/favorite/user/${userId}/ids`;
@@ -118,8 +119,113 @@ export const clientApi = createApi({
       query: ({ userId }) => {
         return `/cookbooks/user/${userId}`;
       },
-    })
+    }),
+    getCookBook: builder.query<Cookbook, SingleCookbookQuery>({
+      query: ({ cookbookId, userId, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
+        let query = `/cookbooks/${cookbookId}?userId=${userId}`;
+
+        if (titleStartsWith) {
+          query += `&titleStartsWith=${titleStartsWith}`;
+        }
+        if (category) {
+          query += `&category=${category}`;
+        }
+        if (difficulty) {
+          query += `&difficulty=${difficulty}`;
+        }
+        if (cuisine) {
+          query += `&cuisine=${cuisine}`;
+        }
+        if (cookingTime) {
+          query += `&cookingTime=${JSON.stringify(cookingTime)}`;
+        }
+        if (ingredients && ingredients.length) {
+          query += `&ingredients=${ingredients.join(",")}`;
+        }
+        if (isFavorite) {
+          query += `&isFavorite=${isFavorite}`;
+        }
+
+        return query;
+      },
+    }),
+
+    removeRecipeFromCookbook: builder.mutation<Recipe, { userId: string, cookbookId: string; recipeId: string; }>({
+      query: ({ userId, cookbookId, recipeId }) => ({
+        url: `/cookbooks/${cookbookId}`,
+        method: "DELETE",
+        body: { userId, recipeId }
+      }),
+      async onQueryStarted({ userId, cookbookId, recipeId }, lifecycleApi) {
+        const getCookBookPatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getCookBook", { cookbookId, userId }, draft => {
+            const recipes = draft.recipes;
+            const deleteRecipeIndex = recipes.findIndex(recipe => recipe.id === recipeId);
+
+            if (deleteRecipeIndex !== -1) {
+              recipes.splice(deleteRecipeIndex, 1);
+            }
+          })
+        );
+        const getCookBooksPatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getCookBooks", { userId }, draft => {
+            const currentCookbook = draft.find(cookbook => cookbook.id === cookbookId)!;
+            const recipes = currentCookbook.recipes;
+            const deleteRecipeIndex = recipes.findIndex(recipe => recipe.id === recipeId);
+
+            if (deleteRecipeIndex !== -1) {
+              recipes.splice(deleteRecipeIndex, 1);
+            }
+          })
+        );
+
+        try {
+          await lifecycleApi.queryFulfilled;
+        } catch {
+          getCookBookPatchResult.undo();
+          getCookBooksPatchResult.undo();
+        }
+      },
+    }),
+    addRecipeToCookbook: builder.mutation<Recipe, { userId: string, cookbookId: string; recipeId: string; recipe: Recipe }>({
+      query: ({ userId, cookbookId, recipeId }) => ({
+        url: `/cookbooks/${cookbookId}`,
+        method: "POST",
+        body: { userId, recipeId }
+      }),
+      async onQueryStarted({ userId, cookbookId, recipeId, recipe }, lifecycleApi) {
+        const getCookBookPatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getCookBook", { cookbookId, userId }, draft => {
+            const recipes = draft.recipes as Recipe[];
+            recipes.push(recipe);
+          })
+        );
+        const getCookBooksPatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getCookBooks", { userId }, draft => {
+            const currentCookbook = draft.find(cookbook => cookbook.id === cookbookId)!;
+            const recipes = currentCookbook.recipes as Recipe[];
+            recipes.push(recipe);
+          })
+        );
+
+        try {
+          await lifecycleApi.queryFulfilled
+        } catch {
+          getCookBookPatchResult.undo();
+          getCookBooksPatchResult.undo();
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery, useToggleRecipesIdsMutation, useGetUserRecipesQuery, useGetCookBooksQuery } = clientApi;
+export const {
+  useGetRecipesQuery,
+  useGetFavoriteRecipesIdsQuery,
+  useToggleRecipesIdsMutation,
+  useGetUserRecipesQuery,
+  useGetCookBooksQuery,
+  useGetCookBookQuery,
+  useRemoveRecipeFromCookbookMutation,
+  useAddRecipeToCookbookMutation,
+} = clientApi;

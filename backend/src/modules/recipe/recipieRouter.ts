@@ -10,6 +10,8 @@ const recipeController = new RecipeController();
 router.get("/", transformQueryGetAllRecipesParams, recipeController.getAllRecipes);
 router.get("/user/:userId", transformQueryGetAllRecipesParams, recipeController.getUserRecipes);
 
+router.get("/:recipeId/cookbook-ids", recipeController.getCookbookIdsOfUserRecipe);
+
 router.get("/favorite/user/:userId/ids", recipeController.getFavoriteRecipesIds);
 router.post("/favorite/user/:userId/ids", recipeController.toggleFavoriteRecipesIds);
 

@@ -14,9 +14,9 @@ interface CookbookCardProps {
   isFetching?: boolean;
 }
 
-export default function CookbookCard({ title, imageUrl, recipesCount, isFetching }: CookbookCardProps) {
+export default function CookbookCard({ id, title, imageUrl, recipesCount, isFetching }: CookbookCardProps) {
   return (
-    <Link className={`${styles.card} ${isFetching ? styles.cardFetching : ""}`} to="/">
+    <Link className={`${styles.card} ${isFetching ? styles.cardFetching : ""}`} to={`${id}`}>
       <div className={styles.cardContainer}>
         <div className={styles.content}>
           <div className={styles.contentImgWrapper}>

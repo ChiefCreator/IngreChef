@@ -72,8 +72,19 @@ export default class RecipeController {
       };
 
       const userRecipes = await recipeService.getUserRecipes(filters);
-      console.log(userRecipes)
       res.status(200).json(userRecipes);
+    } catch(error) {
+      console.error(error);
+      res.status(500).json({ message: "Ошибка получения рецептов пользователя" });
+    }
+  }
+
+  async getCookbookIdsOfUserRecipe(req: Request, res: Response): Promise<void> {
+    try {
+      const recipeId = req.params.recipeId;
+
+      const cookbookIds = await recipeService.getCookbookIdsOfUserRecipe(recipeId);
+      res.status(200).json(cookbookIds);
     } catch(error) {
       console.error(error);
       res.status(500).json({ message: "Ошибка получения рецептов пользователя" });

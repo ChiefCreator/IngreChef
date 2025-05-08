@@ -1,0 +1,18 @@
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+
+  transition: background-color 0.3s var(--transition-power--in-out);
+
+  &:hover {
+    background-color: var(--color-neutral-main--darken);
+  }
+
+  &__arrow {
+    margin-left: auto;
+  }
+}

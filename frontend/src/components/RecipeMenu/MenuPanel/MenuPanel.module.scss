@@ -1,0 +1,27 @@
+.menu-panel {
+  background-color: var(--color-neutral-main);
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--color-neutral-main--dark);
+  min-width: 180px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &__block {
+    border-bottom: 1px solid var(--color-neutral-main--dark);
+    padding-bottom: 3px;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+}

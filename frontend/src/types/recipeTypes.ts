@@ -1,3 +1,5 @@
+import type { MenuItem } from "../components/RecipeMenu/RecipeMenu";
+
 export type Category = "soups" | "main-dishes" | "side-dishes" | "salads" | "snacks" | "desserts" | "bakery-products";
 export type Difficulty = "easy" | "medium" | "hard";
 export type Cuisine = "Russian" | "Belarusian";
@@ -25,4 +27,12 @@ export interface FavoriteRecipes {
   recipeId: string;
 
   recipe?: Recipe;
+}
+
+export interface RecipeCardOfMyRecipesOptions {
+  [key: string]: MenuItem[];
+}
+
+export interface RecipeCardOfCookbookOptions {
+  [key: string]: MenuItem[];
 }

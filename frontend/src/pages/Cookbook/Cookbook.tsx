@@ -1,41 +1,41 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useCallback, useMemo } from "react";
-import { useGetUserRecipesQuery, useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "./../../features/api/apiSlice";
+import { useParams } from "react-router-dom";
+import { useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "./../../features/api/apiSlice";
 
-import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
+import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
+
 import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import SearchPanel from "../../components/SearchPanel/SearchPanel";
-import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
+import MyRecipeCardsPanel from "../MyRecipes/MyRecipeCardsPanel/MyRecipeCardsPanel";
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
-import type { ChangeFilter } from "../../types/filtersTypes";
-import type { RecipeQuery } from "../../types/queryTypes";
+import type { ChangeFilter, Filter } from "../../types/filtersTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
-import styles from "./MyRecipes.module.scss";
+import styles from "./Cookbook.module.scss";
 
-const defaultFilters: RecipeQuery = { page: 1, limit: 10, userId: "author_1" };
-
-export default function MyRecipes() {
-  const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
+export default function Cookbook() {
+  const { cookbookId } = useParams();
+  const [filters, setFilters] = useState<Filter>({});
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters);
+  const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId: "author_1", cookbookId: cookbookId!, ...filters });
   const { data: cookbooks } = useGetCookBooksQuery({ userId: "author_1" });
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
   const [addRecipeToCookbook] = useAddRecipeToCookbookMutation();
 
+  const recipes = data?.recipes;
+
   const changeFilter: ChangeFilter = useCallback((key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
   const removeFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, [defaultFilters]);
+    setFilters({});
+  }, []);
   const toggleFiltersPanel = useCallback(() => {
-    setIsFiltersPanelOpen(prev => !prev);
+    setIsFiltersPanelOpen((prev) => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
 
-  
   const recipeCardsMenuOptions: RecipeCardOfMyRecipesOptions[] | undefined = useMemo(() => recipes?.map(recipe => {
     const recipeId = recipe.id;
 
@@ -74,12 +74,21 @@ export default function MyRecipes() {
             ],
           }
         },
+        {
+          id: "delete",
+          type: "button",
+          label: "Удалить из кулинарной книги",
+          icon: <BookX size={16} />,
+          onClick: () => {
+            cookbookId && removeRecipeFromCookbook({ userId: "author_1", cookbookId, recipeId })
+          },
+        },
       ],
     }
   }), [recipes, cookbooks, removeRecipeFromCookbook, addRecipeToCookbook]);
-  
-  const filterItemsData = useMemo<FilterItemProps[]>(() => (
-    [
+
+  const filterItemsData = useMemo<FilterItemProps[]>(
+    () => [
       {
         id: "difficulty",
         icon: <Rocket size={16} />,
@@ -87,15 +96,15 @@ export default function MyRecipes() {
         type: "list",
         selectedValue: filters["difficulty"],
         options: [
-          { 
+          {
             label: "Легкая",
             value: "easy",
           },
-          { 
+          {
             label: "Средняя",
             value: "medium",
           },
-          { 
+          {
             label: "Тяжелая",
             value: "hard",
           },
@@ -108,31 +117,31 @@ export default function MyRecipes() {
         type: "list",
         selectedValue: filters["category"],
         options: [
-          { 
+          {
             label: "Супы",
             value: "soups",
           },
-          { 
+          {
             label: "Основные блюда",
             value: "main-dishes",
           },
-          { 
+          {
             label: "Гарниры",
             value: "side-dishes",
           },
-          { 
+          {
             label: "Салаты",
             value: "salads",
           },
-          { 
+          {
             label: "Закуски",
             value: "snacks",
           },
-          { 
+          {
             label: "Дессерты",
             value: "desserts",
           },
-          { 
+          {
             label: "Хлебобулочные изделия",
             value: "bakery-products",
           },
@@ -156,43 +165,27 @@ export default function MyRecipes() {
         type: "toggle",
         isActive: Boolean(filters["isFavorite"]),
       },
-    ]
-  ), [filters]);
+    ],
+    [filters]
+  );
 
   return (
     <section className={styles.page}>
       <Header
         className={styles.header}
-        title="Мои рецепты"
+        title={data?.name}
         controls={[
-          <Button
-            type="outline"
-            className={styles.recipiesButtonLine}
-            icon={<Compass size={16} />}
-          >
+          <Button type="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
             Лента
           </Button>,
-          <Button
-            type="primary"
-            className={styles.recipiesButtonLine}
-            icon={<Plus size={16} />}
-          >
+          <Button type="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
             Добавить рецепт
-          </Button>
+          </Button>,
         ]}
       />
       <div className={styles.body}>
         <header className={styles.bodyHeader}>
-          <SearchPanel
-            className={styles.bodySearchPanel}
-            filterItemsData={filterItemsData}
-            placeholder="Поиск по названию..."
-            isFiltersPanelOpen={isFiltersPanelOpen}
-
-            changeFilter={changeFilter}
-            removeFilters={removeFilters}
-            toggleFiltersPanel={toggleFiltersPanel}
-          />
+          <SearchPanel className={styles.bodySearchPanel} filterItemsData={filterItemsData} placeholder="Поиск по названию..." isFiltersPanelOpen={isFiltersPanelOpen} changeFilter={changeFilter} removeFilters={removeFilters} toggleFiltersPanel={toggleFiltersPanel} />
         </header>
 
         <MyRecipeCardsPanel

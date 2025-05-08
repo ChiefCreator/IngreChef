@@ -3,7 +3,7 @@ import styles from "./Header.module.scss";
 
 interface HeaderProps {
   className?: string;
-  title: string;
+  title?: string;
   controls?: React.ReactNode[];
 }
 

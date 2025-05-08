@@ -376,6 +376,11 @@ async function main() {
           recipeId: "recipe_1",
         },
         {
+          cookbookId: "cookbook_2",
+          userId: "author_1",
+          recipeId: "recipe_1",
+        },
+        {
           cookbookId: "cookbook_1",
           userId: "author_1",
           recipeId: "recipe_2",
