@@ -1,0 +1,136 @@
+.page {
+  padding: 20px 0;
+  &__container {
+  }
+}
+
+.main-section {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  align-items: start;
+  gap: 30px;
+
+  &__img-wrapper {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    overflow: hidden;
+
+    &:hover {
+      .main-section__img {
+        scale: 1.05;
+      }
+    }
+  }
+  &__img {
+    width: 100%;
+    aspect-ratio: 1/0.8;
+    object-fit: cover;
+    transition: scale 0.3s var(--transition-power--in-out);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__info {
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--color-neutral-main--dark);
+    margin-bottom: 15px;
+  }
+
+  &__title {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 130%;
+  }
+  &__description {
+    margin-top: 10px;
+    opacity: 0.9;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 130%;
+  }
+
+  &__meta-wrapper {
+    margin-top: 20px;
+  }
+
+  &__controls {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+.illustration {
+  width: 100%;
+  aspect-ratio: 1/0.8;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &__icon {
+    color: #c8ccca;
+    position: relative;
+    z-index: 2;
+  }
+}
+.illustration-skeleton {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.button-cookbook {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 10px 20px;
+  border-radius: 6px;
+  background-color: var(--color-neutral-contrast);
+  color: rgb(228, 228, 228);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s var(--transition-power--in-out);
+
+  &__icon {
+    display: flex;
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-contrast--dark);
+  }
+}
+
+.recipe-meta-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.ingredients-and-steps-wrapper {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 30px;
+
+  margin-top: 30px;
+}
+
+.ingredients-section {
+  &__title {
+    line-height: 130%;
+    font-size: 24px;
+    font-weight: 600;
+  }
+}

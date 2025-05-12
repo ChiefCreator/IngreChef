@@ -18,8 +18,8 @@ export const delayedBaseQuery = (ms: number = 1000) => async (...args: Parameter
 
 export const clientApi = createApi({
   reducerPath: "clientApi",
-  baseQuery: delayedBaseQuery(0),
-  tagTypes: ["FavoriteRecipe"],
+  baseQuery: delayedBaseQuery(2000),
+  tagTypes: ["Recipe", "FavoriteRecipe"],
   endpoints: (builder) => ({
     getRecipes: builder.query<Recipe[], RecipeQuery>({
       query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
@@ -49,7 +49,23 @@ export const clientApi = createApi({
 
         return query;
       },
-      providesTags: (_, __, { userId }) => [{ type: "FavoriteRecipe", id: userId }],
+      providesTags: (result, __, { userId }) => {
+        const recipeTag = result ?
+          [
+            ...result.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
+            { type: "Recipe" as const, id: "List" },
+          ] : [{ type: "Recipe" as const, id: "List" }];
+
+        return [
+          ...recipeTag,
+          { type: "FavoriteRecipe", id: userId },
+        ];
+      }
+    }),
+    getRecipe: builder.query<Recipe, { userId: string; recipeId: string }>({
+      query: ({ userId, recipeId }) => {
+        return `/recipes/${recipeId}?userId=${userId}`;
+      },
     }),
     getUserRecipes: builder.query<Recipe[], RecipeQuery>({
       query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
@@ -79,6 +95,52 @@ export const clientApi = createApi({
 
         return query;
       },
+    }),
+
+    addRecipeToFavorite: builder.mutation<{ id: string; likedAt: string; userId: string; recipeId: string }, { userId: string; recipeId: string }>({
+      query: ({ userId, recipeId }) => ({
+        url: "/favorites",
+        method: "POST",
+        body: { userId, recipeId },
+      }),
+      async onQueryStarted({ userId, recipeId }, lifecycleApi) {
+        const getRecipePatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getRecipe", { userId, recipeId }, (draft) => {
+            if ("isFavorite" in draft) {
+              draft.isFavorite = true;
+            }
+          })
+        );
+
+        try {
+          await lifecycleApi.queryFulfilled;
+        } catch {
+          getRecipePatchResult.undo();
+        }
+      },
+      invalidatesTags: (_, __, { recipeId }) => [{ type: "Recipe", id: "List" }, { type: "Recipe", id: recipeId }],
+    }),
+    deleteRecipeFromFavorite: builder.mutation<{ id: string; likedAt: string; userId: string; recipeId: string }, { userId: string; recipeId: string }>({
+      query: ({ userId, recipeId }) => ({
+        url: `/favorites?userId=${userId}&recipeId=${recipeId}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted({ userId, recipeId }, lifecycleApi) {
+        const getRecipePatchResult = lifecycleApi.dispatch(
+          clientApi.util.updateQueryData("getRecipe", { userId, recipeId }, (draft) => {
+            if ("isFavorite" in draft) {
+              draft.isFavorite = false;
+            }
+          })
+        );
+
+        try {
+          await lifecycleApi.queryFulfilled;
+        } catch {
+          getRecipePatchResult.undo();
+        }
+      },
+      invalidatesTags: (_, __, { recipeId }) => [{ type: "Recipe", id: "List" }, { type: "Recipe", id: recipeId }],
     }),
 
     getFavoriteRecipesIds: builder.query<string[], FavoriteRecipeQuery>({
@@ -221,7 +283,10 @@ export const clientApi = createApi({
 
 export const {
   useGetRecipesQuery,
+  useGetRecipeQuery,
   useGetFavoriteRecipesIdsQuery,
+  useAddRecipeToFavoriteMutation,
+  useDeleteRecipeFromFavoriteMutation,
   useToggleRecipesIdsMutation,
   useGetUserRecipesQuery,
   useGetCookBooksQuery,

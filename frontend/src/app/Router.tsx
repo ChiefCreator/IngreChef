@@ -5,6 +5,7 @@ import MyRecipes from "../pages/MyRecipes/MyRecipes";
 import RecipesList from "../pages/RecipesList/RecipesList";
 import Discover from "../pages/Discover/Discover";
 import Cookbooks from "../pages/Cookbooks/Cookbooks";
+import Recipe from "../pages/Recipe/Recipe";
 import Cookbook from "../pages/Cookbook/Cookbook";
 
 function ProtectedRoute() {
@@ -27,6 +28,7 @@ export default function Router() {
           <Route path="cookbooks" element={<Cookbooks />} />
           <Route path="favorites" element={<MyRecipes />} />
 
+          <Route path="recipes/:recipeId" element={<Recipe />} />
           <Route path="cookbooks/:cookbookId" element={<Cookbook />} />
         </Route>
 

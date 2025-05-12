@@ -1,0 +1,19 @@
+.ingredients-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  padding-left: 15px;
+  list-style: disc;
+
+  &__item-wrapper {
+    line-height: 130%;
+    font-size: 17px;
+
+    &::marker {
+      color: var(--color-neutral-main--darken);
+      background-color: var(--color-neutral-main--darken);
+    }
+  }
+}

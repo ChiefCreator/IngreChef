@@ -2,7 +2,7 @@ import type { MenuItem } from "../components/RecipeMenu/RecipeMenu";
 
 export type Category = "soups" | "main-dishes" | "side-dishes" | "salads" | "snacks" | "desserts" | "bakery-products";
 export type Difficulty = "easy" | "medium" | "hard";
-export type Cuisine = "Russian" | "Belarusian";
+export type Cuisine = "russian" | "belarusian";
 
 export interface Recipe {
   id: string;
@@ -14,9 +14,10 @@ export interface Recipe {
   cuisine: Cuisine;
   cookingTime: number;
   ingredients: string[];
-  steps: string[];
+  steps: { title: string; time: number; description: string }[];
   createdAt: Date;
   authorId: string;
+  isFavorite: boolean;
   likedBy?: FavoriteRecipes[];
 }
 

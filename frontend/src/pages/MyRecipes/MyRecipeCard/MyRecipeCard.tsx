@@ -65,7 +65,15 @@ export default function MyRecipeCard({ recipeId, title, imageUrl, isFetching, me
         </div>
       </div>
 
-      {isMenuOpen && <RecipeMenu isOpen={isMenuOpen} options={menuOptions} ref={menuRef} mousePos={contextMenu} closeMenu={closeMenu} />}
+      {isMenuOpen && <RecipeMenu
+        isOpen={isMenuOpen}
+        options={menuOptions}
+        ref={menuRef}
+        positionerProps={{
+          mousePos: contextMenu,
+        }}
+        closeMenu={closeMenu}
+      />}
     </>
   );
 }

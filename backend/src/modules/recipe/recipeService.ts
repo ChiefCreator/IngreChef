@@ -70,6 +70,26 @@ export default class RecipeService {
       include: {likedBy: true}
     });
   }
+  async getRecipe(userId: string, recipeId: string) {
+    const recipe = await prisma.recipe.findUnique({
+      where: {
+        id: recipeId,
+      },
+      include: {
+        likedBy: {
+          where: {
+            userId
+          }
+        }
+      }
+    });
+
+    if (!recipe) return null;
+
+    const recipeWithIsFavorite = { ...recipe, isFavorite: !!recipe?.likedBy.length };
+
+    return recipeWithIsFavorite;
+  }
   async getUserRecipes(filters: RecipeFilters) {
     const {
       userId,

@@ -8,6 +8,7 @@ dotenv.config();
 
 import recipeRouter from "./src/modules/recipe/recipieRouter";
 import cookbookRouter from "./src/modules/cookbook/cookbookRouter";
+import favoriteRouter from "./src/modules/favorite/favoriteRouter";
 
 export const prisma = new PrismaClient();
 const app: Application = express();
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/recipes", recipeRouter);
+app.use("/api/favorites", favoriteRouter);
 app.use("/api/cookbooks", cookbookRouter);
 
 const PORT = process.env.PORT || 5000;

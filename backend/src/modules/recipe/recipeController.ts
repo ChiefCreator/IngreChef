@@ -5,6 +5,8 @@ import RecipeService from './recipeService';
 
 const recipeService = new RecipeService();
 
+import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
+
 export default class RecipeController {
   constructor() {}
 
@@ -41,6 +43,25 @@ export default class RecipeController {
     } catch(error) {
       console.error(error);
       res.status(500).json({ message: 'Ошибка получения рецептов' });
+    }
+  }
+  async getRecipe(req: Request, res: Response): Promise<void> {
+    try {
+      const { recipeId } = req.params;
+      const user = req.query.userId as string;
+
+      const recipe = await recipeService.getRecipe(user, recipeId);
+
+      if (recipe) {
+        const transformedRecipe = transformRecipeFromDBToClient(recipe);
+
+        res.status(200).json(transformedRecipe);
+      } else {
+        res.status(500).json({ message: "Ошибка получения рецепта" });
+      }
+    } catch(error) {
+      console.error(error);
+      res.status(500).json({ message: "Ошибка получения рецепта" });
     }
   }
   async getUserRecipes(req: Request, res: Response): Promise<void> {

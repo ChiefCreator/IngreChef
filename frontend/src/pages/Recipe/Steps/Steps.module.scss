@@ -1,0 +1,44 @@
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.step {
+  cursor: pointer;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  &__title {
+    line-height: 130%;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  &__description {
+    line-height: 130%;
+    font-size: 17px;
+    margin-top: 10px;
+  }
+
+  &__check {
+    opacity: 0;
+
+    &_active {
+      opacity: 1 !important;
+    }
+  }
+
+  &_passed {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    .step__check {
+      opacity: .5;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px;
+  background-color: var(--color-neutral-main--dark);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color .3s var(--transition-power--in-out);
+
+  &__icon {
+    color: var(--color-neutral-contrast);
+  }
+
+  &__label {
+    text-wrap: nowrap;
+  }
+
+  &__selected-value {
+    display: block;
+    border-radius: 8px;
+    padding: 2.5px 5px;
+    font-size: 11px;
+    color: var(--color-primary);
+    background-color: var(--color-neutral-main--darken);
+    text-wrap: nowrap;
+  }
+}

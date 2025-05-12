@@ -8,6 +8,7 @@ const router = Router();
 const recipeController = new RecipeController();
 
 router.get("/", transformQueryGetAllRecipesParams, recipeController.getAllRecipes);
+router.get("/:recipeId", transformQueryGetAllRecipesParams, recipeController.getRecipe);
 router.get("/user/:userId", transformQueryGetAllRecipesParams, recipeController.getUserRecipes);
 
 router.get("/:recipeId/cookbook-ids", recipeController.getCookbookIdsOfUserRecipe);

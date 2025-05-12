@@ -1,0 +1,19 @@
+.step {
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  &__title {
+    width: 70%;
+    line-height: 130%;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  &__description {
+    line-height: 130%;
+    font-size: 17px;
+    margin-top: 10px;
+  }
+}
