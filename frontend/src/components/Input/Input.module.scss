@@ -1,0 +1,35 @@
+.input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--color-neutral-main--darken);
+  position: relative;
+  transform: border .3s var(--transition-power--in-out);
+  
+  &__item {
+    width: 100%;
+
+    padding: 10px;
+    background-color: transparent;
+
+    &::placeholder {
+      color: var(--color-neutral-contrast--light);
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--color-neutral-contrast--light);
+    border-radius: 12px;
+    pointer-events: none;
+    display: none;
+  }
+
+  &_focused::before {
+    display: block;
+  }
+  &_error {
+    border: 1px solid red;
+  }
+}

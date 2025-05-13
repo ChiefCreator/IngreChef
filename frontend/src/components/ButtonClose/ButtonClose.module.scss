@@ -1,0 +1,16 @@
+.button {
+  display: inline-flex;
+  
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color .3s var(--transition-power--in-out);
+  cursor: pointer;
+
+  &__icon {
+    color: var(--color-neutral-contrast--light);
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
+  }
+}

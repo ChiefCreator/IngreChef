@@ -7,6 +7,7 @@ import CookbookController from "./cookbookController";
 const router = Router();
 const cookbookController = new CookbookController();
 
+router.post("/", cookbookController.createCookbook);
 router.get("/user/:userId", cookbookController.getCookbooks);
 router.get("/:cookbookId", transformQueryGetAllRecipesParams, cookbookController.getCookbook);
 router.delete("/:cookbookId", cookbookController.removeRecipeFromCookbook);

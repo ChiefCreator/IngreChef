@@ -1,0 +1,45 @@
+.modal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 6px;
+  background-color: var(--color-neutral-main);
+
+  &__header {
+    display: flex;
+    gap: 5px;
+    align-items: start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  &__description {
+    margin-top: 10px;
+    line-height: 100%;
+    color: var(--color-neutral-contrast--light);
+  }
+  &__close {
+    transform: translate(4px, -4px);
+  }
+
+  &__footer {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+}
+.backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-neutral-contrast);
+  opacity: .5;
+}

@@ -57,6 +57,24 @@ export default class CookbookController {
       res.status(500).json({ message: "Ошибка получения кулинарной книги" });
     }
   }
+
+  async createCookbook(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId, cookbookId, name, colorPalette } = req.body;
+
+      if (!name || !cookbookId || !userId || !colorPalette) {
+        res.status(400).json({ message: "Имя книги, цветовая палитра и ID пользователя и книги обязательны" });
+        return;
+      }
+
+      const cookbook = await cookbookService.createCookbook(userId, cookbookId, name, colorPalette);
+      res.status(200).json(cookbook);
+    } catch(error) {
+      console.error(error);
+      res.status(500).json({ message: "Ошибка создания кулинарной книги" });
+    }
+  }
+
   async removeRecipeFromCookbook(req: Request, res: Response): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;

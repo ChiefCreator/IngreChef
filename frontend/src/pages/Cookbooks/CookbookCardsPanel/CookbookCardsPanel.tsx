@@ -26,17 +26,18 @@ export default React.memo(function CookbookCardsPanel({ data, isSuccess, isError
     } else if (isSuccess) {
       return (
         <div className={styles.cardsList}>
-          {data?.map(cookBook => {
-            const recipesCount = cookBook.recipes?.length;
-            const lastImageUrl = cookBook.recipes[recipesCount - 1]?.imageUrl;
+          {data?.map(({ id, name, recipes, colorPalette }) => {
+            const recipesCount = recipes?.length;
+            const lastImageUrl = recipes[recipesCount - 1]?.imageUrl;
             
             return (
               <CookbookCard
-                key={cookBook.id}
-                id={cookBook.id}
-                title={cookBook.name}
+                key={id}
+                id={id}
+                title={name}
                 imageUrl={lastImageUrl}
                 recipesCount={recipesCount}
+                colorPalette={colorPalette}
                 isFetching={isFetching}
               />
             );

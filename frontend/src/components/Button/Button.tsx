@@ -1,23 +1,26 @@
 import styles from "./Button.module.scss";
 
 interface ButtonProps {
-  type?: "primary" | "outline" | "text" | "ghost";
+  variant?: "primary" | "outline" | "text" | "ghost";
   className?: string;
-
   children?: React.ReactNode;
   icon?: React.ReactNode;
+
+  type?: "button" | "submit" | "reset";
+  form?: string;
   
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-export default function Button({ type = "primary", className = "", children, icon, onClick }: ButtonProps) {
-  const typeStyle = type;
+export default function Button({ variant = "primary", className = "", children, icon, type = "button", form, onClick }: ButtonProps) {
+  const variantStyle = variant;
 
   return (
     <button
       className={`${styles.button} ${className}`}
-      type="button"
-      data-style={typeStyle}
+      type={type}
+      data-style={variantStyle}
+      form={form}
 
       onClick={onClick}
     >

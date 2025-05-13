@@ -19,7 +19,7 @@ export const delayedBaseQuery = (ms: number = 1000) => async (...args: Parameter
 export const clientApi = createApi({
   reducerPath: "clientApi",
   baseQuery: delayedBaseQuery(2000),
-  tagTypes: ["Recipe", "FavoriteRecipe"],
+  tagTypes: ["Recipe", "FavoriteRecipe", "Cookbook"],
   endpoints: (builder) => ({
     getRecipes: builder.query<Recipe[], RecipeQuery>({
       query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
@@ -181,6 +181,7 @@ export const clientApi = createApi({
       query: ({ userId }) => {
         return `/cookbooks/user/${userId}`;
       },
+      providesTags: (_, __, ___) => ["Cookbook"],
     }),
     getCookBook: builder.query<Cookbook, SingleCookbookQuery>({
       query: ({ cookbookId, userId, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
@@ -210,6 +211,35 @@ export const clientApi = createApi({
 
         return query;
       },
+      providesTags: (_, __, { cookbookId }) => [{ type: "Cookbook", id: cookbookId }],
+    }),
+    createCookbook: builder.mutation<Cookbook, { name: string; cookbookId: string; userId: string; colorPalette: Cookbook["colorPalette"] }>({
+      query: ({ userId, cookbookId, name, colorPalette }) => ({
+        url: "cookbooks",
+        method: "POST",
+        body: {
+          userId,
+          cookbookId,
+          name,
+          colorPalette,
+        },
+      }),
+      async onQueryStarted({ userId, cookbookId, name, colorPalette }, { dispatch, queryFulfilled }) {
+        const createdAt = new Date().toISOString();
+
+        const getCookbooksPatchResult = dispatch(
+          clientApi.util.updateQueryData("getCookBooks", { userId }, (draft) => {
+            draft.push({ id: cookbookId, name, createdAt, recipes: [], colorPalette });
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          getCookbooksPatchResult.undo();
+        }
+      },
+      invalidatesTags: (cookbook, __, ___) => [{ type: "Cookbook", id: cookbook?.id }],
     }),
 
     removeRecipeFromCookbook: builder.mutation<Recipe, { userId: string, cookbookId: string; recipeId: string; }>({
@@ -293,4 +323,5 @@ export const {
   useGetCookBookQuery,
   useRemoveRecipeFromCookbookMutation,
   useAddRecipeToCookbookMutation,
+  useCreateCookbookMutation
 } = clientApi;

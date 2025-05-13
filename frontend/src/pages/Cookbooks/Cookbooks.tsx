@@ -1,16 +1,27 @@
+import { useCallback, useState } from "react";
+
+import { useGetCookBooksQuery } from "../../features/api/apiSlice";
+
 import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import CookbookCardsPanel from "./CookbookCardsPanel/CookbookCardsPanel";
+import CreateCookbookModal from "../../components/CreateCookbookModal/CreateCookbookModal";
 import { Plus } from "lucide-react";
-
-import { useGetCookBooksQuery } from "../../features/api/apiSlice";
 
 import styles from "./Cookbooks.module.scss";
 
 export default function Cookbooks() {
-  const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId: "author_1" });
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
 
+  const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId: "author_1" });
   console.log(cookbooks)
+
+  const openCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(true);
+  }, [setIsCreateCookbookModalOpen]);
+  const closeCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(false);
+  }, [setIsCreateCookbookModalOpen]);
 
   return (
     <section className={styles.page}>
@@ -19,13 +30,19 @@ export default function Cookbooks() {
         title="Кулинарные книги"
         controls={[
           <Button
-            type="primary"
+            variant="primary"
             className={styles.recipiesButtonLine}
             icon={<Plus size={16} />}
+            onClick={openCookbookModal}
           >
             Добавить кулинарную книгу
           </Button>
         ]}
+      />
+
+      <CreateCookbookModal
+        isOpen={isCreateCookbookModalOpen}
+        close={closeCookbookModal}
       />
     <div className={styles.body}>
       <CookbookCardsPanel

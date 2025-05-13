@@ -35,6 +35,18 @@ export default class CookbookService {
 
     return { ...cookbook, recipes: cookbook?.recipes.map(rec => rec.recipe)};
   }
+  async createCookbook(userId: string, cookbookId: string, name: string, colorPalette: string) {
+    const cookbook = await prisma.cookbook.create({
+      data: {
+        id: cookbookId,
+        userId,
+        name,
+        colorPalette,
+      },
+    });
+
+    return cookbook;
+  }
 
   async removeRecipeFromCookbook(userId: string, cookbookId: string, recipeId: string) {
     const userSavedRecipe = await prisma.userSavedRecipe.findFirst({

@@ -175,10 +175,10 @@ export default function Cookbook() {
         className={styles.header}
         title={data?.name}
         controls={[
-          <Button type="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
+          <Button variant="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
             Лента
           </Button>,
-          <Button type="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
+          <Button variant="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
             Добавить рецепт
           </Button>,
         ]}

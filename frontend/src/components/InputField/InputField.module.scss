@@ -1,0 +1,13 @@
+.field {
+  &__label {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  &__error-text {
+    display: inline-block;
+    color: red;
+    margin-top: 5px;
+  }
+}
