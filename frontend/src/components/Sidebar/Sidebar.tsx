@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useGetCookBooksQuery } from "../../features/api/apiSlice";
 
 import Logo from "./../Logo/Logo";
 import Menu from "./Menu/Menu";
 import ButtonToggle from "./ButtonToggle/ButtonToggle";
 import HideElement from "./HideElement/HideElement";
-import { ChefHat, ShoppingCart, BookMarked, Compass, Heart, LayoutList, CookingPot } from "lucide-react";
+import { ChefHat, BookMarked, Compass, LayoutList, CookingPot } from "lucide-react";
 
 import styles from "./Sidebar.module.scss";
 
@@ -20,78 +22,66 @@ export interface MenuItemData {
   title: string;
   icon: React.ReactNode;
   children?: MenuItemData[];
-  defaultTitle?: string;
+  isChildrenLoading?: boolean;
+  defaultContent?: string;
 }
-
-const menuData_1: MenuItemData[] = [
-  {
-    id: "item-1",
-    type: "link",
-    pathname: "/",
-    index: true,
-    title: "Мои рецепты",
-    icon: <ChefHat size={16} />,
-  },
-  {
-    id: "item-2",
-    type: "link",
-    pathname: "/recipes-list",
-    index: true,
-    title: "Список рецептов",
-    icon: <ChefHat size={16} />,
-  },
-  {
-    id: "item-3",
-    type: "link",
-    title: "Список покупок",
-    pathname: "/shopping-list",
-    icon: <ShoppingCart size={16} />,
-  },
-  {
-    id: "item-4",
-    type: "link",
-    title: "Кулинарные книги",
-    pathname: "/cookbooks",
-    icon: <BookMarked size={16} />,
-  },
-  {
-    id: "item-5",
-    type: "buttonOpenDropdown",
-    title: "Список книг",
-    icon: <LayoutList size={16} />,
-    children: [],
-    defaultTitle: "Список книг пуст. Добавьте новую!",
-  },
-  {
-    id: "item-6",
-    type: "link",
-    title: "Избранные",
-    pathname: "/favorites",
-    icon: <Heart size={16} />,
-  },
-  {
-    id: "item-7",
-    type: "link",
-    title: "Подбор рецептов",
-    pathname: "/favorites",
-    icon: <CookingPot size={16} />,
-  },
-];
-const menuData_2: MenuItemData[] = [
-  {
-    id: "item-99",
-    type: "link",
-    pathname: "/discover",
-    title: "Лента",
-    icon: <Compass size={16} />,
-  },
-];
 
 export default function Sidebar({ className = "" }: SidebarProps) {
   const [openMenuPath, setOpenMenuPath] = useState([] as string []);
-  const [isLogoTitleExist, setIsLogoTitleExist] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [isButtonToggleVisible, setIsButtonToggleVisible] = useState(false);
+
+  const { data: cookbooks, isLoading: isCookbooksLoading } = useGetCookBooksQuery({ userId: "author_1" });
+  
+
+  const menuData_1 = useMemo<MenuItemData[]>(() => [
+    {
+      id: "item-1",
+      type: "link",
+      pathname: "/",
+      index: true,
+      title: "Мои рецепты",
+      icon: <ChefHat size={16} />,
+    },
+    {
+      id: "item-4",
+      type: "link",
+      title: "Кулинарные книги",
+      pathname: "/cookbooks",
+      icon: <BookMarked size={16} />,
+    },
+    {
+      id: "item-5",
+      type: "buttonOpenDropdown",
+      title: "Список книг",
+      icon: <LayoutList size={16} />,
+      children: cookbooks?.map(({ id, name }) => ({
+        id,
+        type: "link",
+        title: name,
+        pathname: `/cookbooks/${id}`,
+        icon: <BookMarked size={16} />,
+      })),
+      isChildrenLoading: isCookbooksLoading,
+      defaultContent: "Список книг пуст. Добавьте новую!",
+    },
+    {
+      id: "item-7",
+      type: "link",
+      title: "Генерация рецептов",
+      pathname: "/favorites",
+      icon: <CookingPot size={16} />,
+    },
+  ], [cookbooks]);
+  const menuData_2 = useMemo<MenuItemData[]>(() =>[
+    {
+      id: "item-99",
+      type: "link",
+      pathname: "/discover",
+      title: "Лента",
+      icon: <Compass size={16} />,
+    },
+  ], []);
 
   function handleClickOutside(e: MouseEvent) {
     const target = e.target as HTMLElement;
@@ -120,7 +110,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
       <div className={styles.sidebarContainer}>
         <div className={styles.sidebarContent}>
           <HideElement isOpen={isOpen}>
-            <Logo className={`${styles.sidebarLogo} ${styles.hideElementByHeight}`} isTitle={isLogoTitleExist} />
+            <Logo className={`${styles.sidebarLogo} ${styles.hideElementByHeight}`} />
           </HideElement>
 
           <nav className={styles.sidebarNavigation}>

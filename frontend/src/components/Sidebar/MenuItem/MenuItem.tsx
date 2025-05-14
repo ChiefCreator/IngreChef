@@ -1,8 +1,10 @@
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import HideElement from "../HideElement/HideElement";
+import MenuItemSkeleton from "../MenuItemSkeleton/MenuItemSkeleton";
 
 import styles from "./MenuItem.module.scss";
 
@@ -15,15 +17,51 @@ interface MenuItemProps {
   openPath: string[];
   setOpenPath: React.Dispatch<React.SetStateAction<string[]>>;
 }
+interface DropdownContentProps {
+  isSidebarOpen: boolean;
+  data: MenuItemData;
+  level: number;
+  openPath: string[];
+  setOpenPath: React.Dispatch<React.SetStateAction<string[]>>;
+}
 
-export default function MenuItem({ isSidebarOpen, data, level, openPath, setOpenPath }: MenuItemProps) {
+function DropdownContent({ data, isSidebarOpen, level, openPath, setOpenPath }: DropdownContentProps) {
+  const { children, isChildrenLoading } = data || {};
+
+  if (isChildrenLoading) {
+    return <MenuItemSkeleton count={3} />
+  }
+
+  if (children?.length) { 
+    return (
+      <>
+        {data?.children?.map((menuItemData) => (
+          <MenuItem
+            key={menuItemData.id}
+            data={menuItemData}
+            level={level + 1}
+            openPath={openPath}
+            setOpenPath={setOpenPath}
+            isSidebarOpen={isSidebarOpen}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (!children?.length) {
+    return data.defaultContent;
+  }
+
+}
+
+function MenuItem({ isSidebarOpen, data, level, openPath, setOpenPath }: MenuItemProps) {
   const { pathname } = useLocation();
-  const { title, icon, defaultTitle } = data;
+  const { title, icon } = data;
 
   const isButton = data.type === "buttonOpenDropdown";
   const isLinkActive = pathname === data.pathname;
   const isSubMenuOpen = openPath.includes(data.id);
-  const isChildren = data?.children?.length;
 
   function toggleSubMenu() {
     if (!isButton) return;
@@ -76,25 +114,6 @@ export default function MenuItem({ isSidebarOpen, data, level, openPath, setOpen
     }
   }
 
-  const dropdownContent: React.ReactNode = (
-    isChildren ? (
-      <>
-        {data?.children?.map((menuItemData) => (
-          <MenuItem
-            key={menuItemData.id}
-            data={menuItemData}
-            level={level + 1}
-            openPath={openPath}
-            setOpenPath={setOpenPath}
-            isSidebarOpen={isSidebarOpen}
-          />
-        ))}
-      </>
-    ) : (
-      <div>{defaultTitle}</div>
-    )
-  )
-
   return (
     <div className={`${styles.menuItem} ${isSubMenuOpen ? styles.menuItemOpen : ""}`}>
       {renderMenuItemHead(isButton ? "button" : "link")}
@@ -102,15 +121,17 @@ export default function MenuItem({ isSidebarOpen, data, level, openPath, setOpen
       {(isButton && isSidebarOpen) && (
         <div className={`${styles.dropdown} ${isSubMenuOpen ? styles.dropdownOpen : ""}`}>
           <div className={styles.dropdownContainer}>
-            {dropdownContent}
+            {<DropdownContent data={data} isSidebarOpen={isSidebarOpen} level={level} openPath={openPath} setOpenPath={setOpenPath} />}
           </div>
         </div>
       )}
       {(isButton && !isSidebarOpen) && (
         <div className={`${styles.dropdownAbsolute} ${isSubMenuOpen ? styles.dropdownAbsoluteOpen : ""}`}>
-          {dropdownContent}
+          {<DropdownContent data={data} isSidebarOpen={isSidebarOpen} level={level} openPath={openPath} setOpenPath={setOpenPath} />}
         </div>
       )}
     </div>
   );
 }
+
+export default React.memo(MenuItem)

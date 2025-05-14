@@ -1,3 +1,4 @@
+import React from "react";
 import MenuItem from "../MenuItem/MenuItem";
 
 import { MenuItemData } from "../Sidebar";
@@ -11,7 +12,7 @@ interface MenuProps {
   setOpenPath: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export default function Menu({ isSidebarOpen, openPath, setOpenPath, data }: MenuProps) {
+export default React.memo(function Menu({ isSidebarOpen, openPath, setOpenPath, data }: MenuProps) {
   return (
     <div className={styles.menu}>
       <ul className={styles.menuList}>
@@ -28,4 +29,4 @@ export default function Menu({ isSidebarOpen, openPath, setOpenPath, data }: Men
       </ul>
     </div>
   );
-}
+})

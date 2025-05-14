@@ -23,9 +23,11 @@
   &__title {
     display: block;
     max-width: 100%;
+    text-wrap: pretty;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
   }
 
   &:hover {
@@ -71,9 +73,11 @@
   &__title {
     display: block;
     max-width: 100%;
+    text-wrap: pretty;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
   }
 
   &__arrow {

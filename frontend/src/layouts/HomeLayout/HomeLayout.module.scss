@@ -15,5 +15,7 @@
   &__sidebar {
     max-width: 400px;
     min-height: 100vh;
+    position: relative;
+    z-index: 10;
   }
 }

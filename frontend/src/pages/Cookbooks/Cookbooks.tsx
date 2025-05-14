@@ -14,7 +14,6 @@ export default function Cookbooks() {
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
 
   const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId: "author_1" });
-  console.log(cookbooks)
 
   const openCookbookModal = useCallback(() => {
     setIsCreateCookbookModalOpen(true);
