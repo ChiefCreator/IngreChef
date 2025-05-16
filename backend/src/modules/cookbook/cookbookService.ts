@@ -3,100 +3,122 @@ import { prisma } from "./../../../server";
 import type { RecipeFilters } from '../recipe/recipeTypes';
 import { buildSingleCookbookIncludeClause } from "./../../lib/filterUtils";
 
+import DatabaseError from "../../../errors/DatabaseError";
+import NotFoundError from "../../../errors/NotFoundError";
 
 export default class CookbookService {
   constructor() {};
 
   async getCookbooks(userId: string) {
-    const cookbooks = await prisma.cookbook.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        recipes: {
-          select: {
-            recipe: true
-          },
+    try {
+      const cookbooks = await prisma.cookbook.findMany({
+        where: {
+          userId,
         },
-      }
-    });
-
-    return cookbooks.map(cookbook => ({ ...cookbook, recipes: cookbook.recipes.map(rec => rec.recipe)}));
+        include: {
+          recipes: {
+            select: {
+              recipe: true
+            },
+          },
+        }
+      });
+  
+      return cookbooks.map(cookbook => ({ ...cookbook, recipes: cookbook.recipes.map(rec => rec.recipe)}));
+    } catch(error) {
+      throw new DatabaseError("Не удалось получить кулинарные книги", error as Error);
+    }
   }
   async getCookbook(cookbookId: string, filters: RecipeFilters) {
-    const include = buildSingleCookbookIncludeClause(filters);
+    try {
+      const include = buildSingleCookbookIncludeClause(filters);
 
-    const cookbook = await prisma.cookbook.findUnique({
-      where: {
-        id: cookbookId,
-      },
-      include,
-    });
-
-    return { ...cookbook, recipes: cookbook?.recipes.map(rec => rec.recipe)};
+      const cookbook = await prisma.cookbook.findUnique({
+        where: {
+          id: cookbookId,
+        },
+        include,
+      });
+  
+      return { ...cookbook, recipes: cookbook?.recipes.map(rec => rec.recipe)};
+    } catch(error) {
+      throw new DatabaseError("Не удалось получить кулинарную книгу", error as Error, { cookbookId });
+    }
   }
   async createCookbook(userId: string, cookbookId: string, name: string, colorPalette: string) {
-    const cookbook = await prisma.cookbook.create({
-      data: {
-        id: cookbookId,
-        userId,
-        name,
-        colorPalette,
-      },
-    });
-
-    return cookbook;
+    try {
+      const cookbook = await prisma.cookbook.create({
+        data: {
+          id: cookbookId,
+          userId,
+          name,
+          colorPalette,
+        },
+      });
+  
+      return cookbook;
+    } catch(error) {
+      throw new DatabaseError("Не удалось создать кулинарную книгу", error as Error);
+    }
   }
 
   async removeRecipeFromCookbook(userId: string, cookbookId: string, recipeId: string) {
-    const userSavedRecipe = await prisma.userSavedRecipe.findFirst({
-      where: {
-        userId,
-        recipeId,
-        cookbook: {
+    try {
+      const userSavedRecipe = await prisma.userSavedRecipe.findFirst({
+        where: {
+          userId,
+          recipeId,
+          cookbook: {
+            id: cookbookId,
+          },
+        },
+        select: {
+          recipe: true,
+        },
+      });
+    
+      if (!userSavedRecipe || !userSavedRecipe.recipe) {
+        throw new NotFoundError("Рецепт не найден в указанной книге пользователя");
+      }
+    
+      const recipe = userSavedRecipe.recipe;
+  
+      await prisma.cookbook.update({
+        where: {
+          userId,
           id: cookbookId,
         },
-      },
-      select: {
-        recipe: true,
-      },
-    });
-  
-    if (!userSavedRecipe || !userSavedRecipe.recipe) {
-      throw new Error('Рецепт не найден в указанной книге пользователя.');
-    }
-  
-    const recipe = userSavedRecipe.recipe;
-
-    await prisma.cookbook.update({
-      where: {
-        userId,
-        id: cookbookId,
-      },
-      data: {
-        recipes: {
-          disconnect: {
-            userId_recipeId_cookbookId: {
-              userId,
-              recipeId,
-              cookbookId,
+        data: {
+          recipes: {
+            disconnect: {
+              userId_recipeId_cookbookId: {
+                userId,
+                recipeId,
+                cookbookId,
+              }
             }
-          }
+          },
         },
-      },
-    });
-
-    return recipe;
+      });
+  
+      return recipe;
+    } catch(error) {
+      throw new DatabaseError("Не удалось удалить рецепт из кулинарной книги", error as Error, { userId, recipeId, cookbookId });
+    }
   }
   async addRecipeToCookbook(userId: string, cookbookId: string, recipeId: string) {
-    const userSavedRecipe = await prisma.userSavedRecipe.create({
-      data: {
-        userId,
-        recipeId,
-        cookbookId,
-      },
-    });
-
-    return userSavedRecipe;
+    try {
+      const userSavedRecipe = await prisma.userSavedRecipe.create({
+        data: {
+          userId,
+          recipeId,
+          cookbookId,
+        },
+      });
+  
+      return userSavedRecipe;
+    } catch(error) {
+      throw new DatabaseError("Не удалось добавить рецепт в кулинарную книгу", error as Error, { userId, recipeId, cookbookId });
+    }
   }
 }

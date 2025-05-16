@@ -6,22 +6,36 @@ async function main() {
     await tx.cookbook.deleteMany();
     await tx.favoriteRecipes.deleteMany();
     await tx.recipe.deleteMany();
-    await tx.userProfile.deleteMany();
-    await tx.userCredentials.deleteMany();
+    await tx.token.deleteMany();
+    await tx.profile.deleteMany();
+    await tx.user.deleteMany();
 
-    const user = await tx.userCredentials.create({
+    const user = await tx.user.create({
       data: {
-        email: 'user@example.com',
-        passwordHash: 'hashed_password_here',
+        id: "author_1",
+        email: "kipe122006@gmail.com",
+        passwordHash: "hashed_password_here",
+        isActivated: true,
       },
     });
 
-    const userProfiles = await tx.userProfile.createMany({
+    const profiles = await tx.profile.createMany({
       data: [
-        { id: "author_1", },
-        { id: "author_2", },
-        { id: "author_3", },
+        {
+          name: "Kiryl Pekarski",
+          userId: "author_1",
+        },
       ],
+    });
+
+    const tokens = await tx.token.createMany({
+      data: [
+        {
+          value: "refresh-token",
+          userId: "author_1",
+          expiresAt: "2025-06-01T12:00:00.000Z",
+        }
+      ]
     });
 
     const recipes = await tx.recipe.createMany({
@@ -345,10 +359,6 @@ async function main() {
         {
           userId: "author_1",
           recipeId: "recipe_1",
-        },
-        {
-          userId: "author_2",
-          recipeId: "recipe_2",
         },
       ],
     });

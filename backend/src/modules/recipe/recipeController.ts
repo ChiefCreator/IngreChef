@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { RecipeFilters } from "./recipeTypes";
 
 import RecipeService from './recipeService';
@@ -6,11 +6,12 @@ import RecipeService from './recipeService';
 const recipeService = new RecipeService();
 
 import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
+import { BadRequestError } from '../../../errors/BadRequestError';
 
 export default class RecipeController {
   constructor() {}
 
-  async getAllRecipes(req: Request, res: Response): Promise<void> {
+  async getAllRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const {
         userId,
@@ -24,6 +25,10 @@ export default class RecipeController {
         ingredients,
         isFavorite,
       } = req.query;
+
+      if (!userId) {
+        throw new BadRequestError("Поле userId обязательно", { field: "userId" });
+      }
 
       const filters: RecipeFilters = {
         userId: userId as string,
@@ -41,30 +46,10 @@ export default class RecipeController {
       const recipes = await recipeService.getAllRecipes(filters);
       res.status(200).json(recipes);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: 'Ошибка получения рецептов' });
+      next(error);
     }
   }
-  async getRecipe(req: Request, res: Response): Promise<void> {
-    try {
-      const { recipeId } = req.params;
-      const user = req.query.userId as string;
-
-      const recipe = await recipeService.getRecipe(user, recipeId);
-
-      if (recipe) {
-        const transformedRecipe = transformRecipeFromDBToClient(recipe);
-
-        res.status(200).json(transformedRecipe);
-      } else {
-        res.status(500).json({ message: "Ошибка получения рецепта" });
-      }
-    } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения рецепта" });
-    }
-  }
-  async getUserRecipes(req: Request, res: Response): Promise<void> {
+  async getUserRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.params.userId;
       const {
@@ -78,6 +63,10 @@ export default class RecipeController {
         ingredients,
         isFavorite,
       } = req.query;
+
+      if (!userId) {
+        throw new BadRequestError("Поле userId обязательно", { field: "userId" })
+      }
 
       const filters: RecipeFilters = {
         userId: userId as string,
@@ -95,8 +84,24 @@ export default class RecipeController {
       const userRecipes = await recipeService.getUserRecipes(filters);
       res.status(200).json(userRecipes);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения рецептов пользователя" });
+      next(error);
+    }
+  }
+  async getRecipe(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { recipeId } = req.params;
+      const userId = req.query.userId as string;
+
+      if (!recipeId || !userId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: recipeId, userId", { misssingFields: ["userId", "recipeId"] });
+      }
+
+      const recipe = await recipeService.getRecipe(userId, recipeId);
+      const transformedRecipe = transformRecipeFromDBToClient(recipe);
+
+      res.status(200).json(transformedRecipe);
+    } catch(error) {
+      next(error);
     }
   }
 

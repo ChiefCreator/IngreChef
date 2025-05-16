@@ -1,26 +1,30 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import type { RecipeFilters } from '../recipe/recipeTypes';
 
 import CookbookService from './cookbookService';
+import { BadRequestError } from '../../../errors/BadRequestError';
 
 const cookbookService = new CookbookService();
 
 export default class CookbookController {
   constructor() {}
 
-  async getCookbooks(req: Request, res: Response): Promise<void> {
+  async getCookbooks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.params.userId;
+
+      if (!userId) {
+        throw new BadRequestError("Поле userId обязательно"); 
+      } 
 
       const cookbooks = await cookbookService.getCookbooks(userId);
       res.status(200).json(cookbooks);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения кулинарных книг" });
+      next(error);
     }
   }
-  async getCookbook(req: Request, res: Response): Promise<void> {
+  async getCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;
 
@@ -36,6 +40,10 @@ export default class CookbookController {
         ingredients,
         isFavorite,
       } = req.query;
+
+      if (!cookbookId || !userId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: cookbookId, userId");
+      }
       
       const filters: RecipeFilters = {
         userId: userId as string,
@@ -53,54 +61,53 @@ export default class CookbookController {
       const cookbook = await cookbookService.getCookbook(cookbookId, filters);
       res.status(200).json(cookbook);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения кулинарной книги" });
+      next(error);
     }
   }
 
-  async createCookbook(req: Request, res: Response): Promise<void> {
+  async createCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { userId, cookbookId, name, colorPalette } = req.body;
 
       if (!name || !cookbookId || !userId || !colorPalette) {
-        res.status(400).json({ message: "Имя книги, цветовая палитра и ID пользователя и книги обязательны" });
-        return;
+        throw new BadRequestError("Поле userId, cookbookId, name, colorPalette обязательны"); 
       }
 
       const cookbook = await cookbookService.createCookbook(userId, cookbookId, name, colorPalette);
       res.status(200).json(cookbook);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка создания кулинарной книги" });
+      next(error);
     }
   }
 
-  async removeRecipeFromCookbook(req: Request, res: Response): Promise<void> {
+  async removeRecipeFromCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;
+      const { userId, recipeId } = req.body;
 
-      const userId = req.body.userId as string;
-      const recipeId = req.body.recipeId as string;
+      if (!userId || !cookbookId || !recipeId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: userId, cookbookId, recipeId");
+      }
 
       const deletedRecipe = await cookbookService.removeRecipeFromCookbook(userId, cookbookId, recipeId);
       res.status(200).json(deletedRecipe);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения кулинарной книги" });
+      next(error);
     }
   }
-  async addRecipeToCookbook(req: Request, res: Response): Promise<void> {
+  async addRecipeToCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;
+      const { userId, recipeId } = req.body;
 
-      const userId = req.body.userId as string;
-      const recipeId = req.body.recipeId as string;
-
+      if (!userId || !cookbookId || !recipeId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: userId, cookbookId, recipeId");
+      }
+      
       const addededRecipe = await cookbookService.addRecipeToCookbook(userId, cookbookId, recipeId);
       res.status(200).json(addededRecipe);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения кулинарной книги" });
+      next(error);
     }
   }
 }

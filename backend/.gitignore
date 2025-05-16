@@ -1,3 +1,8 @@
 node_modules/
 generated/
-.env
+
+env/.env
+env/.env.development
+env/.env.production
+
+logger/logs

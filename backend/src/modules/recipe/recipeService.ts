@@ -1,94 +1,75 @@
 import { RecipeFilters } from "./recipeTypes";
 import { prisma } from "./../../../server";
 
+import DatabaseError from "../../../errors/DatabaseError";
+import NotFoundError from "../../../errors/NotFoundError";
+
 export default class RecipeService {
   constructor() {};
 
   async getAllRecipes(filters: RecipeFilters) {
-    const {
-      userId,
-      page,
-      limit,
-      titleStartsWith,
-      category,
-      difficulty,
-      cuisine,
-      cookingTime,
-      ingredients,
-      isFavorite,
-    } = filters;
-
-    const skip = (page - 1) * limit;
+    try {
+      const {
+        userId,
+        page,
+        limit,
+        titleStartsWith,
+        category,
+        difficulty,
+        cuisine,
+        cookingTime,
+        ingredients,
+        isFavorite,
+      } = filters;
   
-    const where: any = {};
-
-    if (titleStartsWith) {
-      where.title = {
-        startsWith: titleStartsWith,
-        mode: "insensitive",
-      };
-    }
-
-    if (category) {
-      where.category = category;
-    }
-
-    if (difficulty) {
-      where.difficulty = difficulty;
-    }
-
-    if (cuisine) {
-      where.cuisine = cuisine;
-    }
-
-    if (cookingTime) {
-      where.cookingTime = { 
-        gte: cookingTime.from,
-        lte: cookingTime.to,
-      };
-    }
-
-    if (ingredients && ingredients.length > 0) {
-      where.ingredients = {
-        hasEvery: ingredients,
-      };
-    }
-
-    if (isFavorite) {
-      where.likedBy = {
-        some: {
-          userId: userId,
-        },
-      };
-    }
-
-    return prisma.recipe.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-      include: {likedBy: true}
-    });
-  }
-  async getRecipe(userId: string, recipeId: string) {
-    const recipe = await prisma.recipe.findUnique({
-      where: {
-        id: recipeId,
-      },
-      include: {
-        likedBy: {
-          where: {
-            userId
-          }
-        }
+      const skip = (page - 1) * limit;
+    
+      const where: any = {};
+  
+      if (titleStartsWith) {
+        where.title = {
+          startsWith: titleStartsWith,
+          mode: "insensitive",
+        };
       }
-    });
-
-    if (!recipe) return null;
-
-    const recipeWithIsFavorite = { ...recipe, isFavorite: !!recipe?.likedBy.length };
-
-    return recipeWithIsFavorite;
+      if (category) {
+        where.category = category;
+      }
+      if (difficulty) {
+        where.difficulty = difficulty;
+      }
+      if (cuisine) {
+        where.cuisine = cuisine;
+      }
+      if (cookingTime) {
+        where.cookingTime = { 
+          gte: cookingTime.from,
+          lte: cookingTime.to,
+        };
+      }
+      if (ingredients && ingredients.length > 0) {
+        where.ingredients = {
+          hasEvery: ingredients,
+        };
+      }
+      if (isFavorite) {
+        where.likedBy = {
+          some: {
+            userId: userId,
+          },
+        };
+      }
+  
+      return prisma.recipe.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {likedBy: true}
+      });
+    } catch (error) {
+      throw new DatabaseError("Не удалось получить рецепты", error as Error);
+    }
   }
   async getUserRecipes(filters: RecipeFilters) {
     const {
@@ -116,32 +97,26 @@ export default class RecipeService {
         mode: "insensitive",
       };
     }
-
     if (category) {
       where.category = category;
     }
-
     if (difficulty) {
       where.difficulty = difficulty;
     }
-
     if (cuisine) {
       where.cuisine = cuisine;
     }
-
     if (cookingTime) {
       where.cookingTime = { 
         gte: cookingTime.from,
         lte: cookingTime.to,
       };
     }
-
     if (ingredients && ingredients.length > 0) {
       where.ingredients = {
         hasEvery: ingredients,
       };
     }
-
     if (isFavorite) {
       where.likedBy = {
         some: {
@@ -150,12 +125,42 @@ export default class RecipeService {
       };
     }
 
-    return prisma.recipe.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      return prisma.recipe.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      throw new DatabaseError("Не удалось получить рецепты пользователя", error as Error, { userId });
+    }
+  }
+  async getRecipe(userId: string, recipeId: string) {
+    try {
+      const recipe = await prisma.recipe.findUnique({
+        where: {
+          id: recipeId,
+        },
+        include: {
+          likedBy: {
+            where: {
+              userId
+            }
+          }
+        }
+      });
+  
+      if (!recipe) {
+        throw new NotFoundError("Рецепт не найден", { recipeId });
+      }
+
+      const recipeWithIsFavorite = { ...recipe, isFavorite: !!recipe?.likedBy.length };
+  
+      return recipeWithIsFavorite;
+    } catch (error) {
+      throw new DatabaseError("Не удалось получить рецепт", error as Error, { userId, recipeId });
+    }
   }
 
   async getCookbookIdsOfUserRecipe(recipeId: string) {
