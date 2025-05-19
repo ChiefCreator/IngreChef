@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import Service from './favoriteService';
-import { BadRequestError } from '../../../errors/BadRequestError';
+import BadRequestError from '../../../errors/BadRequestError';
 
 const service = new Service();
 

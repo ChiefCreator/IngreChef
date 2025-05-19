@@ -3,6 +3,7 @@ import { prisma } from "./../../../server";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
+import { throwError } from "../../lib/error";
 
 export default class RecipeService {
   constructor() {};
@@ -68,14 +69,14 @@ export default class RecipeService {
         include: {likedBy: true}
       });
     } catch (error) {
-      throw new DatabaseError("Не удалось получить рецепты", error as Error);
+      throwError(error, new DatabaseError("Не удалось получить рецепты", error));
     }
   }
   async getUserRecipes(filters: RecipeFilters) {
     const {
       userId,
-      page,
-      limit,
+      page = 1,
+      limit = 10,
       titleStartsWith,
       category,
       difficulty,
@@ -133,7 +134,7 @@ export default class RecipeService {
         orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
-      throw new DatabaseError("Не удалось получить рецепты пользователя", error as Error, { userId });
+      throwError(error, new DatabaseError("Не удалось получить рецепты пользователя", error, { userId }));
     }
   }
   async getRecipe(userId: string, recipeId: string) {
@@ -159,7 +160,7 @@ export default class RecipeService {
   
       return recipeWithIsFavorite;
     } catch (error) {
-      throw new DatabaseError("Не удалось получить рецепт", error as Error, { userId, recipeId });
+      throwError(error, new DatabaseError("Не удалось получить рецепт", error, { userId, recipeId }));
     }
   }
 

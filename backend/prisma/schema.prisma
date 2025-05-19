@@ -11,6 +11,7 @@ model User {
   id              String    @id @default(uuid())
   email           String    @unique
   passwordHash    String    @map("password_hash")
+  activationCode  String?   @unique @map("activation_code")
   isActivated     Boolean   @default(false) @map("is_activated")
   createdAt       DateTime  @default(now()) @map("created_at")
   lastLogin       DateTime? @map("last_login_at")

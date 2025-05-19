@@ -6,7 +6,7 @@ import RecipeService from './recipeService';
 const recipeService = new RecipeService();
 
 import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
-import { BadRequestError } from '../../../errors/BadRequestError';
+import BadRequestError from '../../../errors/BadRequestError';
 
 export default class RecipeController {
   constructor() {}

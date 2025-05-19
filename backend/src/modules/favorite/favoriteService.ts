@@ -1,6 +1,7 @@
 import { prisma } from "../../../server";
 
 import DatabaseError from "../../../errors/DatabaseError";
+import { throwError } from "../../lib/error";
 
 export default class Service {
   constructor() {};
@@ -16,7 +17,7 @@ export default class Service {
   
       return favorite;
     } catch(error) {
-      throw new DatabaseError("Не удалось добавить рецепт в избранное", error as Error, { recipeId });
+      throwError(error, new DatabaseError("Не удалось добавить рецепт в избранное", error, { recipeId }));
     }
   }
   async deleteFavorite(userId: string, recipeId: string) {
@@ -30,7 +31,7 @@ export default class Service {
         },
       });
     } catch(error) {
-      throw new DatabaseError("Не удалось удалить рецепт из избранного", error as Error, { recipeId });
+      throwError(error, new DatabaseError("Не удалось удалить рецепт из избранного", error, { recipeId }));
     }
   }
 }

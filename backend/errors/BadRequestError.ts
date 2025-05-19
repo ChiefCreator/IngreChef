@@ -1,7 +1,7 @@
-import AppError, { ErrorCode } from './AppError';
+import AppError, { ErrorCode, AppErrorOptions } from './AppError';
 
-export class BadRequestError extends AppError {
-  constructor(message = "Неверный запрос", details?: Record<string, unknown>) {
+export default class BadRequestError extends AppError {
+  constructor(message = "Неверный запрос", details?: AppErrorOptions["details"]) {
     super({
       message,
       code: ErrorCode.BAD_REQUEST,

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import type { RecipeFilters } from '../recipe/recipeTypes';
 
 import CookbookService from './cookbookService';
-import { BadRequestError } from '../../../errors/BadRequestError';
+import BadRequestError from '../../../errors/BadRequestError';
 
 const cookbookService = new CookbookService();
 

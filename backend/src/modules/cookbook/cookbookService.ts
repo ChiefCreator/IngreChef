@@ -5,6 +5,7 @@ import { buildSingleCookbookIncludeClause } from "./../../lib/filterUtils";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
+import { throwError } from "../../lib/error";
 
 export default class CookbookService {
   constructor() {};
@@ -26,7 +27,7 @@ export default class CookbookService {
   
       return cookbooks.map(cookbook => ({ ...cookbook, recipes: cookbook.recipes.map(rec => rec.recipe)}));
     } catch(error) {
-      throw new DatabaseError("Не удалось получить кулинарные книги", error as Error);
+      throwError(error, new DatabaseError("Не удалось получить кулинарные книги", error));
     }
   }
   async getCookbook(cookbookId: string, filters: RecipeFilters) {
@@ -42,7 +43,7 @@ export default class CookbookService {
   
       return { ...cookbook, recipes: cookbook?.recipes.map(rec => rec.recipe)};
     } catch(error) {
-      throw new DatabaseError("Не удалось получить кулинарную книгу", error as Error, { cookbookId });
+      throwError(error, new DatabaseError("Не удалось получить кулинарную книгу", error, { cookbookId }));
     }
   }
   async createCookbook(userId: string, cookbookId: string, name: string, colorPalette: string) {
@@ -58,7 +59,7 @@ export default class CookbookService {
   
       return cookbook;
     } catch(error) {
-      throw new DatabaseError("Не удалось создать кулинарную книгу", error as Error);
+      throwError(error, new DatabaseError("Не удалось создать кулинарную книгу", error));
     }
   }
 
@@ -103,7 +104,7 @@ export default class CookbookService {
   
       return recipe;
     } catch(error) {
-      throw new DatabaseError("Не удалось удалить рецепт из кулинарной книги", error as Error, { userId, recipeId, cookbookId });
+      throwError(error, new DatabaseError("Не удалось удалить рецепт из кулинарной книги", error, { userId, recipeId, cookbookId }));
     }
   }
   async addRecipeToCookbook(userId: string, cookbookId: string, recipeId: string) {
@@ -118,7 +119,7 @@ export default class CookbookService {
   
       return userSavedRecipe;
     } catch(error) {
-      throw new DatabaseError("Не удалось добавить рецепт в кулинарную книгу", error as Error, { userId, recipeId, cookbookId });
+      throwError(error, new DatabaseError("Не удалось добавить рецепт в кулинарную книгу", error, { userId, recipeId, cookbookId }));
     }
   }
 }

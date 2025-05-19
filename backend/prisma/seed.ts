@@ -15,6 +15,7 @@ async function main() {
         id: "author_1",
         email: "kipe122006@gmail.com",
         passwordHash: "hashed_password_here",
+        activationCode: "some-code",
         isActivated: true,
       },
     });

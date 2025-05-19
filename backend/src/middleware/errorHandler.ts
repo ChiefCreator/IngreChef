@@ -28,5 +28,5 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     cause: customError.cause,
   });
 
-  res.status(customError.statusCode).json(customError.toJSON());
+  res.status(customError.statusCode!).json(customError.toJSON());
 };
