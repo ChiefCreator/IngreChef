@@ -51,8 +51,8 @@ export default class RecipeController {
   }
   async getUserRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.params.userId;
       const {
+        userId,
         page,
         limit,
         titleStartsWith,

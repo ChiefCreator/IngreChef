@@ -9,14 +9,13 @@ import type { Recipe } from "../../../types/recipeTypes";
 
 interface CardsPanelProps {
   recipes: Recipe[] | undefined;
-  favoriteRecipesIds: string[] | undefined;
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
   isFetching: boolean;
 }
 
-export default React.memo(function CardsPanel({ recipes, favoriteRecipesIds, isSuccess, isError, isLoading, isFetching }: CardsPanelProps) {
+export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading, isFetching }: CardsPanelProps) {
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -35,7 +34,7 @@ export default React.memo(function CardsPanel({ recipes, favoriteRecipesIds, isS
               title={recipe.title}
               description={recipe.description}
               imageUrl={recipe.imageUrl}
-              isFavorite={!!favoriteRecipesIds?.find(id => id === recipe.id)}
+              isFavorite={!!recipe.isFavorite}
               authorId={recipe.authorId}
               createdAt={recipe.createdAt}
             />)

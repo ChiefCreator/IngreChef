@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { useGetCookBooksQuery } from "../../features/api/cookbooksApi";
+import { useGetCookBooksQuery } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 

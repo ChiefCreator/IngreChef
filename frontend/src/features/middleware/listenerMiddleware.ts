@@ -3,7 +3,7 @@ import { setUser, clearUser, setAccessToken, clearAccessToken, setAuth, setUserI
 import { clientApi } from '../api/clientApi';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { User } from '../auth/types';
+import type { User } from '../auth/authSliceTypes';
 
 const listenerMiddleware = createListenerMiddleware();
 

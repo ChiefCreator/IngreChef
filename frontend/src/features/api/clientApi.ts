@@ -16,6 +16,6 @@ export const delayedBaseQuery = (ms: number = 1000) => async (...args: Parameter
 export const clientApi = createApi({
   reducerPath: "clientApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Recipe", "FavoriteRecipe", "Cookbook"],
+  tagTypes: ["Recipe", "Cookbook"],
   endpoints: () => ({}),
 });

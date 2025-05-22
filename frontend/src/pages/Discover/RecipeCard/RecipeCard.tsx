@@ -1,9 +1,11 @@
+import React from "react";
+
 import styles from "./RecipeCard.module.scss";
 import { getTimeAgo } from "../../../lib/dateUtils";
 import { Heart, BookMarked, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { useToggleRecipesIdsMutation } from "../../../features/api/recipesApi";
+import { useAddRecipeToFavoriteMutation, useDeleteRecipeFromFavoriteMutation } from "../../../features/api/recipesApi/recipesApi";
 
 interface RecipeCardProps {
   userId: string;
@@ -39,8 +41,17 @@ function Control({ className = "", children, isActive, onClick }: ControlProps) 
   );
 }
 
-export default function RecipeCard({ userId, recipeId, title, description, imageUrl, isFavorite, authorId, createdAt }: RecipeCardProps) {
-  const [toggleRecipe] = useToggleRecipesIdsMutation();
+export default React.memo(function RecipeCard({ userId, recipeId, title, description, imageUrl, isFavorite, authorId, createdAt }: RecipeCardProps) {
+  const [addRecipeToFavorite] = useAddRecipeToFavoriteMutation();
+  const [deleteRecipeFromFavorite] = useDeleteRecipeFromFavoriteMutation();
+
+  const toggleRecipe = () => {
+    if (isFavorite) {
+      deleteRecipeFromFavorite({ userId, recipeId });
+    } else {
+      addRecipeToFavorite({ userId, recipeId });
+    }
+  };
 
   return (
     <div className={styles.card}>
@@ -58,7 +69,7 @@ export default function RecipeCard({ userId, recipeId, title, description, image
               <Control
                 className={styles.controlAddToFavorites}
                 isActive={isFavorite}
-                onClick={() => toggleRecipe({ userId, recipeId })}
+                onClick={toggleRecipe}
               >
                 <Heart size={18} />
               </Control>
@@ -79,4 +90,4 @@ export default function RecipeCard({ userId, recipeId, title, description, image
       </div>
     </div>
   );
-}
+})

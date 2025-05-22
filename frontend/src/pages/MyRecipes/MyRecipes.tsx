@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import { useGetUserRecipesQuery } from "../../features/api/recipesApi";
-import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi";
+import { useGetUserRecipesQuery } from "../../features/api/recipesApi/recipesApi";
+import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 
@@ -12,15 +12,15 @@ import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookMarked } from "luci
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
-import type { RecipeQuery } from "../../types/queryTypes";
+import type { QueryRecipeFilter } from "../../types/queryTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
 import styles from "./MyRecipes.module.scss";
 
 export default function MyRecipes() {
   const userId = useAppSelector(selectUserId);
-  const defaultFilters = useMemo<RecipeQuery>(() => ({ page: 1, limit: 10, userId }), [userId]);
-  const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
+  const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
+  const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
 
   const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters, { skip: !userId });

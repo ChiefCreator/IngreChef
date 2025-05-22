@@ -1,17 +1,17 @@
-import { clientApi } from "./clientApi";
+import { clientApi } from "../clientApi";
 
-import type { AuthResponse, LoginRequest, RegisterRequest } from "./types";
+import type { AuthResponse, LoginParams, RegisterParams, ActivateParams } from "./authApiTypes";
 
 export const authApi = clientApi.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation<AuthResponse, RegisterRequest>({
+    register: builder.mutation<AuthResponse, RegisterParams>({
       query: (credentials) => ({
         url: "/auth/register",
         method: "POST",
         body: credentials,
       }),
     }),
-    login: builder.mutation<AuthResponse, LoginRequest>({
+    login: builder.mutation<AuthResponse, LoginParams>({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
@@ -24,14 +24,11 @@ export const authApi = clientApi.injectEndpoints({
         method: "POST",
       }),
     }),
-    activate: builder.mutation<AuthResponse, { activationCode: String }>({
+    activate: builder.mutation<AuthResponse, ActivateParams>({
       query: ({ activationCode }) => ({
         url: `/auth/activate/${activationCode}`,
         method: "GET"
       }),
-    }),
-    refresh: builder.query({
-      query: () => "/auth/refresh",
     }),
   }),
   overrideExisting: false,

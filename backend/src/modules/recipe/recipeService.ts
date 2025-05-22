@@ -61,13 +61,27 @@ export default class RecipeService {
         };
       }
   
-      return prisma.recipe.findMany({
+      const recipes = await prisma.recipe.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
-        include: {likedBy: true}
+        include: {
+          likedBy: {
+            where: {
+              userId,
+            },
+            select: {
+              recipeId: true,
+            }
+          }
+        }
       });
+
+      return recipes.map(({ likedBy, ...recipe }) => ({
+        ...recipe,
+        isFavorite: likedBy.length > 0,
+      }));
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепты", error));
     }

@@ -12,7 +12,7 @@ export default class CookbookController {
 
   async getCookbooks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.params.userId;
+      const userId = req.query.userId as string;
 
       if (!userId) {
         throw new BadRequestError("Поле userId обязательно"); 
@@ -80,21 +80,6 @@ export default class CookbookController {
     }
   }
 
-  async removeRecipeFromCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const cookbookId = req.params.cookbookId;
-      const { userId, recipeId } = req.body;
-
-      if (!userId || !cookbookId || !recipeId) {
-        throw new BadRequestError("Отсутствуют обязательные поля: userId, cookbookId, recipeId");
-      }
-
-      const deletedRecipe = await cookbookService.removeRecipeFromCookbook(userId, cookbookId, recipeId);
-      res.status(200).json(deletedRecipe);
-    } catch(error) {
-      next(error);
-    }
-  }
   async addRecipeToCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;
@@ -106,6 +91,21 @@ export default class CookbookController {
       
       const addededRecipe = await cookbookService.addRecipeToCookbook(userId, cookbookId, recipeId);
       res.status(200).json(addededRecipe);
+    } catch(error) {
+      next(error);
+    }
+  }
+  async removeRecipeFromCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const cookbookId = req.params.cookbookId;
+      const { userId, recipeId } = req.body;
+
+      if (!userId || !cookbookId || !recipeId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: userId, cookbookId, recipeId");
+      }
+
+      const deletedRecipe = await cookbookService.removeRecipeFromCookbook(userId, cookbookId, recipeId);
+      res.status(200).json(deletedRecipe);
     } catch(error) {
       next(error);
     }

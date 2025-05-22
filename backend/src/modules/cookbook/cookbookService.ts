@@ -63,6 +63,21 @@ export default class CookbookService {
     }
   }
 
+  async addRecipeToCookbook(userId: string, cookbookId: string, recipeId: string) {
+    try {
+      const userSavedRecipe = await prisma.userSavedRecipe.create({
+        data: {
+          userId,
+          recipeId,
+          cookbookId,
+        },
+      });
+  
+      return userSavedRecipe;
+    } catch(error) {
+      throwError(error, new DatabaseError("Не удалось добавить рецепт в кулинарную книгу", error, { userId, recipeId, cookbookId }));
+    }
+  }
   async removeRecipeFromCookbook(userId: string, cookbookId: string, recipeId: string) {
     try {
       const userSavedRecipe = await prisma.userSavedRecipe.findFirst({
@@ -105,21 +120,6 @@ export default class CookbookService {
       return recipe;
     } catch(error) {
       throwError(error, new DatabaseError("Не удалось удалить рецепт из кулинарной книги", error, { userId, recipeId, cookbookId }));
-    }
-  }
-  async addRecipeToCookbook(userId: string, cookbookId: string, recipeId: string) {
-    try {
-      const userSavedRecipe = await prisma.userSavedRecipe.create({
-        data: {
-          userId,
-          recipeId,
-          cookbookId,
-        },
-      });
-  
-      return userSavedRecipe;
-    } catch(error) {
-      throwError(error, new DatabaseError("Не удалось добавить рецепт в кулинарную книгу", error, { userId, recipeId, cookbookId }));
     }
   }
 }

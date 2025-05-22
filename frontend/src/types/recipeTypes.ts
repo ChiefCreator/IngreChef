@@ -17,8 +17,7 @@ export interface Recipe {
   steps: { title: string; time: number; description: string }[];
   createdAt: Date;
   authorId: string;
-  isFavorite: boolean;
-  likedBy?: FavoriteRecipes[];
+  isFavorite?: boolean;
 }
 
 export interface FavoriteRecipes {

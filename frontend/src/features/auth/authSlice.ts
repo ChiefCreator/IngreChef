@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { InitialState, User } from "./types";
+import type { InitialState, User } from "./authSliceTypes";
 import { RootState } from "../../app/store";
 
 const accessTokenFromStorage = localStorage.getItem("accessToken");

@@ -6,7 +6,7 @@ import { useAppSelector } from "../../../app/hooks";
 
 import InputField from "../../InputField/InputField";
 
-import { useCreateCookbookMutation } from '../../../features/api/cookbooksApi';
+import { useCreateCookbookMutation } from '../../../features/api/cookbooksApi/cookbooksApi';
 import { createCookbookSchema } from './createCookbookSchema';
 
 import { getRandomColorPalette } from '../../../lib/dataUtils';

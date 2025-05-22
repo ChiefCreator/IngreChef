@@ -1,11 +1,11 @@
 import { useState, useCallback, useMemo } from "react";
-import { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery } from "../../features/api/recipesApi";
+import { useGetRecipesQuery } from "../../features/api/recipesApi/recipesApi";
 import { selectUserId } from "../../features/auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 
 import type { Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
-import type { RecipeQuery } from "../../types/queryTypes";
+import type { QueryRecipeFilter } from "../../types/queryTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
 import CardsPanel from "./CardsPanel/CardsPanel";
@@ -16,17 +16,16 @@ import styles from "./Discover.module.scss";
 
 export default function Discover() {
   const userId = useAppSelector(selectUserId);
-  const defaultFilters = useMemo<RecipeQuery>(() => ({ page: 1, limit: 10, userId }), [userId]);
-  const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
+  const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
+  const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
 
   const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters, { skip: !userId });
-  const { data: favoriteRecipesIds, isSuccess: isFavRecIdsSuccess, isError: isFavRecIdsError, isLoading: isFavRecIdsLoading, isFetching: isFavRecIdsFetching } = useGetFavoriteRecipesIdsQuery({ userId }, { skip: !userId });
 
-  const isSuccess = isRecSuccess || isFavRecIdsSuccess;
-  const isError = isRecError || isFavRecIdsError;
-  const isLoading = isRecipesLoading || isRecipesFetching;
-  const isFetching = isFavRecIdsLoading || isFavRecIdsFetching;
+  const isSuccess = isRecSuccess;
+  const isError = isRecError;
+  const isLoading = isRecipesLoading;
+  const isFetching = isRecipesFetching;
 
   const changeFilter: ChangeFilter = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -140,7 +139,6 @@ export default function Discover() {
 
         <CardsPanel
           recipes={recipes}
-          favoriteRecipesIds={favoriteRecipesIds}
           isSuccess={isSuccess}
           isError={isError}
           isLoading={isLoading}

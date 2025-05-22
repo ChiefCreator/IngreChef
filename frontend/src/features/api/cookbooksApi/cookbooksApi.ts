@@ -1,18 +1,18 @@
-import { clientApi } from "./clientApi";
+import { clientApi } from "../clientApi";
 
-import type { Recipe } from "../../types/recipeTypes";
-import type { Cookbook } from "../../types/cookBookTypes";
-import type { CookbookQuery, SingleCookbookQuery } from "../../types/queryTypes";
+import type { Recipe } from "../../../types/recipeTypes";
+import type { Cookbook } from "../../../types/cookBookTypes";
+import type { getCookBooksParams, getCookBookParams, CreateCookbookParams, RemoveRecipeFromCookbookParams, AddRecipeToCookbookParams } from "./cookbooksApiTypes";
 
 export const cookbooksApi = clientApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCookBooks: builder.query<Cookbook[], CookbookQuery>({
+    getCookBooks: builder.query<Cookbook[], getCookBooksParams>({
       query: ({ userId }) => {
-        return `/cookbooks/user/${userId}`;
+        return `/cookbooks?userId=${userId}`;
       },
       providesTags: (_, __, ___) => ["Cookbook"],
     }),
-    getCookBook: builder.query<Cookbook, SingleCookbookQuery>({
+    getCookBook: builder.query<Cookbook, getCookBookParams>({
       query: ({ cookbookId, userId, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
         let query = `/cookbooks/${cookbookId}?userId=${userId}`;
 
@@ -53,7 +53,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
         ];
       }
     }),
-    createCookbook: builder.mutation<Cookbook, { name: string; cookbookId: string; userId: string; colorPalette: Cookbook["colorPalette"] }>({
+    createCookbook: builder.mutation<Cookbook, CreateCookbookParams>({
       query: ({ userId, cookbookId, name, colorPalette }) => ({
         url: "cookbooks",
         method: "POST",
@@ -82,7 +82,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
       invalidatesTags: (cookbook, __, ___) => [{ type: "Cookbook", id: cookbook?.id }],
     }),
 
-    removeRecipeFromCookbook: builder.mutation<Recipe, { userId: string, cookbookId: string; recipeId: string; }>({
+    removeRecipeFromCookbook: builder.mutation<Recipe, RemoveRecipeFromCookbookParams>({
       query: ({ userId, cookbookId, recipeId }) => ({
         url: `/cookbooks/${cookbookId}`,
         method: "DELETE",
@@ -119,7 +119,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
         }
       },
     }),
-    addRecipeToCookbook: builder.mutation<Recipe, { userId: string, cookbookId: string; recipeId: string; recipe: Recipe }>({
+    addRecipeToCookbook: builder.mutation<Recipe, AddRecipeToCookbookParams>({
       query: ({ userId, cookbookId, recipeId }) => ({
         url: `/cookbooks/${cookbookId}`,
         method: "POST",
