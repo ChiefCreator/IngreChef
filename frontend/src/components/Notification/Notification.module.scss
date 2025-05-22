@@ -1,0 +1,47 @@
+.notification {
+  position: fixed;
+  z-index: 10;
+  bottom: 20px;
+  right: 20px;
+
+  width: 330px;
+
+  padding: 8px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 0 15px var(--color-neutral-main--dark);
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+  }
+  &__title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  &__close {
+    margin-left: auto;
+    padding: 2px;
+    border-radius: 3px;
+  }
+}
+
+.icon-wrapper {
+  margin-right: 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5px;
+
+  background-color: var(--color-neutral-contrast);
+  border-radius: 50%;
+  color: white;
+}

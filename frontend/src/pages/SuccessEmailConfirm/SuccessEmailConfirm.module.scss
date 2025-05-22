@@ -1,0 +1,32 @@
+.panel {
+  padding: 25px;
+  background-color: white;
+  box-shadow: 0 0 15px var(--color-neutral-main--dark);
+  border-radius: 15px;
+  max-width: 500px;
+
+  &__head {
+  }
+  &__img {
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+  }
+  &__title {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  &__body {
+    padding-top: 100px;
+  }
+
+  &__button {
+    margin: 0 auto;
+    width: 100%;
+    justify-content: center;
+    padding: 15px 20px !important;
+  }
+}

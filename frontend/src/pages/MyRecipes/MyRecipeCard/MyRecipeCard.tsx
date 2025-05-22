@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { ChefHat } from "lucide-react";
@@ -17,7 +17,7 @@ interface MyRecipeCardProps {
   menuOptions?: RecipeCardOfMyRecipesOptions;
 }
 
-export default function MyRecipeCard({ recipeId, title, imageUrl, isFetching, menuOptions }: MyRecipeCardProps) {
+export default React.memo(function MyRecipeCard({ recipeId, title, imageUrl, isFetching, menuOptions }: MyRecipeCardProps) {
   const [isMenuOpen, setIsOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; } | null>(null);
 
@@ -76,4 +76,4 @@ export default function MyRecipeCard({ recipeId, title, imageUrl, isFetching, me
       />}
     </>
   );
-}
+})

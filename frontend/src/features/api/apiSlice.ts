@@ -1,8 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { baseQueryWithReauth } from "./baseQueryWithReauth";
+
 import type { Recipe } from "../../types/recipeTypes";
 import type { RecipeQuery, FavoriteRecipeQuery } from "../../types/queryTypes";
-
+import type { GetRecipeParams, AuthResponse, LoginRequest, RegisterRequest } from "./types";
 import type { Cookbook } from "../../types/cookBookTypes";
 import type { CookbookQuery, SingleCookbookQuery } from "../../types/queryTypes";
 
@@ -12,13 +14,15 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export const delayedBaseQuery = (ms: number = 1000) => async (...args: Parameters<ReturnType<typeof fetchBaseQuery>>) => {
   await delay(ms)
-  const baseQuery = fetchBaseQuery({ baseUrl: baseUrl })
+  const baseQuery = fetchBaseQuery({
+    baseUrl: baseUrl,
+  })
   return baseQuery(...args)
 }
 
 export const clientApi = createApi({
   reducerPath: "clientApi",
-  baseQuery: delayedBaseQuery(2000),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Recipe", "FavoriteRecipe", "Cookbook"],
   endpoints: (builder) => ({
     getRecipes: builder.query<Recipe[], RecipeQuery>({
@@ -62,7 +66,7 @@ export const clientApi = createApi({
         ];
       }
     }),
-    getRecipe: builder.query<Recipe, { userId: string; recipeId: string }>({
+    getRecipe: builder.query<Recipe, GetRecipeParams>({
       query: ({ userId, recipeId }) => {
         return `/recipes/${recipeId}?userId=${userId}`;
       },
@@ -308,6 +312,36 @@ export const clientApi = createApi({
         }
       },
     }),
+    
+    register: builder.mutation<AuthResponse, RegisterRequest>({
+      query: (credentials) => ({
+        url: "/auth/register",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    login: builder.mutation<AuthResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    logout: builder.mutation<AuthResponse, void>({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+    }),
+    activate: builder.mutation<AuthResponse, { activationCode: String }>({
+      query: ({ activationCode }) => ({
+        url: `/auth/activate/${activationCode}`,
+        method: "GET"
+      }),
+    }),
+    refresh: builder.query({
+      query: () => "/auth/refresh",
+    }),
   }),
 });
 
@@ -323,5 +357,9 @@ export const {
   useGetCookBookQuery,
   useRemoveRecipeFromCookbookMutation,
   useAddRecipeToCookbookMutation,
-  useCreateCookbookMutation
+  useCreateCookbookMutation,
+
+  useRegisterMutation,
+  useLoginMutation,
+  useActivateMutation
 } = clientApi;

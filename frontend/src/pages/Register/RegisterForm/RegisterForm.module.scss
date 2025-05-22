@@ -1,0 +1,32 @@
+.form {
+  padding: 25px;
+  background-color: white;
+  box-shadow: 0 0 15px var(--color-neutral-main--dark);
+  border-radius: 15px;
+  max-width: 500px;
+  &__header {
+    padding-bottom: 20px;
+  }
+  &__title {
+    font-size: 24px;
+  }
+  &__sub-title {
+    display: block;
+    margin-top: 5px;
+    color: var(--color-neutral-contrast--light);
+    line-height: 130%;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  &__checkbox-wrapper {
+    margin-top: 20px;
+  }
+
+  &__button {
+    margin-top: 20px;
+  }
+}

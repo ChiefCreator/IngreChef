@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
+
 import { useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "./../../features/api/apiSlice";
+import { selectUserId } from "../../features/auth/authSlice";
+import { useAppSelector } from "../../app/hooks";
 
 import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
 
@@ -16,17 +19,20 @@ import type { FilterListItemProps, FilterItemProps } from "../../components/Sear
 import styles from "./Cookbook.module.scss";
 
 export default function Cookbook() {
+  const userId = useAppSelector(selectUserId);
   const { cookbookId } = useParams();
   const [filters, setFilters] = useState<Filter>({});
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId: "author_1", cookbookId: cookbookId!, ...filters });
-  const { data: cookbooks } = useGetCookBooksQuery({ userId: "author_1" });
+
+  const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId, cookbookId: cookbookId!, ...filters }, { skip: !userId });
+  const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
+
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
   const [addRecipeToCookbook] = useAddRecipeToCookbookMutation();
 
   const recipes = data?.recipes;
 
-  const changeFilter: ChangeFilter = useCallback((key, value) => {
+  const changeFilter = useCallback<ChangeFilter>((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
   const removeFilters = useCallback(() => {
@@ -57,9 +63,9 @@ export default function Cookbook() {
                 checked: !!cookbook.recipes.find(recipe => recipe.id === recipeId),
                 onToggle: (isChecked: boolean) => {
                   if (isChecked) {
-                    addRecipeToCookbook({ userId: "author_1", cookbookId, recipeId, recipe });
+                    addRecipeToCookbook({ userId, cookbookId, recipeId, recipe });
                   } else {
-                    removeRecipeFromCookbook({ userId: "author_1", cookbookId, recipeId });
+                    removeRecipeFromCookbook({ userId, cookbookId, recipeId });
                   }
                 }, 
               }
@@ -80,7 +86,7 @@ export default function Cookbook() {
           label: "Удалить из кулинарной книги",
           icon: <BookX size={16} />,
           onClick: () => {
-            cookbookId && removeRecipeFromCookbook({ userId: "author_1", cookbookId, recipeId })
+            cookbookId && removeRecipeFromCookbook({ userId, cookbookId, recipeId })
           },
         },
       ],

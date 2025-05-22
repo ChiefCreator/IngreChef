@@ -1,12 +1,13 @@
 import { prisma } from "../../../server";
 import jwt from "jsonwebtoken";
+import "./../../../env/env";
 
 class TokenService {
   constructor() {};
 
   generateTokens(payload: { id: string, email: string, isActivated: boolean }) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, { expiresIn: "30m" });
-    const refreshToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, { expiresIn: "30d" });
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, { expiresIn: "30d" });
 
     return { accessToken, refreshToken };
   }
@@ -43,7 +44,7 @@ class TokenService {
         value: refreshToken,
       }
     })
-    
+ 
     return token;
   }
 

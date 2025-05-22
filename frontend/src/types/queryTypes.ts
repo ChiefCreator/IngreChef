@@ -21,3 +21,21 @@ export interface SingleCookbookQuery extends Filter {
   userId: string;
   cookbookId: string;
 }
+
+export interface ApiError {
+  status: number;
+  data: {
+    message: string;
+    [key: string]: any;
+  };
+}
+
+export function isApiError(error: unknown): error is ApiError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    "data" in error &&
+    typeof (error as any).data === "object"
+  );
+}

@@ -2,6 +2,8 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { useGetRecipeQuery, useGetCookBooksQuery, useAddRecipeToFavoriteMutation, useDeleteRecipeFromFavoriteMutation, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/apiSlice";
+import { useAppSelector } from "../../app/hooks";
+import { selectUserId } from "../../features/auth/authSlice";
 
 import { recipeOptions } from "../../data/selectedRecipeData";
 
@@ -23,13 +25,14 @@ import styles from "./Recipe.module.scss";
 import Skeleton from "react-loading-skeleton";
 
 export default function Recipe() {
+  const userId = useAppSelector(selectUserId);
   const recipeId = useParams().recipeId!;
   const [isCookbookMenuOpen, setIsCookbookMenuOpen] = useState(false);
   const cookbookMenuRef = useRef<HTMLDivElement>(null);
   const buttonCookbookRef = useRef<HTMLButtonElement>(null);
 
-  const { data: recipe, isSuccess: isRecipeSuccess, isError: isRecipeError, isLoading: isRecipeLoading, isFetching: isRecipeFetching } = useGetRecipeQuery({ userId: "author_1", recipeId });
-  const { data: cookbooks } = useGetCookBooksQuery({ userId: "author_1" });
+  const { data: recipe, isSuccess: isRecipeSuccess, isLoading: isRecipeLoading } = useGetRecipeQuery({ userId, recipeId }, { skip: !userId });
+  const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
 
   const [addRecipeToFavorite] = useAddRecipeToFavoriteMutation();
   const [deleteRecipeFromFavorite] = useDeleteRecipeFromFavoriteMutation();
@@ -49,9 +52,9 @@ export default function Recipe() {
         checked: !!cookbook.recipes.find(recipe => recipe.id === recipeId),
         onToggle: (isChecked: boolean) => {
           if (isChecked) {
-            addRecipeToCookbook({ userId: "author_1", cookbookId, recipeId, recipe: recipe! });
+            addRecipeToCookbook({ userId, cookbookId, recipeId, recipe: recipe! });
           } else {
-            removeRecipeFromCookbook({ userId: "author_1", cookbookId, recipeId });
+            removeRecipeFromCookbook({ userId, cookbookId, recipeId });
           }
         }, 
       }
@@ -67,7 +70,7 @@ export default function Recipe() {
   }), [recipe, cookbooks, removeRecipeFromCookbook, addRecipeToCookbook]);
 
   const toggleIsFavorite = () => {
-    isFavorite ? deleteRecipeFromFavorite({ userId: "author_1", recipeId }) : addRecipeToFavorite({ userId: "author_1", recipeId });
+    isFavorite ? deleteRecipeFromFavorite({ userId, recipeId }) : addRecipeToFavorite({ userId, recipeId });
   };
   const toggleCookbookMenu = useCallback(() => {
     setIsCookbookMenuOpen(prev => !prev);

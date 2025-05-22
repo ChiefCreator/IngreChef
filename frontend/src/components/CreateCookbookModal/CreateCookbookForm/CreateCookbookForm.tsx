@@ -1,6 +1,9 @@
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { selectUserId } from "../../../features/auth/authSlice";
+import { useAppSelector } from "../../../app/hooks";
+
 import InputField from "../../InputField/InputField";
 
 import { useCreateCookbookMutation } from '../../../features/api/apiSlice';
@@ -19,6 +22,7 @@ interface FormData {
 }
 
 export default function CreateCookbookForm({ formId, closeModal }: CreateCookbookFormProps) {
+  const userId = useAppSelector(selectUserId);
   const { control, reset, handleSubmit, formState: { errors }, } = useForm<FormData>({
     resolver: zodResolver(createCookbookSchema),
   })
@@ -27,7 +31,7 @@ export default function CreateCookbookForm({ formId, closeModal }: CreateCookboo
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     createCookbook({
-      userId: "author_1",
+      userId,
       cookbookId: crypto.randomUUID(),
       name: data.cookbookName,
       colorPalette: getRandomColorPalette()

@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useCallback, useMemo } from "react";
 import { useGetUserRecipesQuery, useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "./../../features/api/apiSlice";
+import { selectUserId } from "../../features/auth/authSlice";
+import { useAppSelector } from "../../app/hooks";
 
 import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import Header from "../../components/Header/Header";
@@ -15,13 +16,15 @@ import type { FilterListItemProps, FilterItemProps } from "../../components/Sear
 
 import styles from "./MyRecipes.module.scss";
 
-const defaultFilters: RecipeQuery = { page: 1, limit: 10, userId: "author_1" };
-
 export default function MyRecipes() {
+  const userId = useAppSelector(selectUserId);
+  const defaultFilters = useMemo<RecipeQuery>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters);
-  const { data: cookbooks } = useGetCookBooksQuery({ userId: "author_1" });
+
+  const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters, { skip: !userId });
+  const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
+
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
   const [addRecipeToCookbook] = useAddRecipeToCookbookMutation();
 
@@ -57,9 +60,9 @@ export default function MyRecipes() {
                 checked: !!cookbook.recipes.find(recipe => recipe.id === recipeId),
                 onToggle: (isChecked: boolean) => {
                   if (isChecked) {
-                    addRecipeToCookbook({ userId: "author_1", cookbookId, recipeId, recipe });
+                    addRecipeToCookbook({ userId, cookbookId, recipeId, recipe });
                   } else {
-                    removeRecipeFromCookbook({ userId: "author_1", cookbookId, recipeId });
+                    removeRecipeFromCookbook({ userId, cookbookId, recipeId });
                   }
                 }, 
               }
@@ -166,14 +169,14 @@ export default function MyRecipes() {
         title="Мои рецепты"
         controls={[
           <Button
-            type="outline"
+            variant="outline"
             className={styles.recipiesButtonLine}
             icon={<Compass size={16} />}
           >
             Лента
           </Button>,
           <Button
-            type="primary"
+            variant="primary"
             className={styles.recipiesButtonLine}
             icon={<Plus size={16} />}
           >

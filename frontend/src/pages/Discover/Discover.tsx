@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery } from "../../features/api/apiSlice";
+import { selectUserId } from "../../features/auth/authSlice";
+import { useAppSelector } from "../../app/hooks";
 
 import type { Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
@@ -12,14 +14,14 @@ import { Rocket, ListCheck, Clock, Heart } from "lucide-react";
 
 import styles from "./Discover.module.scss";
 
-const defaultFilters: RecipeQuery = { page: 1, limit: 10, userId: "author_1" };
-
 export default function Discover() {
+  const userId = useAppSelector(selectUserId);
+  const defaultFilters = useMemo<RecipeQuery>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<RecipeQuery>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
 
-  const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters);
-  const { data: favoriteRecipesIds, isSuccess: isFavRecIdsSuccess, isError: isFavRecIdsError, isLoading: isFavRecIdsLoading, isFetching: isFavRecIdsFetching } = useGetFavoriteRecipesIdsQuery({ userId: "author_1" });
+  const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters, { skip: !userId });
+  const { data: favoriteRecipesIds, isSuccess: isFavRecIdsSuccess, isError: isFavRecIdsError, isLoading: isFavRecIdsLoading, isFetching: isFavRecIdsFetching } = useGetFavoriteRecipesIdsQuery({ userId }, { skip: !userId });
 
   const isSuccess = isRecSuccess || isFavRecIdsSuccess;
   const isError = isRecError || isFavRecIdsError;

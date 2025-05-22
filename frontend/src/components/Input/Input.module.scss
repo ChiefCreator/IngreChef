@@ -3,12 +3,17 @@
   border-radius: 10px;
   border: 1px solid var(--color-neutral-main--darken);
   position: relative;
-  transform: border .3s var(--transition-power--in-out);
+  transition: border .3s var(--transition-power--in-out);
+  padding: 10px;
+  cursor: text;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
   
   &__item {
     width: 100%;
 
-    padding: 10px;
     background-color: transparent;
 
     &::placeholder {
@@ -31,5 +36,26 @@
   }
   &_error {
     border: 1px solid red;
+  }
+}
+
+.password-toggle {
+  display: inline-flex;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color .3s var(--transition-power--in-out);
+
+  &__icon {
+    color: var(--color-neutral-contrast--light);
+  }
+
+  &:hover {
+    background-color: var(--color-neutral-main--dark);
   }
 }

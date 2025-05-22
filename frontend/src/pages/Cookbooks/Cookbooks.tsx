@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 
 import { useGetCookBooksQuery } from "../../features/api/apiSlice";
+import { selectUserId } from "../../features/auth/authSlice";
+import { useAppSelector } from "../../app/hooks";
 
 import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
@@ -11,9 +13,10 @@ import { Plus } from "lucide-react";
 import styles from "./Cookbooks.module.scss";
 
 export default function Cookbooks() {
+  const userId = useAppSelector(selectUserId);
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
 
-  const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId: "author_1" });
+  const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId }, { skip: !userId });
 
   const openCookbookModal = useCallback(() => {
     setIsCreateCookbookModalOpen(true);

@@ -59,9 +59,9 @@ export default class Controller {
     try {
       const activationCode = req.params.activationCode;
 
-      await service.activate(activationCode);
-      
-      return res.redirect(process.env.CLIENT_URL!);
+      const user = await service.activate(activationCode);
+
+      res.status(200).json(user);
     } catch(error) {
       next(error);
     }
