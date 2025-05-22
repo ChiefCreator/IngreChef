@@ -2,7 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
-import { useLoginMutation } from "../../../features/api/apiSlice.ts";
+import { useLoginMutation } from "../../../features/api/authApi";
 
 import InputField from "../../../components/InputField/InputField";
 import Button from "../../../components/Button/Button";

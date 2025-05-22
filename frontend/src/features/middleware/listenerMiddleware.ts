@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { setUser, clearUser, setAccessToken, clearAccessToken, setAuth, setUserIsActivated } from '../auth/authSlice';
-import { clientApi } from '../api/apiSlice';
+import { clientApi } from '../api/clientApi';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { User } from '../auth/types';

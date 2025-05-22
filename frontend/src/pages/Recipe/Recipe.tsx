@@ -1,7 +1,8 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { useGetRecipeQuery, useGetCookBooksQuery, useAddRecipeToFavoriteMutation, useDeleteRecipeFromFavoriteMutation, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/apiSlice";
+import { useGetRecipeQuery, useAddRecipeToFavoriteMutation, useDeleteRecipeFromFavoriteMutation } from "../../features/api/recipesApi";
+import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi";
 import { useAppSelector } from "../../app/hooks";
 import { selectUserId } from "../../features/auth/authSlice";
 

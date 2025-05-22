@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery } from "../../features/api/apiSlice";
+import { useGetRecipesQuery, useGetFavoriteRecipesIdsQuery } from "../../features/api/recipesApi";
 import { selectUserId } from "../../features/auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 

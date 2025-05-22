@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useAppDispatch } from "../../app/hooks";
 import { setUserIsActivated } from "../../features/auth/authSlice";
-import { useActivateMutation } from "../../features/api/apiSlice";
+import { useActivateMutation } from "../../features/api/authApi";
 
 import Button from "../../components/Button/Button";
 

@@ -3,7 +3,7 @@ import { getTimeAgo } from "../../../lib/dateUtils";
 import { Heart, BookMarked, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { useToggleRecipesIdsMutation } from "../../../features/api/apiSlice";
+import { useToggleRecipesIdsMutation } from "../../../features/api/recipesApi";
 
 interface RecipeCardProps {
   userId: string;
@@ -45,7 +45,7 @@ export default function RecipeCard({ userId, recipeId, title, description, image
   return (
     <div className={styles.card}>
       <div className={styles.cardImgWrapper}>
-        <Link className={styles.cardImageLink} to="/">
+        <Link className={styles.cardImageLink} to={`/recipes/${recipeId}`}>
           {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
           {!imageUrl && <div className={styles.illustration}><ChefHat className={styles.illustrationIcon} size={"50%"} /></div>}
         </Link>
@@ -70,7 +70,7 @@ export default function RecipeCard({ userId, recipeId, title, description, image
             <Profile authorId={authorId} />
           </div>
 
-          <h3 className={styles.title}><a className={styles.titleLink} href="#">{title}</a></h3>
+          <h3 className={styles.title}><Link className={styles.titleLink} to={`/recipes/${recipeId}`}>{title}</Link></h3>
 
           <p className={styles.bodyDescription}>{description}</p>
 

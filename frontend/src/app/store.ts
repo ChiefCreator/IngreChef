@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import { clientApi } from "../features/api/apiSlice";
+import { clientApi } from "../features/api/clientApi";
 import authReducer from "../features/auth/authSlice";
 import listenerMiddleware from "../features/middleware/listenerMiddleware";
 

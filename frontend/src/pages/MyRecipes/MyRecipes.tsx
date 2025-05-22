@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import { useGetUserRecipesQuery, useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "./../../features/api/apiSlice";
+import { useGetUserRecipesQuery } from "../../features/api/recipesApi";
+import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 
@@ -7,7 +8,7 @@ import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import SearchPanel from "../../components/SearchPanel/SearchPanel";
-import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
+import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookMarked } from "lucide-react";
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
