@@ -15,6 +15,7 @@ import Steps from "./Steps/Steps";
 import RecipeMenu from "../../components/RecipeMenu/RecipeMenu";
 import RecipeMetaSkeleton from "./RecipeMetaSkeleton/RecipeMetaSkeleton";
 import Ingredients from "./Ingredients/Ingredients";
+import CreateCookbookModal from "../../components/CreateCookbookModal/CreateCookbookModal";
 import { ChefHat, Clock, CalendarCheck2, BookMarked, BicepsFlexed, Shapes, Plus } from "lucide-react";
 
 import { convertDateToDDMMYYYYFormat } from "../../lib/dateUtils";
@@ -29,6 +30,7 @@ export default function Recipe() {
   const userId = useAppSelector(selectUserId);
   const recipeId = useParams().recipeId!;
   const [isCookbookMenuOpen, setIsCookbookMenuOpen] = useState(false);
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
   const cookbookMenuRef = useRef<HTMLDivElement>(null);
   const buttonCookbookRef = useRef<HTMLButtonElement>(null);
 
@@ -41,6 +43,28 @@ export default function Recipe() {
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
 
   const { title, description, imageUrl, category, difficulty, cuisine, cookingTime, createdAt, isFavorite, ingredients, steps  } = recipe ?? {};
+
+  const toggleIsFavorite = () => {
+    isFavorite ? deleteRecipeFromFavorite({ userId, recipeId }) : addRecipeToFavorite({ userId, recipeId });
+  };
+  const toggleCookbookMenu = useCallback(() => {
+    setIsCookbookMenuOpen(prev => !prev);
+  }, [setIsCookbookMenuOpen]);
+  const closeCookbookMenu = useCallback(() => {
+    setIsCookbookMenuOpen(false);
+  }, [setIsCookbookMenuOpen]);
+  const openCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(true);
+  }, [setIsCreateCookbookModalOpen]);
+  const closeCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(false);
+  }, [setIsCreateCookbookModalOpen]);
+
+  const handleClickOutsideCookbookMenu = (e: MouseEvent) => {
+    if (cookbookMenuRef.current && !cookbookMenuRef.current.contains(e.target as Node) && buttonCookbookRef.current && !buttonCookbookRef.current.contains(e.target as Node)) {
+      closeCookbookMenu();
+    }
+  };
 
   const cookbookMenuOptions: RecipeCardOfMyRecipesOptions | undefined = useMemo(() => ({
     "cookbooks": cookbooks ? cookbooks.map(cookbook => {
@@ -66,25 +90,10 @@ export default function Recipe() {
         type: "button",
         label: "Создать книгу",
         icon: <Plus size={16} />,
+        onClick: openCookbookModal,
       },
     ],
   }), [recipe, cookbooks, removeRecipeFromCookbook, addRecipeToCookbook]);
-
-  const toggleIsFavorite = () => {
-    isFavorite ? deleteRecipeFromFavorite({ userId, recipeId }) : addRecipeToFavorite({ userId, recipeId });
-  };
-  const toggleCookbookMenu = useCallback(() => {
-    setIsCookbookMenuOpen(prev => !prev);
-  }, [setIsCookbookMenuOpen]);
-  const closeCookbookMenu = useCallback(() => {
-    setIsCookbookMenuOpen(false);
-  }, [setIsCookbookMenuOpen]);
-
-  const handleClickOutsideCookbookMenu = (e: MouseEvent) => {
-    if (cookbookMenuRef.current && !cookbookMenuRef.current.contains(e.target as Node) && buttonCookbookRef.current && !buttonCookbookRef.current.contains(e.target as Node)) {
-      closeCookbookMenu();
-    }
-  };
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideCookbookMenu);
@@ -195,6 +204,11 @@ export default function Recipe() {
           </div>
         </div>
       </Container>
+
+      <CreateCookbookModal
+        isOpen={isCreateCookbookModalOpen}
+        close={closeCookbookModal}
+      />
     </section>
   );
 }

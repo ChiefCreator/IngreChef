@@ -8,6 +8,7 @@ import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import SearchPanel from "../../components/SearchPanel/SearchPanel";
+import CreateCookbookModal from "../../components/CreateCookbookModal/CreateCookbookModal";
 import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookMarked } from "lucide-react";
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
@@ -22,6 +23,7 @@ export default function MyRecipes() {
   const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
 
   const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -38,7 +40,12 @@ export default function MyRecipes() {
   const toggleFiltersPanel = useCallback(() => {
     setIsFiltersPanelOpen(prev => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
-
+  const openCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(true);
+  }, [setIsCreateCookbookModalOpen]);
+  const closeCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(false);
+  }, [setIsCreateCookbookModalOpen]);
   
   const recipeCardsMenuOptions: RecipeCardOfMyRecipesOptions[] | undefined = useMemo(() => recipes?.map(recipe => {
     const recipeId = recipe.id;
@@ -74,6 +81,7 @@ export default function MyRecipes() {
                 type: "button",
                 label: "Создать книгу",
                 icon: <Plus size={16} />,
+                onClick: openCookbookModal,
               },
             ],
           }
@@ -208,6 +216,11 @@ export default function MyRecipes() {
           isFetching={isFetching}
         />
       </div>
+
+      <CreateCookbookModal
+        isOpen={isCreateCookbookModalOpen}
+        close={closeCookbookModal}
+      />
     </section>
   );
 }

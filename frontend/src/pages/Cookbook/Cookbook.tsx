@@ -11,6 +11,7 @@ import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import SearchPanel from "../../components/SearchPanel/SearchPanel";
 import MyRecipeCardsPanel from "../MyRecipes/MyRecipeCardsPanel/MyRecipeCardsPanel";
+import CreateCookbookModal from "../../components/CreateCookbookModal/CreateCookbookModal";
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter, Filter } from "../../types/filtersTypes";
@@ -23,6 +24,7 @@ export default function Cookbook() {
   const { cookbookId } = useParams();
   const [filters, setFilters] = useState<Filter>({});
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
 
   const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId, cookbookId: cookbookId!, ...filters }, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -41,6 +43,12 @@ export default function Cookbook() {
   const toggleFiltersPanel = useCallback(() => {
     setIsFiltersPanelOpen((prev) => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
+  const openCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(true);
+  }, [setIsCreateCookbookModalOpen]);
+  const closeCookbookModal = useCallback(() => {
+    setIsCreateCookbookModalOpen(false);
+  }, [setIsCreateCookbookModalOpen]);
 
   const recipeCardsMenuOptions: RecipeCardOfMyRecipesOptions[] | undefined = useMemo(() => recipes?.map(recipe => {
     const recipeId = recipe.id;
@@ -76,6 +84,7 @@ export default function Cookbook() {
                 type: "button",
                 label: "Создать книгу",
                 icon: <Plus size={16} />,
+                onClick: openCookbookModal,
               },
             ],
           }
@@ -203,6 +212,11 @@ export default function Cookbook() {
           isFetching={isFetching}
         />
       </div>
+
+      <CreateCookbookModal
+        isOpen={isCreateCookbookModalOpen}
+        close={closeCookbookModal}
+      />
     </section>
   );
 }
