@@ -69,7 +69,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
       id: "item-7",
       type: "link",
       title: "Генерация рецептов",
-      pathname: "/favorites",
+      pathname: "/generate-recipe",
       icon: <CookingPot size={16} />,
     },
   ], [cookbooks]);

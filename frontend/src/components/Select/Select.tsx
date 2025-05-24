@@ -1,0 +1,114 @@
+import { useState, useRef, useEffect } from "react";
+import Positioner from "../Positioner/Positioner";
+import Portal from "../Portal/Portal";
+
+import Option from "./Option/Option";
+import { ChevronDown } from "lucide-react";
+
+import styles from "./Select.module.scss";
+
+export type Option = {
+  label: string;
+  value: string | number;
+};
+
+type SelectProps = {
+  options?: Option[];
+  selectedOption: Option | Option[] | null;
+  name?: string;
+  placeholder?: string;
+  multiple?: boolean;
+
+  onChange: (value: Option | Option[] | null) => void;
+};
+
+export default function Select({ options, selectedOption, name, onChange, placeholder = "Выберите...", multiple = false }: SelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+  const triggerElRef = useRef<HTMLButtonElement>(null);
+
+  const isSelected = (option: Option) => {
+    if (multiple && Array.isArray(selectedOption)) {
+      return selectedOption.some(v => v.value === option.value);
+    }
+
+    return (selectedOption as Option)?.value === option.value;
+  };
+  const displayValue = () => {
+    if (multiple && Array.isArray(selectedOption)) {
+      return selectedOption.map(v => v.label).join(", ");
+    }
+
+    return (selectedOption as Option)?.label || null;
+  };
+  const handleClear = () => {
+    onChange(multiple ? [] : null);
+  };
+
+  const handleTriggerClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    setIsOpen(prev => !prev);
+  }
+  const handleSelect = (option: Option) => {
+    if (multiple) {
+      if (!Array.isArray(selectedOption)) return;
+
+      if (isSelected(option)) {
+        onChange(selectedOption.filter(v => v.value !== option.value));
+      } else {
+        onChange([...selectedOption, option]);
+      }
+    } else {
+      onChange(option);
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handlerClickOutside = (e: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handlerClickOutside);
+
+    return () => document.removeEventListener("click", handlerClickOutside);
+  }, []);
+
+  return (
+    <div className={`${styles.select} ${isOpen ? styles.selectActive : ""}`} ref={selectRef}>
+      <button className={styles.trigger} type="button" onClick={handleTriggerClick} ref={triggerElRef}>
+        <span className={styles.triggerSelectedValue}>
+          {displayValue() || placeholder}
+        </span>
+
+        <ChevronDown className={styles.triggerArrow} size={14} />
+
+        <input className={styles.triggerInput} name={name}></input>
+      </button>
+
+      {isOpen && (
+        <Portal>
+          <Positioner triggerRef={triggerElRef} offsetY={6} matchTriggerWidth={true}>
+            <div className={styles.dropdown}>
+              <ul className={styles.list}>
+                {options?.map((option) => (
+                  <li key={option.value}>
+                    <Option
+                      label={option.label}
+                      value={option.value}
+                      isSelected={isSelected(option)}
+                      onSelect={() => handleSelect(option)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Positioner>
+        </Portal>
+      )}
+    </div>
+  );
+}

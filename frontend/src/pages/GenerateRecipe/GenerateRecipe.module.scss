@@ -1,0 +1,11 @@
+.page {
+  width: 100%;
+
+  &__container {
+    margin: 0 auto;
+    max-width: 700px;
+    padding: 30px;
+    border-radius: 15px;
+    background-color: white;
+  }
+}

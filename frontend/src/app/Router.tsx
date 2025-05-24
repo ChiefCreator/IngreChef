@@ -12,6 +12,7 @@ import Discover from "../pages/Discover/Discover";
 import Cookbooks from "../pages/Cookbooks/Cookbooks";
 import Recipe from "../pages/Recipe/Recipe";
 import Cookbook from "../pages/Cookbook/Cookbook";
+import GenerateRecipe from "../pages/GenerateRecipe/GenerateRecipe";
 import ConfirmEmail from "../pages/ConfirmEmail/ConfirmEmail";
 import SuccessEmailConfirm from "../pages/SuccessEmailConfirm/SuccessEmailConfirm";
 
@@ -35,9 +36,8 @@ export default function Router() {
           <Route index element={<MyRecipes />} />
 
           <Route path="recipies" element={<MyRecipes />} />
-          <Route path="shopping-list" element={<MyRecipes />} />
           <Route path="cookbooks" element={<Cookbooks />} />
-          <Route path="favorites" element={<MyRecipes />} />
+          <Route path="generate-recipe" element={<GenerateRecipe />} />
 
           <Route path="recipes/:recipeId" element={<Recipe />} />
           <Route path="cookbooks/:cookbookId" element={<Cookbook />} />

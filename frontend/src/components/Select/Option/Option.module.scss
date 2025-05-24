@@ -1,0 +1,14 @@
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color .2s var(--transition-power--in-out);
+
+  &:hover {
+    background-color: var(--color-neutral-main--darken);
+  }
+}

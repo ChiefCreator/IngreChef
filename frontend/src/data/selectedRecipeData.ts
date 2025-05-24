@@ -72,3 +72,7 @@ export const recipeOptions: RecipeOptions = {
     },
   ]
 }
+
+export const recipeDifficultyOptions = recipeOptions.difficulty;
+export const recipeCategoryOptions = recipeOptions.category;
+export const recipeCuisineOptions = recipeOptions.cuisine;

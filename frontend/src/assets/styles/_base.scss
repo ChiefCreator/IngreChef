@@ -13,6 +13,15 @@
 
 #root {
 }
+#portal-root {
+  position: fixed;
+  z-index: 20;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 .main-structure {
   display: flex;
   flex-direction: column;
