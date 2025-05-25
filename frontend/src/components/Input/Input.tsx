@@ -18,9 +18,10 @@ export interface InputProps {
   
   onChange?: (value: string) => void;
   onBlur?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({ type = "base" , className = "", id, value = "", placeholder = "Введите", name, error, ref, onChange }: InputProps) {
+export default function Input({ type = "base" , className = "", id, value = "", placeholder = "Введите", name, error, ref, onChange, onKeyDown }: InputProps) {
   const [isFocesed, setIsFocused] = useState(false);
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -59,6 +60,7 @@ export default function Input({ type = "base" , className = "", id, value = "", 
         onChange={(e) => onChange?.(e.target.value as string)}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyDown={onKeyDown}
         ref={inputEl}
       ></input>
 

@@ -7,14 +7,14 @@ type Origin = {
   horizontal: "left" | "center" | "right";
 };
 
-interface PositionerProps {
+export interface PositionerProps {
   triggerRef: React.RefObject<HTMLElement | null> | null;
   anchorOrigin?: Origin;
   transformOrigin?: Origin;
   offsetX?: number;
   offsetY?: number;
   matchTriggerWidth?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const getOffset = (origin: Origin, size: { width: number; height: number }): { top: number; left: number } => {

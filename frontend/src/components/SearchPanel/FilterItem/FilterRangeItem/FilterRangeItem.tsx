@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Popover } from '@base-ui-components/react/popover';
-import { Slider } from "@base-ui-components/react/slider";
 
 import RemoveFilter from "../../RemoveFilter/RemoveFilter";
+import RangeSlider from "../../../RangeSlider/RangeSlider";
 
 import type { FilterRangeItemProps } from "../FilterItem";
 
@@ -15,9 +15,16 @@ export default function FilterRangeItem({ id, label, icon, removeFilter, min, ma
   const filterTriggerRef = useRef<HTMLDivElement | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
   
-  const handleChange = (newValue: number[]) => {
+  const handleChange = (newValue: number | number[]) => {
+    if (typeof newValue === "number") return;
+
     setValue({ from: newValue[0], to: newValue[1] });
   };
+  const onCompleteCallback = (value: number | number[]) => {
+    if (typeof value === "number") return;
+
+    onComplete?.(value);
+  }
 
   const isShowRemoveFilterPanel = Boolean(currentValue);
   const selectedLabel = currentValue && `${currentValue?.from} - ${currentValue?.to} мин.`;
@@ -49,25 +56,15 @@ export default function FilterRangeItem({ id, label, icon, removeFilter, min, ma
 
   const dropdown = (
     <div className={styles.dropdownRange}>
-    <Slider.Root
-      className={styles.range}
+    <RangeSlider
+      className={styles.dropdownRangeSlider}
       min={min}
       max={max}
-      value={[defaultFrom, defaultTo]}
-      largeStep={1}
-      minStepsBetweenValues={5}
-
-      onValueChange={handleChange}
-      onValueCommitted={() => onComplete?.(value)}
-    >
-      <Slider.Control className={styles.rangeControl}>
-        <Slider.Track className={styles.rangeTrack}>
-          <Slider.Indicator className={styles.rangeIndicator} />
-          <Slider.Thumb className={styles.rangeThumb} />
-          <Slider.Thumb className={styles.rangeThumb} />
-        </Slider.Track>
-      </Slider.Control>
-    </Slider.Root>
+      defaultValue={[defaultFrom, defaultTo]}
+      value={[value.from, value.to]}
+      onChange={handleChange}
+      onComplete={onCompleteCallback}
+    />
 
     <span className={styles.dropdownRangeValue}>{value.from} - {value.to} мин.</span>
   </div>

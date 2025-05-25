@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import Positioner from "../Positioner/Positioner";
 import Portal from "../Portal/Portal";
+import DropdownSelect from "../DropdownSelect/DropdownSelect";
 
-import Option from "./Option/Option";
+import Option from "../DropdownSelect/Option/Option";
 import { ChevronDown } from "lucide-react";
 
 import styles from "./Select.module.scss";
@@ -89,25 +90,18 @@ export default function Select({ options, selectedOption, name, onChange, placeh
         <input className={styles.triggerInput} name={name}></input>
       </button>
 
-      {isOpen && (
-        <Portal>
-          <Positioner triggerRef={triggerElRef} offsetY={6} matchTriggerWidth={true}>
-            <div className={styles.dropdown}>
-              <ul className={styles.list}>
-                {options?.map((option) => (
-                  <li key={option.value}>
-                    <Option
-                      label={option.label}
-                      value={option.value}
-                      isSelected={isSelected(option)}
-                      onSelect={() => handleSelect(option)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Positioner>
-        </Portal>
+      {isOpen &&  (
+        <DropdownSelect
+          options={options}
+          positionerProps={{
+            triggerRef: triggerElRef,
+            offsetY: 6,
+            matchTriggerWidth: true,
+          }}
+
+          isSelected={isSelected}
+          onSelect={handleSelect}
+        />
       )}
     </div>
   );

@@ -105,6 +105,11 @@ model FavoriteRecipes {
   @@unique([userId, recipeId])
 }
 
+model Ingredient {
+  id    String @id @default(uuid())
+  title String
+}
+
 enum Category {
   SOUPS
   MAIN_DISHES

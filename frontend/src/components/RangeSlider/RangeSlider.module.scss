@@ -1,0 +1,39 @@
+.range {
+  &__track {
+    width: 100%;
+    height: 4px;
+    background-color: var(--color-neutral-main--darken);
+    border-radius: 3px;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  &__thumb {
+    width: 11px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    user-select: none;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__control {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-block: 0.75rem;
+    touch-action: none;
+    user-select: none;
+  }
+
+  &__indicator {
+    border-radius: 3px;
+    background-color: var(--color-primary);
+    user-select: none;
+  }
+}

@@ -1,0 +1,31 @@
+.selected-items {
+  margin-bottom: 10px;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+.item {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: var(--color-neutral-main--darken);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  &__title {
+    font-weight: 500;
+  }
+  &__button-close {
+    &:hover {
+        background-color: #ccd0ce;
+    }
+  }
+
+  &:hover {
+
+  }
+}

@@ -34,7 +34,8 @@ export interface FilterRangeItemProps extends BaseFilterItemProps {
   currentValue?: { from: number; to: number };
   defaultFrom?: number;
   defaultTo?: number;
-  onComplete?: ChangeFilterWithoutKey;
+
+  onComplete?: (value: number[]) => void;
 }
 export interface FilterToggleItemProps extends BaseFilterItemProps {
   type: "toggle";
@@ -61,7 +62,7 @@ export default function FilterItem(props: FilterItemProps) {
     return <FilterListItem {...props} onSelect={(value) => changeFilter?.(id, value)} />;
   }
   if (isRangeFilterItem(props)) {
-    return <FilterRangeItem {...props} onComplete={(value) => changeFilter?.(id, value)} />;
+    return <FilterRangeItem {...props} onComplete={(value) => changeFilter?.(id, { from: value[0], to: value[1] })} />;
   }
   if (isToggleFilterItem(props)) {
     return <FilterToggleItem {...props} onToggle={(value) => changeFilter?.(id, value)} />;
