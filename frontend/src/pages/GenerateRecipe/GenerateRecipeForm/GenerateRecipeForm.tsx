@@ -10,6 +10,7 @@ import Button from "../../../components/Button/Button";
 import { recipeDifficultyOptions, recipeCategoryOptions, recipeCuisineOptions } from "../../../data/selectedRecipeData";
 
 import type { Option } from "../../../components/Select/Select";
+import type { Category, Difficulty, Cuisine } from "../../../types/recipeTypes";
 
 import styles from "./GenerateRecipeForm.module.scss";
 
@@ -21,6 +22,24 @@ interface RecipeFormData {
   difficulty: Option | null;
   cuisine: Option | null;
 };
+
+interface GenerateRecipeFormData {
+  description: string;
+  ingredients: Option[];
+  cookingTime: number | null;
+  category: Category | null;
+  difficulty: Difficulty | null;
+  cuisine: Cuisine | null;
+}
+
+const transformFormData = (data: RecipeFormData): GenerateRecipeFormData => {
+  return {
+    ...data,
+    category: data.category?.label as Category || null,
+    difficulty: data.difficulty?.label as Difficulty || null,
+    cuisine: data.cuisine?.label as Cuisine || null,
+  }
+}
 
 export default function GenerateRecipeForm() {
   const { control, handleSubmit, clearErrors, reset, watch, formState: { errors } } = useForm<RecipeFormData>({
@@ -37,7 +56,8 @@ export default function GenerateRecipeForm() {
   const values = watch();
 
   const onSubmit = (data: RecipeFormData) => {
-    console.log(data)
+    const transformedData = transformFormData(data);
+    console.log(transformedData)
   }
 
   return (

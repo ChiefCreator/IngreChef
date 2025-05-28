@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type { Recipe } from '@prisma/client';
 
 interface Recipe2 extends Recipe {
-  isFavorite: boolean;
+  isFavorite?: boolean;
 }
 
 const categoryMap: { [key: string]: string } = {

@@ -15,6 +15,7 @@ import recipeRouter from "./src/modules/recipe/recipieRouter";
 import cookbookRouter from "./src/modules/cookbook/cookbookRouter";
 import favoriteRouter from "./src/modules/favorite/favoriteRouter";
 import ingredientRouter from "./src/modules/ingredient/ingredientRouter";
+import generateRecipeRouter from "./src/modules/generate-recipe/generateRecipeRouter";
 
 export const prisma = new PrismaClient();
 const app: Application = express();
@@ -48,6 +49,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/recipes", recipeRouter);
 app.use("/api/favorites", favoriteRouter);
 app.use("/api/cookbooks", cookbookRouter);
+app.use("/api/generate-recipe", generateRecipeRouter);
 
 app.use("/api/ingredients", ingredientRouter);
 
