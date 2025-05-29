@@ -2,7 +2,7 @@ import { clientApi } from "../clientApi";
 
 import type { Recipe } from "../../../types/recipeTypes";
 import type { QueryRecipeFilter } from "../../../types/queryTypes";
-import type { GetRecipeParams, FavoriteRecipeResponse, FavoriteRecipeParams } from "./recipesApiTypes";
+import type { GetRecipeParams, AddRecipeParams, FavoriteRecipeResponse, FavoriteRecipeParams, GenerateRecipeParams } from "./recipesApiTypes";
 
 export const recipesApi = clientApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -81,6 +81,13 @@ export const recipesApi = clientApi.injectEndpoints({
       }
     }),
 
+    selectGeneratedRecipe: builder.mutation<Recipe, AddRecipeParams>({
+      query: (body) => ({
+        url: "/recipes/select",
+        method: "POST",
+        body,
+      }),
+    }),
     addRecipeToFavorite: builder.mutation<FavoriteRecipeResponse, FavoriteRecipeParams>({
       query: ({ userId, recipeId }) => ({
         url: "/favorites",
@@ -152,6 +159,14 @@ export const recipesApi = clientApi.injectEndpoints({
       },
       invalidatesTags: (_, __, { recipeId }) => [{ type: "Recipe", id: "List" }, { type: "Recipe", id: recipeId }],
     }),
+
+    generateRecipe: builder.mutation<Recipe[], GenerateRecipeParams>({
+      query: (body) => ({
+        url: `/generate-recipe`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -160,6 +175,8 @@ export const {
   useGetRecipesQuery,
   useGetUserRecipesQuery,
   useGetRecipeQuery,
+  useSelectGeneratedRecipeMutation,
   useAddRecipeToFavoriteMutation,
   useDeleteRecipeFromFavoriteMutation,
+  useGenerateRecipeMutation,
 } = recipesApi;

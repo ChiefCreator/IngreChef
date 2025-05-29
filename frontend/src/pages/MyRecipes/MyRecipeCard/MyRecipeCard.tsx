@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-import { ChefHat } from "lucide-react";
 import RecipeMenu from "../../../components/RecipeMenu/RecipeMenu";
+import NoRecipeImage from "../../../components/NoRecipeImage/NoRecipeImage";
 
 import type { RecipeCardOfMyRecipesOptions } from "../../../types/recipeTypes";
 
@@ -54,7 +54,7 @@ export default React.memo(function MyRecipeCard({ recipeId, title, imageUrl, isF
         <div className={styles.cardImgWrapper}>
           <Link className={styles.cardImageLink} to={`/recipes/${recipeId}`}>
             {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
-            {!imageUrl && <div className={styles.illustration}><ChefHat className={styles.illustrationIcon} size={"50%"} /></div>}
+            {!imageUrl && <NoRecipeImage />}
           </Link>
         </div>
   

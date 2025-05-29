@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -6,13 +6,14 @@ import { useRegisterMutation } from "../../../features/api/authApi/authApi.ts";
 
 import InputField from "../../../components/InputField/InputField";
 import Checkbox from "../../../components/Checkbox/Checkbox";
-import Button from "../../../components/Button/Button";
+import ButtonSend from "../../../components/ButtonSend/ButtonSend";
 import Link from "../../../components/Link/Link";
 import Portal from "../../../components/Portal/Portal.tsx";
 import Notification from "../../../components/Notification/Notification.tsx";
 
 import type { RegisterFormData } from "./schema";
 import type { NotificationData } from "../../../components/Notification/Notification";
+import type { LoadingStatus } from "../../../components/ButtonSend/ButtonSend.tsx";
 import { isApiError } from "../../../types/queryTypes.ts";
 
 import { schema } from "./schema";
@@ -26,6 +27,7 @@ export default function RegisterForm() {
     title: null,
     message: null,
   });
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const navigate = useNavigate();
   const { control, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
     defaultValues: {
@@ -36,13 +38,19 @@ export default function RegisterForm() {
     },
     resolver: zodResolver(schema),
   });
-  const [register] = useRegisterMutation();
+
+  const [register, { isLoading, isSuccess, isError }] = useRegisterMutation();
 
   const closeNotification = useCallback(() => {
     setIsNotificationOpen(false);
   }, [setIsNotificationOpen]);
+  const updateButtonStatus = useCallback((status: LoadingStatus) => {
+    setLoadingStatus(status);
+  }, [loadingStatus]);
 
   const handleRegister = async (data: RegisterFormData) => {
+    if (loadingStatus !== "idle") return;
+
     const response = await register(data);
 
     if (!response.error) {
@@ -76,6 +84,10 @@ export default function RegisterForm() {
 
     setIsNotificationOpen(true);
   }
+
+  useEffect(() => {
+    setLoadingStatus(isLoading ? "loading" : isSuccess ? "success" : isError ? "error" : "idle")
+  }, [isLoading, isSuccess, isError]);
 
   return (
     <>
@@ -169,9 +181,13 @@ export default function RegisterForm() {
           </fieldset>
         </div>
   
-        <Button className={styles.formButton} type="submit">
+        <ButtonSend
+          className={styles.formButton}
+          status={loadingStatus}
+          setStatus={updateButtonStatus}
+        >
           Зарегистрироваться
-        </Button>
+        </ButtonSend>
       </form>
 
       <Portal>

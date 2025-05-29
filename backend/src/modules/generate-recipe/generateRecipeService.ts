@@ -6,8 +6,8 @@ import DatabaseError from "../../../errors/DatabaseError";
 import ValidationError from "../../../errors/ValidationError";
 import { throwError } from "../../lib/error";
 
-import type { GenerateRecipeParams } from "./GenerateRecipeTypes";
-import { GeneratedRecipeSchema } from "./generateRecipeSchema";
+import type { GenerateRecipeParams } from "./generateRecipeTypes";
+import { GeneratedRecipesSchema } from "./generateRecipeSchema";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -16,7 +16,7 @@ const client = new OpenAI({
 export default class GenerateRecipeService {
   constructor() {};
 
-  async generateRecipe(authorId: string, recipeParams: GenerateRecipeParams) {
+  async generateRecipes(authorId: string, recipeParams: GenerateRecipeParams) {
     try {
       const instructions = this.createAssistantInstructions();
       const prompt = this.createPrompt(recipeParams);
@@ -29,39 +29,42 @@ export default class GenerateRecipeService {
         ],
         temperature: 1,
         text: {
-          format: zodTextFormat(GeneratedRecipeSchema, "generated_recipe_schema")
+          format: zodTextFormat(GeneratedRecipesSchema, "generated_recipes_schema")
         }
       });
 
-      const generatedRecipe = aiResponse.output_parsed;
+      const generatedRecipes = aiResponse.output_parsed?.recipes;
 
-      if (!generatedRecipe) {
-        throw new ValidationError("Сгенерированный рецепт не соответствует схеме");
+      if (!generatedRecipes) {
+        throw new ValidationError("Сгенерированные рецепты не соответствует схеме");
       }
 
-      const savedRecipe = await prisma.recipe.create({
-        data: {
-          ...generatedRecipe,
-          authorId,
-        },
+      await prisma.tempRecipe.createMany({
+        data: generatedRecipes.map(o => ({ ...o, authorId }))
       });
 
-      return savedRecipe;
+      const tempRecipes = await prisma.tempRecipe.findMany({
+        where: { authorId },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+      });
+
+      return tempRecipes;
     } catch(error) {
-      throwError(error, new DatabaseError("Не удалось сгенерировать рецепт", error));
+      throwError(error, new DatabaseError("Не удалось сгенерировать список рецептов", error));
     }
   }
 
   createAssistantInstructions() {
     return `
       Ты - профессиональный API-ассистент для генерации рецептов.
-      Сгенерируй креативный рецепт на основе введеннных пользовательских данных.
+      Сгенерируй 3 креативных рецепта на основе введеннных пользовательских данных.
       Коммуникационный стиль — строгий, машинный, без эмоций.
       
       # Инструкции
       
-      На основе пользовательских параметров необходимо сгенерировать рецепт. Возможными параметрами являются: пожелания пользователя, категория блюда, сложность, кухня, время приготовления, ингредиенты.
-      Если пользователь не указал ни одного параметра, то необходимо сгенерировать случайный рецепт.
+      На основе пользовательских параметров необходимо сгенерировать 3 разных рецепта. Возможными параметрами являются: пожелания пользователя, категория блюда, сложность, кухня, время приготовления, ингредиенты.
+      Если пользователь не указал ни одного параметра, то необходимо сгенерировать случайные рецепты.
       
       Список ингредиентов должен включать в себя количество и название каждого ингредиента.
       Все указанные ингредиенты должны использоваться в рецепте (самих ингредиентов может быть любое количество).
@@ -75,8 +78,9 @@ export default class GenerateRecipeService {
       
       # Формат вывода
       
-      1. Необходимо всегда выводить только JSON-объект (даже, если пользователь не указал никаких параметров, и если не получается сформировать реальный рецепт, то не писать, что невозможно сгенерировать рецепт).
-      2. JSON-объект строго должен иметь следующий вид:
+      1. Необходимо всегда выводить только массив из 3 JSON-объектов (даже, если пользователь не указал никаких параметров, и если не получается сформировать реальный рецепт, то не писать, что невозможно сгенерировать рецепт).
+      2. Все данные о рецепте генерировать на русском, кроме следующих параметров, которые имеют определенный тип вывода: category, difficulty, cuisine.
+      3. Формат ответа — строго JSON-объект, который имеет только одно поле "recipes". Recipes содержит массив из 3 рецептов. Каждый рецепт имеет следующую структуру:
       
       {
         "title": string,

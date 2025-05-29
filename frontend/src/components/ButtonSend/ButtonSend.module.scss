@@ -1,0 +1,103 @@
+.button {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color .3s var(--transition-power--in-out), scale .3s var(--transition-power--in-out);
+
+  &__title-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &__title, &__hidden-default-title {
+    text-wrap: nowrap;
+    display: block;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  &__title {
+    position: absolute;
+  }
+  &__hidden-default-title {
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  &__state {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &:hover {
+    background-color: var(--color-primary--dark);
+  }
+  &:active {
+    scale: .98;
+  }
+}
+
+.loader {
+  display: flex;
+  width: 20px;
+  aspect-ratio: 1;
+
+  animation: spin 1s linear infinite;
+  &__icon {
+    circle {
+      stroke-width: 3px;
+      stroke: white;
+      fill: none;
+      stroke-width: 3.6;
+
+      animation: dash 1.5s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 0, 200px;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -15px;
+  }
+  100% {
+    stroke-dasharray: 0, 200px;
+    stroke-dashoffset: -126px;
+  }
+}
+
+.success {
+  display: flex;
+  width: 18px;
+  aspect-ratio: 1;
+
+  &__icon {
+    fill: white;
+  }
+}
+
+.error {
+  display: flex;
+  width: 18px;
+  aspect-ratio: 1;
+
+  &__icon {
+    fill: white;
+  }
+}

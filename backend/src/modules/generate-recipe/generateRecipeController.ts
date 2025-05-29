@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 
-import GenerateRecipeService from './GenerateRecipeService';
+import GenerateRecipeService from './generateRecipeService';
 import BadRequestError from '../../../errors/BadRequestError';
 
 import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
 
-import type { GenerateRecipeParams } from './GenerateRecipeTypes';
+import type { GenerateRecipeParams } from './generateRecipeTypes';
 
 const service = new GenerateRecipeService();
 
 export default class GenerateRecipeController {
   constructor() {}
 
-  async generateRecipe(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async generateRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { category, difficulty, cuisine, ingredients, cookingTime, description, authorId } = req.body;
 
@@ -29,10 +29,10 @@ export default class GenerateRecipeController {
         description: description,
       } as GenerateRecipeParams;
 
-      const recipe = await service.generateRecipe(authorId, recipeParams);
-      const transformedRecipe = transformRecipeFromDBToClient(recipe);
+      const tempRecipes = await service.generateRecipes(authorId, recipeParams);
+      const transformedRecipes = tempRecipes?.map(o => transformRecipeFromDBToClient(o));
 
-      res.status(200).json(transformedRecipe);
+      res.status(200).json(transformedRecipes);
     } catch(error) {
       next(error);
     }

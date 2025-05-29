@@ -1,0 +1,29 @@
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.recipes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.not-found-button {
+  margin: 20px auto 0 auto;
+  display: block;
+  color: var(--color-neutral-contrast--light);
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color .2s var(--transition-power--in-out), color .2s var(--transition-power--in-out);
+
+  &:hover {
+    color: var(--color-neutral-contrast);
+    background-color: var(--color-neutral-main--dark);
+  }
+}

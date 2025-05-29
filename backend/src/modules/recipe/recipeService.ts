@@ -178,55 +178,30 @@ export default class RecipeService {
     }
   }
 
-  async getCookbookIdsOfUserRecipe(recipeId: string) {
-    const userSavedRecipes = await prisma.userSavedRecipe.findMany({
-      where: {
-        recipeId,
-      },
-      select: {
-        cookbook: true,
-      }
-    });
-
-    const cookbookIds = userSavedRecipes?.map(userSavedRecipe => userSavedRecipe.cookbook?.id).filter(Boolean);;
-
-    return cookbookIds;
-  }
-
-  async getFavoriteRecipesIds(userId: string) {
-    const favorites = await prisma.favoriteRecipes.findMany({
-      where: {
-        userId,
-      },
-      select: { recipeId: true },
-    });
-
-    return favorites.map((fav) => fav.recipeId);
-  }
-  async toggleFavoriteRecipe(userId: string, recipeId: string) {
-    const isRecipeExist = await prisma.favoriteRecipes.findUnique({
-      where: {
-        userId_recipeId: { userId, recipeId },
-      },
-    });
-
-    if (isRecipeExist) {
-      const data = await prisma.favoriteRecipes.delete({
-        where: {
-          userId_recipeId: { userId, recipeId },
-        },
+  async selectGeneratedRecipe(userId: string, recipeId: string) {
+    try {
+      const tempRecipe = await prisma.tempRecipe.findUnique({
+        where: { id: recipeId },
       });
 
-      return { status: "removed", data };
-    } else {
-      const data = await prisma.favoriteRecipes.create({
+      if (!tempRecipe) {
+        throw new NotFoundError("Рецепт не найден", { recipeId });
+      }
+
+      const recipe = await prisma.recipe.create({
         data: {
-          userId,
-          recipeId,
+          ...tempRecipe,
+          steps: tempRecipe.steps!,
         }
       });
 
-      return { status: "added", data };
+      await prisma.tempRecipe.deleteMany({
+        where: { authorId: userId },
+      });
+  
+      return recipe;
+    } catch (error) {
+      throwError(error, new DatabaseError("Не удалось выбрать рецепт", error));
     }
   }
 }

@@ -66,6 +66,22 @@ model Recipe {
   savedByUsers      UserSavedRecipe[]
 }
 
+model TempRecipe {
+  id                String      @id @default(uuid())
+  title             String
+  description       String?
+  imageUrl          String?     @map("image_url")
+  category          Category?
+  difficulty        Difficulty?
+  cuisine           Cuisine?
+  cookingTime       Int         @map("cooking_time")
+  ingredients       String[]
+  steps             Json
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  authorId          String      @map("author_id")
+}
+
 model UserSavedRecipe {
   id            String       @id @default(uuid())
   cookbookId    String?      @map("cookbook_id")

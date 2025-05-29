@@ -5,18 +5,19 @@ import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../../features/api/authApi/authApi.ts";
 
 import InputField from "../../../components/InputField/InputField";
-import Button from "../../../components/Button/Button";
 import Link from "../../../components/Link/Link";
 import Portal from "../../../components/Portal/Portal.tsx";
 import Notification from "../../../components/Notification/Notification.tsx";
+import ButtonSend from "../../../components/ButtonSend/ButtonSend";
 
 import type { FormData } from "./schema.ts";
 import type { NotificationData } from "../../../components/Notification/Notification.tsx";
+import type { LoadingStatus } from "../../../components/ButtonSend/ButtonSend";
 import { isApiError } from "../../../types/queryTypes.ts";
 
 import { schema } from "./schema.ts";
 import styles from "./LoginForm.module.scss";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 export default function LoginForm() {
   const { control, handleSubmit, clearErrors, reset, formState: { errors } } = useForm({
@@ -26,21 +27,26 @@ export default function LoginForm() {
     },
     resolver: zodResolver(schema),
   });
-  const [login] = useLoginMutation();
   const navigate = useNavigate();
-
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notificationData, setNotificationData] = useState<NotificationData>({
     type: null,
     title: null,
     message: null,
   });
+  const [login, { isLoading, isSuccess, isError }] = useLoginMutation();
 
   const closeNotification = useCallback(() => {
     setIsNotificationOpen(false);
   }, [setIsNotificationOpen]);
+  const updateButtonStatus = useCallback((status: LoadingStatus) => {
+    setLoadingStatus(status);
+  }, [loadingStatus]);
 
   const handleLogin = async (data: FormData) => {
+    if (loadingStatus !== "idle") return;
+
     const response = await login(data);
 
     if (!response.error) {
@@ -74,6 +80,10 @@ export default function LoginForm() {
 
     setIsNotificationOpen(true);
   }
+
+  useEffect(() => {
+    setLoadingStatus(isLoading ? "loading" : isSuccess ? "success" : isError ? "error" : "idle")
+  }, [isLoading, isSuccess, isError]);
 
   return (
     <>
@@ -127,9 +137,13 @@ export default function LoginForm() {
           </fieldset>
         </div>
   
-        <Button className={styles.formButton} type="submit">
+        <ButtonSend
+          className={styles.formButton}
+          status={loadingStatus}
+          setStatus={updateButtonStatus}
+        >
           Войти
-        </Button>
+        </ButtonSend>
       </form>
 
       <Portal>

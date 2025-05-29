@@ -16,6 +16,7 @@ import RecipeMenu from "../../components/RecipeMenu/RecipeMenu";
 import RecipeMetaSkeleton from "./RecipeMetaSkeleton/RecipeMetaSkeleton";
 import Ingredients from "./Ingredients/Ingredients";
 import CreateCookbookModal from "../../components/CreateCookbookModal/CreateCookbookModal";
+import NoRecipeImage from "../../components/NoRecipeImage/NoRecipeImage";
 import { ChefHat, Clock, CalendarCheck2, BookMarked, BicepsFlexed, Shapes, Plus } from "lucide-react";
 
 import { convertDateToDDMMYYYYFormat } from "../../lib/dateUtils";
@@ -111,7 +112,7 @@ export default function Recipe() {
             <section className={styles.mainSection}>
               <div className={styles.mainSectionImgWrapper}>
                 {imageUrl && <img className={styles.mainSectionImg} src={imageUrl}></img>}
-                {(!imageUrl && isRecipeSuccess) && <div className={styles.illustration}><ChefHat className={styles.illustrationIcon} size={"50%"} /></div>}
+                {(!imageUrl && isRecipeSuccess) && <NoRecipeImage />}
                 {isRecipeLoading && (
                   <div className={styles.illustration}>
                     <Skeleton className={styles.illustrationSkeleton} />

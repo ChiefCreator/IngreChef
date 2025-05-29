@@ -2,7 +2,8 @@ import React from "react";
 
 import styles from "./RecipeCard.module.scss";
 import { getTimeAgo } from "../../../lib/dateUtils";
-import { Heart, BookMarked, ChefHat } from "lucide-react";
+import { Heart, BookMarked } from "lucide-react";
+import NoRecipeImage from "../../../components/NoRecipeImage/NoRecipeImage";
 import { Link } from "react-router-dom";
 
 import { useAddRecipeToFavoriteMutation, useDeleteRecipeFromFavoriteMutation } from "../../../features/api/recipesApi/recipesApi";
@@ -58,7 +59,7 @@ export default React.memo(function RecipeCard({ userId, recipeId, title, descrip
       <div className={styles.cardImgWrapper}>
         <Link className={styles.cardImageLink} to={`/recipes/${recipeId}`}>
           {imageUrl && <img className={styles.cardImage} src={imageUrl}></img>}
-          {!imageUrl && <div className={styles.illustration}><ChefHat className={styles.illustrationIcon} size={"50%"} /></div>}
+          {!imageUrl && <NoRecipeImage />}
         </Link>
       </div>
 

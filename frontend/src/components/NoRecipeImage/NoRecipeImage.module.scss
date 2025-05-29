@@ -1,0 +1,18 @@
+.no-image {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-neutral-main--dark);
+  transition: scale .3s var(--transition-power--in-out);
+
+  &__icon {
+    color: var(--color-neutral-main--darken);
+  }
+
+  &:hover {
+    scale: 1.05;
+  }
+}

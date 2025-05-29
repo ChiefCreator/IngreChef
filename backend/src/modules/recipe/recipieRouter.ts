@@ -12,9 +12,6 @@ router.get("/", authMiddleware, transformQueryGetAllRecipesParams, recipeControl
 router.get("/:recipeId", authMiddleware, transformQueryGetAllRecipesParams, recipeController.getRecipe);
 router.get("/user/:userId", authMiddleware, transformQueryGetAllRecipesParams, recipeController.getUserRecipes);
 
-router.get("/:recipeId/cookbook-ids", authMiddleware, recipeController.getCookbookIdsOfUserRecipe);
-
-router.get("/favorite/user/:userId/ids", authMiddleware, recipeController.getFavoriteRecipesIds);
-router.post("/favorite/user/:userId/ids", authMiddleware, recipeController.toggleFavoriteRecipesIds);
+router.post("/select", authMiddleware, recipeController.selectGeneratedRecipe);
 
 export default router;

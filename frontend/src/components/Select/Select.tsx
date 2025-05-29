@@ -15,12 +15,12 @@ export type Option = {
 
 type SelectProps = {
   options?: Option[];
-  selectedOption: Option | Option[] | null;
+  selectedOption?: Option | Option[];
   name?: string;
   placeholder?: string;
   multiple?: boolean;
 
-  onChange: (value: Option | Option[] | null) => void;
+  onChange: (value?: Option | Option[]) => void;
 };
 
 export default function Select({ options, selectedOption, name, onChange, placeholder = "Выберите...", multiple = false }: SelectProps) {
@@ -43,7 +43,7 @@ export default function Select({ options, selectedOption, name, onChange, placeh
     return (selectedOption as Option)?.label || null;
   };
   const handleClear = () => {
-    onChange(multiple ? [] : null);
+    onChange(multiple ? [] : undefined);
   };
 
   const handleTriggerClick = (e: React.MouseEvent) => {

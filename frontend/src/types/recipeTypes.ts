@@ -15,8 +15,8 @@ export interface Recipe {
   cookingTime: number;
   ingredients: string[];
   steps: { title: string; time: number; description: string }[];
-  createdAt: Date;
   authorId: string;
+  createdAt?: Date;
   isFavorite?: boolean;
 }
 

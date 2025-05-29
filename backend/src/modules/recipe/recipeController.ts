@@ -105,40 +105,20 @@ export default class RecipeController {
     }
   }
 
-  async getCookbookIdsOfUserRecipe(req: Request, res: Response): Promise<void> {
+  async selectGeneratedRecipe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const recipeId = req.params.recipeId;
+      const { userId, recipeId } = req.body;
 
-      const cookbookIds = await recipeService.getCookbookIdsOfUserRecipe(recipeId);
-      res.status(200).json(cookbookIds);
+      if (!recipeId || !userId) {
+        throw new BadRequestError("Отсутствуют обязательные поля: recipeId");
+      }
+
+      const recipe = await recipeService.selectGeneratedRecipe(userId, recipeId);
+      const transformedRecipe = transformRecipeFromDBToClient(recipe);
+
+      res.status(200).json(transformedRecipe);
     } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: "Ошибка получения рецептов пользователя" });
-    }
-  }
-
-  async getFavoriteRecipesIds(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.params.userId;
-
-      const recipesIds = await recipeService.getFavoriteRecipesIds(userId);
-      res.status(200).json(recipesIds);
-    } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: 'Ошибка получения рецептов' });
-    }
-  }
-  async toggleFavoriteRecipesIds(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.params.userId;
-      const recipeId = String(req.body.recipeId);
-
-      const recipe = await recipeService.toggleFavoriteRecipe(userId, recipeId);
-      const newRecipesIds = await recipeService.getFavoriteRecipesIds(userId);
-      res.status(200).json(newRecipesIds);
-    } catch(error) {
-      console.error(error);
-      res.status(500).json({ message: 'Ошибка получения рецептов' });
+      next(error);
     }
   }
 }

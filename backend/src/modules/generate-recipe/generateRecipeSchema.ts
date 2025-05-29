@@ -17,4 +17,8 @@ export const GeneratedRecipeSchema = z.object({
   steps: z.array(GeneratedRecipeStepSchema),
 });
 
+export const GeneratedRecipesSchema = z.object({
+  recipes: z.array(GeneratedRecipeSchema).length(3)
+});
+
 export type GeneratedRecipe = z.infer<typeof GeneratedRecipeSchema>;
