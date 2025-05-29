@@ -15,6 +15,7 @@
     "@base-ui-components/react": "^1.0.0-alpha.8",
     "@prisma/client": "^5.22.0",
     "@types/nodemailer": "^6.4.17",
+    "axios": "^1.9.0",
     "baseui": "^15.0.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",

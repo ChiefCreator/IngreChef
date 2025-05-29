@@ -1,13 +1,18 @@
 import { prisma } from "../../../server";
 import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
+import axios from "axios";
+import * as fs from 'fs';
+import * as path from 'path';
 
 import DatabaseError from "../../../errors/DatabaseError";
 import ValidationError from "../../../errors/ValidationError";
 import { throwError } from "../../lib/error";
+import { v4 } from "uuid";
 
 import type { GenerateRecipeParams } from "./generateRecipeTypes";
 import { GeneratedRecipesSchema } from "./generateRecipeSchema";
+import AppError from "../../../errors/AppError";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -39,8 +44,10 @@ export default class GenerateRecipeService {
         throw new ValidationError("Сгенерированные рецепты не соответствует схеме");
       }
 
+      const imageUrls = await this.generateImages(generatedRecipes.map(o => this.createImagePrompt(o.title)));
+
       await prisma.tempRecipe.createMany({
-        data: generatedRecipes.map(o => ({ ...o, authorId }))
+        data: generatedRecipes.map((o, i) => ({ ...o, authorId, imageUrl: imageUrls?.[i] }))
       });
 
       const tempRecipes = await prisma.tempRecipe.findMany({
@@ -52,6 +59,42 @@ export default class GenerateRecipeService {
       return tempRecipes;
     } catch(error) {
       throwError(error, new DatabaseError("Не удалось сгенерировать список рецептов", error));
+    }
+  }
+  async generateImages(prompts: string[]) {
+    try {
+      const results = await Promise.all(
+        prompts.map(async (prompt) => {
+          const result = await client.images.generate({
+            model: "dall-e-3",
+            prompt,
+            n: 1,
+            size: "512x512",
+            response_format: "url",
+          });
+
+          if (!result?.data?.[0]) return null;
+  
+          const imageUrl = result.data[0].url!;
+          const uniqueName = `${v4()}.png`;
+          const filePath = path.resolve(__dirname, "./../../../uploads", uniqueName);
+  
+          const response = await axios.get(imageUrl, { responseType: "stream" });
+          const writer = fs.createWriteStream(filePath);
+          response.data.pipe(writer);
+  
+          await new Promise<void>((resolve, reject) => {
+            writer.on("finish", resolve);
+            writer.on("error", reject);
+          });
+  
+          return imageUrl;
+        })
+      );
+
+      return results;
+    } catch (error) {
+      throwError(error, new AppError({ message: "Не удалось сгенерировать картинки", cause: error }));
     }
   }
 
@@ -109,5 +152,8 @@ export default class GenerateRecipeService {
       Время приготовления: ${cookingTime}
       Ингредиенты: ${ingredients?.join(", ")}
     `;
+  }
+  createImagePrompt(title: string) {
+    return `Сгенерируй ${title}`;
   }
 }
