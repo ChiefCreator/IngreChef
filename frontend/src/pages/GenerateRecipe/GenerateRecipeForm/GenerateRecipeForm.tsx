@@ -194,6 +194,11 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
           className={styles.buttonGenerate}
           status={loadingStatus}
           setStatus={updateButtonStatus}
+          titleProps={{
+            loading: "Генерация...",
+            success: "Генерация завершена",
+            error: "Ошибка генерации"
+          }}
         >Сгенерировать рецепт</ButtonSend>
       </div>
     </form>

@@ -21,8 +21,8 @@ export default function SelectRecipeModal({ recipes, isOpen, isBackdrop = true, 
 
         <div className={styles.body}>
           <div className={styles.recipesList}>
-            {recipes.map(({ id, title, description }) => (
-              <SelectRecipeCard key={id} id={id} title={title} description={description} />
+            {recipes.map(({ id, title, description, imageUrl }) => (
+              <SelectRecipeCard key={id} id={id} title={title} description={description} imgSrc={imageUrl} />
             ))}
           </div>
 

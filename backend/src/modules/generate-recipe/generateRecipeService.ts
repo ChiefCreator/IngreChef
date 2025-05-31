@@ -10,7 +10,7 @@ import ValidationError from "../../../errors/ValidationError";
 import { throwError } from "../../lib/error";
 import { v4 } from "uuid";
 
-import type { GenerateRecipeParams } from "./generateRecipeTypes";
+import type { GenerateRecipeParams, RecipeImagePromptProps } from "./generateRecipeTypes";
 import { GeneratedRecipesSchema } from "./generateRecipeSchema";
 import AppError from "../../../errors/AppError";
 
@@ -23,8 +23,8 @@ export default class GenerateRecipeService {
 
   async generateRecipes(authorId: string, recipeParams: GenerateRecipeParams) {
     try {
-      const instructions = this.createAssistantInstructions();
-      const prompt = this.createPrompt(recipeParams);
+      const instructions = this.createInstructionsForRecipeGeneration();
+      const prompt = this.createRecipePrompt(recipeParams);
 
       const aiResponse = await client.responses.parse({
         model: "gpt-4.1-nano",
@@ -44,10 +44,14 @@ export default class GenerateRecipeService {
         throw new ValidationError("Сгенерированные рецепты не соответствует схеме");
       }
 
-      const imageUrls = await this.generateImages(generatedRecipes.map(o => this.createImagePrompt(o.title)));
+      const imageNames = await this.generateImages(generatedRecipes.map(({ title, description, ingredients }) => this.createImagePrompt({ title, description, ingredients })));
 
       await prisma.tempRecipe.createMany({
-        data: generatedRecipes.map((o, i) => ({ ...o, authorId, imageUrl: imageUrls?.[i] }))
+        data: generatedRecipes.map((el, i) => ({
+          ...el,
+          authorId,
+          imageUrl: imageNames?.[i] ? `${process.env.API_URL}/uploads/${imageNames?.[i]}` : undefined
+        }))
       });
 
       const tempRecipes = await prisma.tempRecipe.findMany({
@@ -66,29 +70,24 @@ export default class GenerateRecipeService {
       const results = await Promise.all(
         prompts.map(async (prompt) => {
           const result = await client.images.generate({
-            model: "dall-e-3",
+            model: "dall-e-2",
             prompt,
             n: 1,
-            size: "512x512",
-            response_format: "url",
+            size: "1024x1024",
+            response_format: "b64_json",
           });
 
           if (!result?.data?.[0]) return null;
+
+          const base64Img = result.data[0].b64_json!;
+          const buffer = Buffer.from(base64Img, "base64");
   
-          const imageUrl = result.data[0].url!;
           const uniqueName = `${v4()}.png`;
           const filePath = path.resolve(__dirname, "./../../../uploads", uniqueName);
   
-          const response = await axios.get(imageUrl, { responseType: "stream" });
-          const writer = fs.createWriteStream(filePath);
-          response.data.pipe(writer);
+          await fs.promises.writeFile(filePath, buffer);
   
-          await new Promise<void>((resolve, reject) => {
-            writer.on("finish", resolve);
-            writer.on("error", reject);
-          });
-  
-          return imageUrl;
+          return uniqueName;
         })
       );
 
@@ -98,7 +97,7 @@ export default class GenerateRecipeService {
     }
   }
 
-  createAssistantInstructions() {
+  createInstructionsForRecipeGeneration() {
     return `
       Ты - профессиональный API-ассистент для генерации рецептов.
       Сгенерируй 3 креативных рецепта на основе введеннных пользовательских данных.
@@ -143,7 +142,7 @@ export default class GenerateRecipeService {
       }
     `;
   }
-  createPrompt({ category, difficulty, cuisine, ingredients, cookingTime, description }: GenerateRecipeParams) {
+  createRecipePrompt({ category, difficulty, cuisine, ingredients, cookingTime, description }: GenerateRecipeParams) {
     return `
       Пожелания: ${description}
       Категория: ${category}
@@ -153,7 +152,9 @@ export default class GenerateRecipeService {
       Ингредиенты: ${ingredients?.join(", ")}
     `;
   }
-  createImagePrompt(title: string) {
-    return `Сгенерируй ${title}`;
+  createImagePrompt({ title, description, ingredients }: RecipeImagePromptProps) {
+    return `
+      Сгенерируй ${title}.
+    `;
   }
 }
