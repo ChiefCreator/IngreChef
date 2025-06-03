@@ -125,7 +125,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
         method: "POST",
         body: { userId, recipeId }
       }),
-      async onQueryStarted({ userId, cookbookId, recipeId, recipe }, lifecycleApi) {
+      async onQueryStarted({ userId, cookbookId, recipe }, lifecycleApi) {
         const getCookBookPatchResult = lifecycleApi.dispatch(
           cookbooksApi.util.updateQueryData("getCookBook", { cookbookId, userId }, draft => {
             const recipes = draft.recipes as Recipe[];

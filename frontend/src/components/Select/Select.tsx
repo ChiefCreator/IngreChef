@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import Positioner from "../Positioner/Positioner";
-import Portal from "../Portal/Portal";
 import DropdownSelect from "../DropdownSelect/DropdownSelect";
 
 import Option from "../DropdownSelect/Option/Option";
@@ -41,9 +39,6 @@ export default function Select({ options, selectedOption, name, onChange, placeh
     }
 
     return (selectedOption as Option)?.label || null;
-  };
-  const handleClear = () => {
-    onChange(multiple ? [] : undefined);
   };
   const toggleDropdown = useCallback((isOpen?: boolean) => {
     if (typeof isOpen === "undefined") {

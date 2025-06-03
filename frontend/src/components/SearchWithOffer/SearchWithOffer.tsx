@@ -10,7 +10,7 @@ import type { InputProps } from "../Input/Input";
 import type { Option } from "../DropdownSelect/DropdownSelect";
 
 import styles from "./SearchWithOffer.module.scss";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 
 interface SearchWithOfferProps {
   data?: Option[];
@@ -75,19 +75,19 @@ export default React.memo(function SearchWithOffer({ data, selectedData = [], in
         onKeyDown={onKeyDown}
       />
 
-      {isOfferData && (
-        <DropdownSelect
-          options={data}
-          positionerProps={{
-            triggerRef: inputRef,
-            offsetY: 6,
-            matchTriggerWidth: true,
-          }}
-
-          isSelected={isSelected}
-          onSelect={selectItem}
-        />
-      )}
+      
+      <DropdownSelect
+        isOpen={isOfferData}
+        options={data}
+        positionerProps={{
+          triggerRef: inputRef,
+          offsetY: 6,
+          matchTriggerWidth: true,
+        }}
+        
+        isSelected={isSelected}
+        onSelect={selectItem}
+      />
     </div>
   );
 })

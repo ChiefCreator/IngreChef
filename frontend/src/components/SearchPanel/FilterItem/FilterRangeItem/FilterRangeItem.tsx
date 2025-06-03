@@ -9,7 +9,7 @@ import type { FilterRangeItemProps } from "../FilterItem";
 import baseStyles from "./../FilterItem.module.scss";
 import styles from "./FilterRangeItem.module.scss";
 
-export default function FilterRangeItem({ id, label, icon, removeFilter, min, max, currentValue, defaultFrom = min, defaultTo = max, onComplete }: FilterRangeItemProps) {
+export default function FilterRangeItem({ label, icon, removeFilter, min, max, currentValue, defaultFrom = min, defaultTo = max, onComplete }: FilterRangeItemProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<{ from: number, to: number }>({ from: defaultFrom, to: defaultTo });
   const filterTriggerRef = useRef<HTMLButtonElement | null>(null);

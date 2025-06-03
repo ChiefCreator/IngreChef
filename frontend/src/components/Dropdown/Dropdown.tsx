@@ -19,7 +19,7 @@ type DropdownProps = {
   children: React.ReactNode;
   isAbsolute?: boolean;
 
-  toggle: (isOpen?: boolean) => void;
+  toggle?: (isOpen?: boolean) => void;
 };
 
 const staticVariants = {
@@ -45,7 +45,7 @@ export default React.memo(function Dropdown({ isOpen, positionerProps, children,
   const layoutRef = useRef<HTMLDivElement>(null);
 
   const closeMenu = () => {
-    toggle(false);
+    toggle?.(false);
     setDragY(null);
   };
   const animateOnOpen = () => {
@@ -178,7 +178,7 @@ export default React.memo(function Dropdown({ isOpen, positionerProps, children,
 
   return (
     <Portal>
-      {isMobile && <Backdrop isActive={isOpen} onClick={() => toggle(false)} />}
+      {isMobile && <Backdrop isActive={isOpen} onClick={() => toggle?.(false)} />}
     
       <Positioner {...positionerProps}>
         <div

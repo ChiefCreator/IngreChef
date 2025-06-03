@@ -16,15 +16,7 @@ interface RecipeCardProps {
   imageUrl?: string;
   isFavorite: boolean;
   authorId: string;
-  createdAt: Date;
-}
-
-function Profile({ authorId }: { authorId: RecipeCardProps["authorId"] }) {
-  return (
-    <div className={styles.profile}>
-
-    </div>
-  );
+  createdAt?: Date;
 }
 
 interface ControlProps {
@@ -42,7 +34,7 @@ function Control({ className = "", children, isActive, onClick }: ControlProps) 
   );
 }
 
-export default React.memo(function RecipeCard({ userId, recipeId, title, description, imageUrl, isFavorite, authorId, createdAt }: RecipeCardProps) {
+export default React.memo(function RecipeCard({ userId, recipeId, title, description, imageUrl, isFavorite, createdAt }: RecipeCardProps) {
   const [addRecipeToFavorite] = useAddRecipeToFavoriteMutation();
   const [deleteRecipeFromFavorite] = useDeleteRecipeFromFavoriteMutation();
 
@@ -78,15 +70,13 @@ export default React.memo(function RecipeCard({ userId, recipeId, title, descrip
                 <BookMarked size={18} />
               </Control>
             </div>
-
-            <Profile authorId={authorId} />
           </div>
 
           <h3 className={styles.title}><Link className={styles.titleLink} to={`/recipes/${recipeId}`}>{title}</Link></h3>
 
           <p className={styles.bodyDescription}>{description}</p>
 
-          <span className={styles.bodyTimeAgo}>{getTimeAgo(new Date(createdAt))}</span>
+          {createdAt && <span className={styles.bodyTimeAgo}>{getTimeAgo(new Date(createdAt))}</span>}
         </div>
       </div>
     </div>

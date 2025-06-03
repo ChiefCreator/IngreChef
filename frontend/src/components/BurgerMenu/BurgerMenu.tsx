@@ -1,5 +1,4 @@
 import { motion, useAnimate, AnimationSequence } from "motion/react";
-import { animate } from "motion/react";
 
 import styles from "./BurgerMenu.module.scss";
 import { useEffect, useRef } from "react";

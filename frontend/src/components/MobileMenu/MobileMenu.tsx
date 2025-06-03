@@ -1,10 +1,9 @@
-import { motion, useAnimate, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
 import Container from "../Container/Container";
 import Portal from "../Portal/Portal";
 
 import styles from "./MobileMenu.module.scss";
-import { useEffect } from "react";
 
 interface MobileMenuProps {
   isOpen: boolean;

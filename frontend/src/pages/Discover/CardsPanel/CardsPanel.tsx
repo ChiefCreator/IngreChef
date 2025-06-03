@@ -15,7 +15,7 @@ interface CardsPanelProps {
   isFetching: boolean;
 }
 
-export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading, isFetching }: CardsPanelProps) {
+export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading }: CardsPanelProps) {
   const renderContent = () => {
     if (isLoading) {
       return (

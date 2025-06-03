@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import styles from "./Checkbox.module.scss";
 
 import { Check } from "lucide-react";
@@ -19,7 +19,7 @@ export interface CheckboxProps {
   onBlur?: () => void;
 }
 
-export default function Checkbox({ className = "", isChecked, label, id, name, error, ref, onChange, onBlur }: CheckboxProps) {
+export default function Checkbox({ className = "", isChecked, label, id, name, error, onChange }: CheckboxProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const toggle = () => {

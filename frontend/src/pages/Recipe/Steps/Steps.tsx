@@ -22,7 +22,7 @@ interface StepProps {
   toggleIsPassed: () => void;
 }
 
-function Step({ title, description, time, index, isPassed, toggleIsPassed }: StepProps) {
+function Step({ title, description, index, isPassed, toggleIsPassed }: StepProps) {
   return (
     <div 
       className={`${styles.step} ${isPassed ? styles.stepPassed : ""}`}

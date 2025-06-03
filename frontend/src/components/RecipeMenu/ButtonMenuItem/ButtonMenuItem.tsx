@@ -1,13 +1,12 @@
 import type { ButtonItem } from '../RecipeMenu';
 
 import stylesBase from "./../MenuItem.module.scss";
-import styles from "./SubmenuMenuItem.module.scss";
 
 interface ButtonMenuItemProps extends ButtonItem {
   closeMenu: () => void;
 }
 
-export default function ButtonMenuItem({ id, label, icon, onClick, closeMenu }: ButtonMenuItemProps) {
+export default function ButtonMenuItem({ label, icon, onClick, closeMenu }: ButtonMenuItemProps) {
   const handleClick = () => {
     closeMenu();
     onClick?.();

@@ -16,7 +16,7 @@ type SelectProps = {
 
   positionerProps: PositionerProps;
 
-  toggle: (isOpen?: boolean) => void;
+  toggle?: (isOpen?: boolean) => void;
   isSelected: (option: Option) => boolean;
   onSelect: (option: Option) => void;
 };

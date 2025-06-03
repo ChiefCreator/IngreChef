@@ -10,7 +10,7 @@ import RemoveFilter from "../../RemoveFilter/RemoveFilter";
 import baseStyles from "./../FilterItem.module.scss";
 import styles from "./FilterListItem.module.scss";
 
-export default function FilterListItem({ id, label, icon, removeFilter, options, selectedValue, onSelect }: FilterListItemProps<Difficulty | Cuisine | Category>) {
+export default function FilterListItem({ label, icon, removeFilter, options, selectedValue, onSelect }: FilterListItemProps<Difficulty | Cuisine | Category>) {
   const [open, setOpen] = useState(false);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);

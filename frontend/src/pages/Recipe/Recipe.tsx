@@ -8,7 +8,6 @@ import { selectUserId } from "../../features/auth/authSlice";
 
 import { recipeOptions } from "../../data/selectedRecipeData";
 
-import Container from "../../components/Container/Container";
 import RecipeMeta from "./RecipeMeta/RecipeMeta";
 import ButtonAddToFavorite from "./ButtonAddToFavorite/ButtonAddToFavorite";
 import Steps from "./Steps/Steps";
@@ -176,18 +175,17 @@ export default function Recipe() {
                   <BookMarked className={styles.buttonCookbookIcon} size={16} />
                   <span className={styles.buttonCookbookTitle}>Кулинарная книга</span>
                 </button>
-                {isCookbookMenuOpen &&
-                  <RecipeMenu
-                    isOpen={isCookbookMenuOpen}
-                    options={cookbookMenuOptions}
-                    positionerProps={{
-                      align: "start",
-                      anchor: buttonCookbookRef,
-                    }}
-                    ref={cookbookMenuRef}
-                    closeMenu={closeCookbookMenu}
-                  />
-                }
+                
+                <RecipeMenu
+                  isOpen={isCookbookMenuOpen}
+                  options={cookbookMenuOptions}
+                  positionerProps={{
+                    triggerRef: buttonCookbookRef
+                  }}
+                  ref={cookbookMenuRef}
+                  closeMenu={closeCookbookMenu}
+                />
+                
                 <ButtonAddToFavorite isActive={!!isFavorite} toggleIsActive={toggleIsFavorite}  />
               </div>
             </div>

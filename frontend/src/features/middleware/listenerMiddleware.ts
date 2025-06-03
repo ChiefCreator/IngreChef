@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { setUser, clearUser, setAccessToken, clearAccessToken, setAuth, setUserIsActivated } from '../auth/authSlice';
-import { clientApi } from '../api/clientApi';
+import { authApi } from '../api/authApi/authApi';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { User } from '../auth/authSliceTypes';
@@ -8,7 +8,7 @@ import type { User } from '../auth/authSliceTypes';
 const listenerMiddleware = createListenerMiddleware();
 
 listenerMiddleware.startListening({
-  matcher: clientApi.endpoints.register.matchFulfilled,
+  matcher: authApi.endpoints.register.matchFulfilled,
   effect: async (action, listenerApi) => {
     const { user, accessToken } = action.payload;
 
@@ -18,7 +18,7 @@ listenerMiddleware.startListening({
   },
 });
 listenerMiddleware.startListening({
-  matcher: clientApi.endpoints.login.matchFulfilled,
+  matcher: authApi.endpoints.login.matchFulfilled,
   effect: async (action, listenerApi) => {
     const { user, accessToken } = action.payload;
 
@@ -28,8 +28,8 @@ listenerMiddleware.startListening({
   },
 });
 listenerMiddleware.startListening({
-  matcher: clientApi.endpoints.logout.matchFulfilled,
-  effect: async (action, listenerApi) => {
+  matcher: authApi.endpoints.logout.matchFulfilled,
+  effect: async (_, listenerApi) => {
     listenerApi.dispatch(clearUser());
     listenerApi.dispatch(clearAccessToken());
     listenerApi.dispatch(setAuth(false));

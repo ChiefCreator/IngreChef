@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useMediaQuery } from "../../app/hooks";
@@ -73,13 +73,10 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
   }
 
   useLayoutEffect(() => {
-
     setTimeout(() => {
       if (!activeItemRef.current) return;
 
       const activeItemRect = activeItemRef.current?.getBoundingClientRect();
-
-      console.log(activeItemRef) 
 
       setIndicatorSize({
         width: activeItemRect?.width || 0,

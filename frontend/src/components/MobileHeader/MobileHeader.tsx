@@ -3,7 +3,6 @@ import Logo from "../Logo/Logo";
 import BurgerMenu from "../BurgerMenu/BurgerMenu";
 
 import styles from "./MobileHeader.module.scss";
-import { useState } from "react";
 
 interface MobileHeaderProps {
   isOpen: boolean;

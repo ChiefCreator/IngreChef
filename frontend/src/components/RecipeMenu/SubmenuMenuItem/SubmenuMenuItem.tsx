@@ -16,7 +16,7 @@ interface SubmenuMenuItemProps extends SubmenuItem {
   closeMenu: () => void;
 }
 
-export default function SubmenuMenuItem({ id, label, icon, submenu, menuRef, closeMenu }: SubmenuMenuItemProps) {
+export default function SubmenuMenuItem({ label, icon, submenu, closeMenu }: SubmenuMenuItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const isTouchScreen = useMediaQuery("(hover: none)");

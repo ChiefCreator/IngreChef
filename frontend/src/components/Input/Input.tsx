@@ -21,7 +21,7 @@ export interface InputProps {
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({ type = "base" , className = "", id, value = "", placeholder = "Введите", name, error, ref, onChange, onKeyDown }: InputProps) {
+export default function Input({ type = "base" , className = "", id, value = "", placeholder = "Введите", name, error, onChange, onKeyDown }: InputProps) {
   const [isFocesed, setIsFocused] = useState(false);
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const inputEl = useRef<HTMLInputElement>(null);
