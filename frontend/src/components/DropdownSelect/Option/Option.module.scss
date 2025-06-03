@@ -11,4 +11,9 @@
   &:hover {
     background-color: var(--color-neutral-main--darken);
   }
+
+  @media (hover: none) {
+    border-radius: 6px;
+    background-color: var(--color-neutral-main--dark);
+  }
 }

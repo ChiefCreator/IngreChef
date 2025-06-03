@@ -1,10 +1,10 @@
-import { Ref, useRef } from 'react';
+import { useRef } from 'react';
 
-import { Menu } from '@base-ui-components/react/menu';
 import MenuPanel from './MenuPanel/MenuPanel';
+import Dropdown from '../Dropdown/Dropdown';
 
-import type { RefObject } from 'react';
 import type { RecipeCardOfMyRecipesOptions } from '../../types/recipeTypes';
+import type { PositionerProps } from '../Positioner/Positioner';
 
 import styles from "./RecipeMenu.module.scss";
 
@@ -12,12 +12,8 @@ interface RecipeMenuProps {
   className?: string;
   isOpen: boolean;
   options?: RecipeCardOfMyRecipesOptions;
-  ref?: Ref<Element>;
-  positionerProps?: {
-    mousePos?: { x: number; y: number } | null;
-    align?: "center" | "end" | "start";
-    anchor?: HTMLButtonElement | Element | RefObject<Element | null> | null
-  };
+  ref?: React.RefObject<HTMLDivElement | null>;
+  positionerProps: PositionerProps;
 
   closeMenu: () => void;
 }
@@ -47,30 +43,19 @@ export interface SubmenuItem extends BaseMenuItem {
 export type MenuItem = ButtonItem | CheckboxItem | SubmenuItem;
   
 export default function RecipeMenu({ className, isOpen, options, ref, positionerProps, closeMenu }: RecipeMenuProps) {
-  const { mousePos, align, anchor } = positionerProps || {};
-
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <Menu.Root open={isOpen} modal={false}>
-      <Menu.Portal>
-        <Menu.Positioner
-          sideOffset={8}
-          align={align}
-          anchor={anchor}
-          {...(mousePos ? { style: { top: mousePos?.y, left: mousePos?.x, position: "absolute" }} : {})}
-        >
-          <Menu.Popup ref={ref}>
-          <div className={`${styles.menu} ${className}`} ref={menuRef}>
-            <MenuPanel
-              options={options!}
-              menuRef={menuRef}
-              closeMenu={closeMenu}
-            />
-            </div>
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+    <Dropdown isOpen={isOpen} toggle={closeMenu} positionerProps={positionerProps}>
+      <div className={styles.popup} ref={ref}>
+        <div className={`${styles.menu} ${className}`} ref={menuRef}>
+          <MenuPanel
+            options={options!}
+            menuRef={menuRef}
+            closeMenu={closeMenu}
+          />
+        </div>
+      </div>
+    </Dropdown>
   );
 }

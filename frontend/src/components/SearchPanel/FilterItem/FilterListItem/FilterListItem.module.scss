@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+
+  @media (hover: none) {
+    gap: 10px;
+  }
 }
 
 .option {
@@ -23,5 +27,11 @@
   &_active {
     background-color: var(--color-neutral-main--dark);
     color: var(--color-primary);
+  }
+
+  @media (hover: none) {
+    &:hover {
+     background-color: initial;
+    }
   }
 }

@@ -25,4 +25,12 @@
     background-color: var(--color-neutral-main--darken);
     text-wrap: nowrap;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+
+    &__selected-value {
+      margin-left: auto;
+    }
+  }
 }

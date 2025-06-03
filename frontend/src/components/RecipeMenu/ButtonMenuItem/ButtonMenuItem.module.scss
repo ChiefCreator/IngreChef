@@ -8,10 +8,6 @@
 
   transition: background-color 0.3s var(--transition-power--in-out);
 
-  &:hover {
-    background-color: var(--color-neutral-main--darken);
-  }
-
   &__arrow {
     margin-left: auto;
   }

@@ -1,15 +1,24 @@
 .card {
   width: 100%;
-  transition: opacity .3s var(--transition-power--in-out);
+  transition: opacity 0.3s var(--transition-power--in-out);
   &__img-wrapper {
     width: 100%;
     aspect-ratio: 1/0.8;
     border-radius: 12px;
     overflow: hidden;
+    position: relative;
 
     &:hover {
       .card__image {
         scale: 1.05;
+      }
+    }
+
+    @media (hover: none) {
+      &:hover {
+        .card__image {
+          scale: initial;
+        }
       }
     }
   }
@@ -17,11 +26,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: scale .3s var(--transition-power--in-out);
+    transition: scale 0.3s var(--transition-power--in-out);
   }
 
   &_fetching {
-    opacity: .5;
+    opacity: 0.5;
   }
 }
 
@@ -43,4 +52,21 @@
   &:hover &__link {
     text-decoration: underline;
   }
+
+  @media (hover: none) {
+    &:hover &__link {
+      text-decoration: initial;
+    }
+  }
+}
+
+.button-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
 }

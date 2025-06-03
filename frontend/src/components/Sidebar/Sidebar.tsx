@@ -12,6 +12,7 @@ import styles from "./Sidebar.module.scss";
 
 interface SidebarProps {
   className?: string;
+  isDesktop: boolean;
 }
 
 export interface MenuItemData {
@@ -26,13 +27,12 @@ export interface MenuItemData {
   defaultContent?: string;
 }
 
-export default function Sidebar({ className = "" }: SidebarProps) {
+export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
   const [openMenuPath, setOpenMenuPath] = useState([] as string []);
   const [isOpen, setIsOpen] = useState(true);
   const [isButtonToggleVisible, setIsButtonToggleVisible] = useState(false);
 
   const { data: cookbooks, isLoading: isCookbooksLoading } = useGetCookBooksQuery({ userId: "author_1" });
-  
 
   const menuData_1 = useMemo<MenuItemData[]>(() => [
     {
@@ -100,6 +100,8 @@ export default function Sidebar({ className = "" }: SidebarProps) {
 
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isOpen, setIsOpen]);
+
+  if (!isDesktop) return null;
 
   return (
     <aside

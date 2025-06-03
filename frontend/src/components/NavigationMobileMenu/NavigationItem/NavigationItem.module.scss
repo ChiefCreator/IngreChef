@@ -1,0 +1,15 @@
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  &__title {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  &_active {
+    color: var(--color-primary);
+  }
+}

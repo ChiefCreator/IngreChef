@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-import { Menu } from '@base-ui-components/react/menu';
+import { useMediaQuery } from '../../../app/hooks';
+
 import { ChevronRight } from 'lucide-react';
 import MenuPanel from '../MenuPanel/MenuPanel';
+import Dropdown from '../../Dropdown/Dropdown';
 
 import type { SubmenuItem } from '../RecipeMenu';
 
@@ -16,35 +18,37 @@ interface SubmenuMenuItemProps extends SubmenuItem {
 
 export default function SubmenuMenuItem({ id, label, icon, submenu, menuRef, closeMenu }: SubmenuMenuItemProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const isTouchScreen = useMediaQuery("(hover: none)");
 
   const toggleSubmenu = () => {
     setIsOpen(prev => !prev);
   }
 
+  const handleMouseOver = () => {
+    if (isTouchScreen) return;
+
+    setIsOpen(prev => !prev);
+  }
+
   return (
-    <Menu.Root open={isOpen} openOnHover={false}>
-      <Menu.SubmenuTrigger className={stylesBase.menuItem} onMouseEnter={toggleSubmenu}>
+    <>
+      <button className={`${stylesBase.menuItem} ${styles.menuItem}`} onMouseEnter={handleMouseOver} onClick={toggleSubmenu} ref={triggerRef}>
         <div className={stylesBase.menuItemIconWrapper}>{icon}</div>
   
         <span className={stylesBase.menuItemLabel}>{label}</span>
   
         <ChevronRight className={stylesBase.menuItemArrow} size={16} />
-      </Menu.SubmenuTrigger>
+      </button>
 
-      <Menu.Portal container={menuRef}>
-        <Menu.Positioner
-          className={styles.Positioner}
-          alignOffset={15}
-          sideOffset={6}
-        >
-          <Menu.Popup className={styles.Popup}>
-            <MenuPanel
-              options={submenu}
-              closeMenu={closeMenu}
-            />
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+      <Dropdown isOpen={isOpen} isAbsolute={!isTouchScreen} positionerProps={{ triggerRef, anchorOrigin: { vertical: "top", horizontal: "right" } }} toggle={toggleSubmenu}>
+        <div className={styles.menuItemDropdownContent}>
+          <MenuPanel
+            options={submenu}
+            closeMenu={closeMenu}
+          />
+        </div>
+      </Dropdown>
+    </>
   );
 }

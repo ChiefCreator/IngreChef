@@ -32,6 +32,14 @@
   &_fetching {
     opacity: .5;
   }
+
+  @media (hover: none) {
+    &:hover {
+      .card__container {
+        transform: initial;
+      }
+    }
+  }
 }
 
 .content {

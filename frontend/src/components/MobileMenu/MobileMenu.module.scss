@@ -1,0 +1,9 @@
+.menu {
+  position: fixed;
+  left: 0;
+  top: 66px;
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+  background-color: var(--color-neutral-main);
+}

@@ -3,4 +3,8 @@
   display: grid;
   grid-template-columns: repeat(2, 6fr);
   gap: 30px 20px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }

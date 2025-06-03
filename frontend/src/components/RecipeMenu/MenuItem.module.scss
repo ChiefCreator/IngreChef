@@ -25,4 +25,13 @@
   &__arrow {
     margin-left: auto;
   }
+
+  @media (hover: none) {
+    background-color: var(--color-neutral-main--darken);
+    border-radius: 6px;
+    padding: 10px;
+    &:hover {
+      background-color: var(--color-neutral-main--darken);
+    }
+  }
 }

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import { useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector } from "../../app/hooks";
+import { useAppSelector, useMediaQuery } from "../../app/hooks";
 
 import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
 
@@ -25,6 +25,7 @@ export default function Cookbook() {
   const [filters, setFilters] = useState<Filter>({});
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId, cookbookId: cookbookId!, ...filters }, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -184,19 +185,22 @@ export default function Cookbook() {
     [filters]
   );
 
+  const headerControls = isDesktop ?
+    [
+      <Button variant="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
+        Лента
+      </Button>,
+      <Button variant="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
+        Добавить рецепт
+      </Button>,
+    ] : []
+
   return (
     <section className={styles.page}>
       <Header
         className={styles.header}
         title={data?.name}
-        controls={[
-          <Button variant="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
-            Лента
-          </Button>,
-          <Button variant="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
-            Добавить рецепт
-          </Button>,
-        ]}
+        controls={headerControls}
       />
       <div className={styles.body}>
         <header className={styles.bodyHeader}>

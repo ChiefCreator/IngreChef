@@ -10,7 +10,9 @@ export default function AuthLayout() {
     <div className={styles.layout}>
       <Container>
         <div className={styles.layoutContainer}>
-          <Outlet />
+          <div className={styles.layoutContent}>
+            <Outlet />
+          </div>
         </div>
       </Container>
     </div>

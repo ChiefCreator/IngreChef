@@ -3,4 +3,17 @@
   display: grid;
   grid-template-columns: repeat(4, 6fr);
   gap: 60px 50px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+  @media ((min-width: 481px) and (max-width: 768px)) {
+    grid-template-columns: repeat(2, 6fr);
+  }
+  @media ((min-width: 769px) and (max-width: 1024px)) {
+    grid-template-columns: repeat(3, 4fr);
+  }
+  @media (max-width: 1024px) {
+    margin-top: 0;
+  }
 }

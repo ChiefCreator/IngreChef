@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useGetRecipesQuery } from "../../features/api/recipesApi/recipesApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector } from "../../app/hooks";
+import { useAppSelector, useMediaQuery } from "../../app/hooks";
 
 import type { Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
@@ -19,6 +19,7 @@ export default function Discover() {
   const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 769px)");
 
   const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters, { skip: !userId });
 
@@ -122,8 +123,12 @@ export default function Discover() {
     <section className={styles.page}>
       <div className={styles.body}>
         <header className={styles.bodyHeader}>
-          <h1 className={styles.bodyTitle}>Откройте для себя новые рецепты</h1>
-          <p className={styles.bodyDescription}>Ознакомьтесь с нашей коллекцией рецептов, присланных пользователями. Найдите свое новое кулинарное вдохновение!</p>
+          {isDesktop && (
+            <>
+              <h1 className={styles.bodyTitle}>Откройте для себя новые рецепты</h1>
+              <p className={styles.bodyDescription}>Ознакомьтесь с нашей коллекцией рецептов, присланных пользователями. Найдите свое новое кулинарное вдохновение!</p>
+            </>
+          )}
 
           <SearchPanel
             className={styles.bodySearchPanel}

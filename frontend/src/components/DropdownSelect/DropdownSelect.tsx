@@ -1,5 +1,4 @@
-import Positioner from "../Positioner/Positioner";
-import Portal from "../Portal/Portal";
+import Dropdown from "../Dropdown/Dropdown";
 import Option from "./Option/Option";
 
 import type { PositionerProps } from "../Positioner/Positioner";
@@ -12,34 +11,34 @@ export type Option = {
 };
 
 type SelectProps = {
+  isOpen: boolean;
   options?: Option[];
 
   positionerProps: PositionerProps;
 
+  toggle: (isOpen?: boolean) => void;
   isSelected: (option: Option) => boolean;
   onSelect: (option: Option) => void;
 };
 
-export default function DropdownSelect({ options, positionerProps, isSelected, onSelect }: SelectProps) {
+export default function DropdownSelect({ isOpen, options, positionerProps, toggle, isSelected, onSelect }: SelectProps) {
   
   return (
-    <Portal>
-      <Positioner {...positionerProps}>
-        <div className={styles.dropdown}>
-          <ul className={styles.list}>
-            {options?.map((option) => (
-              <li key={option.value}>
-                <Option
-                  label={option.label}
-                  value={option.value}
-                  isSelected={isSelected(option)}
-                  onSelect={() => onSelect(option)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Positioner>
-    </Portal>
+    <Dropdown positionerProps={positionerProps} isOpen={isOpen} toggle={toggle}>
+      <div className={styles.dropdown}>
+        <ul className={styles.list}>
+          {options?.map((option) => (
+            <li key={option.value}>
+              <Option
+                label={option.label}
+                value={option.value}
+                isSelected={isSelected(option)}
+                onSelect={() => onSelect(option)}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Dropdown>
   )
 }

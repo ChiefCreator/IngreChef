@@ -8,12 +8,16 @@ type Origin = {
 };
 
 export interface PositionerProps {
-  triggerRef: React.RefObject<HTMLElement | null> | null;
+  triggerRef?: React.RefObject<HTMLElement | null> | null;
   anchorOrigin?: Origin;
   transformOrigin?: Origin;
   offsetX?: number;
   offsetY?: number;
   matchTriggerWidth?: boolean;
+  position?: {
+    left?: number;
+    top?: number;
+  }
   children?: React.ReactNode;
 }
 
@@ -48,7 +52,7 @@ const getOffset = (origin: Origin, size: { width: number; height: number }): { t
   return { top, left };
 };
 
-export default function Positioner({ triggerRef, anchorOrigin = { vertical: "bottom", horizontal: "left" }, transformOrigin = { vertical: "top", horizontal: "left" }, offsetX = 0, offsetY = 0, matchTriggerWidth = false, children }: PositionerProps) {
+export default function Positioner({ triggerRef, anchorOrigin = { vertical: "bottom", horizontal: "left" }, transformOrigin = { vertical: "top", horizontal: "left" }, offsetX = 0, offsetY = 0, matchTriggerWidth = false, position, children }: PositionerProps) {
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +64,16 @@ export default function Positioner({ triggerRef, anchorOrigin = { vertical: "bot
 
     const triggerRect = trigger.getBoundingClientRect();
     const contentRect = content.getBoundingClientRect();
+
+    if (position) {
+      return {
+        position: "absolute",
+        top: position.top,
+        left: position.left,
+        width: matchTriggerWidth ? triggerRect.width : undefined,
+        zIndex: 1000,
+      };
+    }
 
     const anchorOffset = getOffset(anchorOrigin, {
       width: triggerRect.width,

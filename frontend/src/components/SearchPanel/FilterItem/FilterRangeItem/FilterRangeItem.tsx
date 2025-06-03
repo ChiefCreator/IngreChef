@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { Popover } from '@base-ui-components/react/popover';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import RemoveFilter from "../../RemoveFilter/RemoveFilter";
 import RangeSlider from "../../../RangeSlider/RangeSlider";
+import Dropdown from "../../../Dropdown/Dropdown";
 
 import type { FilterRangeItemProps } from "../FilterItem";
 
@@ -12,8 +12,16 @@ import styles from "./FilterRangeItem.module.scss";
 export default function FilterRangeItem({ id, label, icon, removeFilter, min, max, currentValue, defaultFrom = min, defaultTo = max, onComplete }: FilterRangeItemProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<{ from: number, to: number }>({ from: defaultFrom, to: defaultTo });
-  const filterTriggerRef = useRef<HTMLDivElement | null>(null);
+  const filterTriggerRef = useRef<HTMLButtonElement | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleDropdown = useCallback((isOpen?: boolean) => {
+    if (typeof isOpen === "undefined") {
+      setOpen(prev => !prev);
+    } else {
+      setOpen(isOpen);
+    }
+  }, [setOpen]);
   
   const handleChange = (newValue: number | number[]) => {
     if (typeof newValue === "number") return;
@@ -49,8 +57,8 @@ export default function FilterRangeItem({ id, label, icon, removeFilter, min, ma
   }, []);
 
   const removeFilterPanel = (
-    <div className={styles.removeFilterPanel}>
-      <RemoveFilter className={styles.removeFilterPanelButton} onClick={handleRemoveFilter} />
+    <div className={baseStyles.removeFilterPanel}>
+      <RemoveFilter className={baseStyles.removeFilterPanelButton} onClick={handleRemoveFilter} />
     </div>
   );
 
@@ -72,24 +80,21 @@ export default function FilterRangeItem({ id, label, icon, removeFilter, min, ma
 
   return (
     <div className={baseStyles.filterItem}>
-      <Popover.Root open={open}>
-        <Popover.Trigger className={baseStyles.button} ref={filterTriggerRef} onClick={() => setOpen(prev => !prev)}>
-          {icon}
+      <button className={baseStyles.button} ref={filterTriggerRef} onClick={() => setOpen(prev => !prev)}>
+        {icon}
 
-          <span className={baseStyles.buttonLabel}>{label}</span>
+        <span className={baseStyles.buttonLabel}>{label}</span>
 
-          {selectedLabel && <span className={baseStyles.buttonSelectedValue}>{selectedLabel}</span>}
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Positioner align="start" sideOffset={8}>
-            <Popover.Popup className={styles.popup} ref={popupRef}>
-              {dropdown}
+        {selectedLabel && <span className={baseStyles.buttonSelectedValue}>{selectedLabel}</span>}
+      </button>
 
-              {isShowRemoveFilterPanel && removeFilterPanel}
-            </Popover.Popup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+      <Dropdown isOpen={open} positionerProps={{ triggerRef: filterTriggerRef, offsetY: 8 }} toggle={toggleDropdown}>
+        <div className={styles.popup} ref={popupRef}>
+          {dropdown}
+
+          {isShowRemoveFilterPanel && removeFilterPanel}
+        </div>
+      </Dropdown>
     </div>
   );
 }

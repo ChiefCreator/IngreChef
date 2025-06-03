@@ -3,4 +3,17 @@
   border-radius: 8px;
   background-color: var(--color-neutral-main--dark);
   overflow: hidden;
+
+  @media (hover: none) {
+    border-radius: 0;
+    background-color: var(--color-neutral-main);
+  }
+}
+
+.list {
+  @media (hover: none) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }

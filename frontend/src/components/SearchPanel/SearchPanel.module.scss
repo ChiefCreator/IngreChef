@@ -16,7 +16,16 @@
   &__list {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
+  }
+
+  @media (hover: none) {
+    &__list {
+      width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
   }
 }
 

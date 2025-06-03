@@ -8,4 +8,22 @@
     align-items: center;
     justify-content: center;
   }
+  &__content {
+    border-radius: 15px;
+    max-width: 500px;
+    box-shadow: 0 0 15px var(--color-neutral-main--dark);
+    background-color: white;
+    padding: 25px;
+  }
+
+  @media (max-width: 600px) {
+    background-color: white;
+
+    &__content {
+      max-width: 100%;
+      box-shadow: initial;
+      padding: 0;
+      background-color: white;
+    }
+  }
 }

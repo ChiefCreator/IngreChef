@@ -1,10 +1,13 @@
 .layout {
-  height: 0;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  background-color: var(--color-neutral-main);
   &__main-content {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 25px;
+    padding-bottom: 20px;
   }
   &__content {
     padding-top: 20px;
@@ -16,5 +19,15 @@
     max-width: 400px;
     min-height: 100vh;
     z-index: 10;
+  }
+
+  @media (max-width: 1024px) {
+    &__content {
+      padding-top: 10px;
+    }
+    &__main-content {
+      display: block;
+      width: 100%;
+    }
   }
 }

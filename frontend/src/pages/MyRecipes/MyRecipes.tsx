@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useGetUserRecipesQuery } from "../../features/api/recipesApi/recipesApi";
 import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector } from "../../app/hooks";
+import { useAppSelector, useMediaQuery } from "../../app/hooks";
 
 import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import Header from "../../components/Header/Header";
@@ -24,6 +24,7 @@ export default function MyRecipes() {
   const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -173,26 +174,28 @@ export default function MyRecipes() {
 
   return (
     <section className={styles.page}>
-      <Header
-        className={styles.header}
-        title="Мои рецепты"
-        controls={[
-          <Button
-            variant="outline"
-            className={styles.recipiesButtonLine}
-            icon={<Compass size={16} />}
-          >
-            Лента
-          </Button>,
-          <Button
-            variant="primary"
-            className={styles.recipiesButtonLine}
-            icon={<Plus size={16} />}
-          >
-            Добавить рецепт
-          </Button>
-        ]}
-      />
+      {isDesktop && (
+        <Header
+          className={styles.header}
+          title="Мои рецепты"
+          controls={[
+            <Button
+              variant="outline"
+              className={styles.recipiesButtonLine}
+              icon={<Compass size={16} />}
+            >
+              Лента
+            </Button>,
+            <Button
+              variant="primary"
+              className={styles.recipiesButtonLine}
+              icon={<Plus size={16} />}
+            >
+              Добавить рецепт
+            </Button>
+          ]}
+        />
+      )}
       <div className={styles.body}>
         <header className={styles.bodyHeader}>
           <SearchPanel

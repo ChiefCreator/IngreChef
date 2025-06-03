@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { Popover } from '@base-ui-components/react/popover';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import type { FilterListItemProps } from "../FilterItem";
 import type { Difficulty, Cuisine, Category } from "../../../../types/recipeTypes";
 import type { ChangeFilterWithoutKey } from "../../../../types/filtersTypes";
 
+import Dropdown from "../../../Dropdown/Dropdown";
 import RemoveFilter from "../../RemoveFilter/RemoveFilter";
 
 import baseStyles from "./../FilterItem.module.scss";
@@ -12,13 +12,21 @@ import styles from "./FilterListItem.module.scss";
 
 export default function FilterListItem({ id, label, icon, removeFilter, options, selectedValue, onSelect }: FilterListItemProps<Difficulty | Cuisine | Category>) {
   const [open, setOpen] = useState(false);
-  const filterTriggerRef = useRef<HTMLDivElement | null>(null);
+  const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
 
   const selectedOption = options.find(option => option.value === selectedValue);
   const selectedOptionValue = selectedOption?.value;
   const selectedLabel = selectedOption?.label;
   const isShowRemoveFilterPanel = Boolean(selectedLabel);
+
+  const toggleDropdown = useCallback((isOpen?: boolean) => {
+    if (typeof isOpen === "undefined") {
+      setOpen(prev => !prev);
+    } else {
+      setOpen(isOpen);
+    }
+  }, [setOpen]);
 
   const handleSelect: ChangeFilterWithoutKey = (value) => {
     onSelect?.(value);
@@ -68,24 +76,21 @@ export default function FilterListItem({ id, label, icon, removeFilter, options,
 
   return (
     <div className={baseStyles.filterItem}>
-      <Popover.Root open={open}>
-        <Popover.Trigger className={baseStyles.button} ref={filterTriggerRef} onClick={() => setOpen(prev => !prev)}>
-          {icon}
+      <button className={baseStyles.button} ref={filterTriggerRef} onClick={() => setOpen(prev => !prev)}>
+        {icon}
 
-          <span className={baseStyles.buttonLabel}>{label}</span>
+        <span className={baseStyles.buttonLabel}>{label}</span>
 
-          {selectedLabel && <span className={baseStyles.buttonSelectedValue}>{selectedLabel}</span>}
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Positioner align="start" sideOffset={8}>
-            <Popover.Popup className={baseStyles.popup} ref={popupRef}>
-              {dropdownList}
+        {selectedLabel && <span className={baseStyles.buttonSelectedValue}>{selectedLabel}</span>}
+      </button>
 
-              {isShowRemoveFilterPanel && removeFilterPanel}
-            </Popover.Popup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
+      <Dropdown isOpen={open} positionerProps={{ triggerRef: filterTriggerRef, offsetY: 8 }} toggle={toggleDropdown}>
+        <div className={baseStyles.popup} ref={popupRef}>
+          {dropdownList}
+
+          {isShowRemoveFilterPanel && removeFilterPanel}
+        </div>
+      </Dropdown>
     </div>
   );
 }

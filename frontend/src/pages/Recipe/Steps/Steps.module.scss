@@ -41,4 +41,12 @@
       opacity: .5;
     }
   }
+
+  @media (hover: none) {
+    &:hover {
+      .step__check {
+        opacity: 0;
+      }
+    }
+  }
 }

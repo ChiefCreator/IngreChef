@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Positioner from "../Positioner/Positioner";
 import Portal from "../Portal/Portal";
 import DropdownSelect from "../DropdownSelect/DropdownSelect";
@@ -45,6 +45,13 @@ export default function Select({ options, selectedOption, name, onChange, placeh
   const handleClear = () => {
     onChange(multiple ? [] : undefined);
   };
+  const toggleDropdown = useCallback((isOpen?: boolean) => {
+    if (typeof isOpen === "undefined") {
+      setIsOpen(prev => !prev);
+    } else {
+      setIsOpen(isOpen);
+    }
+  }, [setIsOpen]);
 
   const handleTriggerClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -90,8 +97,10 @@ export default function Select({ options, selectedOption, name, onChange, placeh
         <input className={styles.triggerInput} name={name}></input>
       </button>
 
-      {isOpen &&  (
+      
         <DropdownSelect
+          isOpen={isOpen}
+          toggle={toggleDropdown}
           options={options}
           positionerProps={{
             triggerRef: triggerElRef,
@@ -102,7 +111,6 @@ export default function Select({ options, selectedOption, name, onChange, placeh
           isSelected={isSelected}
           onSelect={handleSelect}
         />
-      )}
     </div>
   );
 }

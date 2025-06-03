@@ -1,0 +1,18 @@
+.header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  padding: 15px 0;
+  background-color: var(--color-neutral-main);
+
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  &__logo {
+    max-width: 150px;
+  }
+}

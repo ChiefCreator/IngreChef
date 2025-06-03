@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import Portal from "../Portal/Portal";
+import Backdrop from "../Backdrop/Backdrop";
 
 import styles from "./Modal.module.scss";
 
@@ -31,7 +32,7 @@ export default function Modal({ children, isOpen, isBackdrop = true, onClose }: 
 
   return (
     <Portal>
-      {isBackdrop && <div className={`${styles.backdrop} ${isOpen ? styles.backdropActive : ""}`} onClick={onClose}></div>}
+      {isBackdrop && <Backdrop isActive={isOpen} onClick={onClose} />}
 
       <div className={styles.modal}>
         {children}

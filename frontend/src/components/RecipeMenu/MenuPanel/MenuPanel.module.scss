@@ -24,4 +24,13 @@
     flex-direction: column;
     gap: 3px;
   }
+
+  @media (hover: none) {
+    border: 0;
+    padding: 0;
+
+    &__list {
+      gap: 10px;
+    }
+  }
 }

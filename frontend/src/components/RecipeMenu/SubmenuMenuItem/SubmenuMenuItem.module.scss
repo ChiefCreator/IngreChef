@@ -1,0 +1,9 @@
+.menu-item {
+  @media (hover: none) {
+    margin-bottom: 10px;
+
+    &__dropdown-content {
+      padding-left: 20px;
+    }
+  }
+}

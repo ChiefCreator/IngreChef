@@ -29,6 +29,12 @@
   &:hover {
     background-color: var(--color-neutral-main--darken);
   }
+
+  @media (hover: none) {
+    &:hover {
+      background-color: var(--color-neutral-main--dark);
+    }
+  }
 }
 
 .popup {
@@ -38,6 +44,12 @@
   padding: 8px;
   background-color: var(--color-neutral-main);
   box-shadow: 0 0 4px var(--color-neutral-main--darken);
+
+  @media (hover: none) {
+    box-shadow: initial;
+    border-radius: 0;
+    padding: 0;
+  }
 }
 
 .remove-filter-panel {
@@ -47,5 +59,15 @@
 
   &__button {
     width: 100%;
+  }
+
+  @media (hover: none) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__button {
+    width: auto;
+  }
   }
 }

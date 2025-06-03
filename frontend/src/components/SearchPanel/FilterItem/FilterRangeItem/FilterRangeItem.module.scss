@@ -1,30 +1,3 @@
-.filter-item {
-}
-
-.button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px;
-  background-color: var(--color-neutral-main--dark);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s var(--transition-power--in-out);
-
-  &__selected-value {
-    display: block;
-    border-radius: 8px;
-    padding: 2.5px 5px;
-    font-size: 11px;
-    color: var(--color-primary);
-    background-color: var(--color-neutral-main--darken);
-  }
-
-  &:hover {
-    background-color: var(--color-neutral-main--darken);
-  }
-}
-
 .popup {
   min-width: 150px;
   width: 100%;
@@ -32,15 +5,11 @@
   padding: 8px;
   background-color: var(--color-neutral-main);
   box-shadow: 0 0 4px var(--color-neutral-main--darken);
-}
 
-.remove-filter-panel {
-  border-top: 1px solid var(--color-neutral-main--dark);
-  margin-top: 5px;
-  padding-top: 5px;
-
-  &__button {
-    width: 100%;
+  @media (hover: none) {
+    box-shadow: initial;
+    border-radius: 0;
+    padding: 0;
   }
 }
 
