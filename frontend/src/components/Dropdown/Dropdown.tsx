@@ -41,31 +41,24 @@ export default React.memo(function Dropdown({ isOpen, positionerProps, children,
   const [dragY, setDragY] = useState<number | null>(null);
   const yStart = useRef<number>(null);
 
-  const rootRef = useRef<HTMLDivElement>(null);
-  const layoutRef = useRef<HTMLDivElement>(null);
-
   const closeMenu = () => {
     toggle?.(false);
     setDragY(null);
   };
   const animateOnOpen = () => {
-    if (!rootRef.current || !layoutRef.current || !scope.current) return;
+    if (!scope.current) return;
 
     const sequence: AnimationSequence = [
-      [rootRef.current, { padding: 20 }],
-      [layoutRef.current, { borderRadius: 20, overflow: "hidden" }, { at: "<" }],
       [scope.current, { transform: "translateY(0)" }, { at: "<" }]
     ];
 
     return animate(sequence, { defaultTransition: { ease: "easeOut", duration: .25 } });
   }
   const animateOnClose = () => {
-    if (!rootRef.current || !layoutRef.current || !scope.current) return;
+    if (!scope.current) return;
 
     const sequence: AnimationSequence = [
       [scope.current, { transform: "translateY(100%)" }, { at: "<" }],
-      [layoutRef.current, { borderRadius: 0, overflow: "visible" }, { at: "<" }],
-      [rootRef.current, { padding: 0 }, { at: "<" }],
     ];
 
     return animate(sequence, { defaultTransition: { ease: "easeOut", duration: .25 } });
@@ -83,9 +76,8 @@ export default React.memo(function Dropdown({ isOpen, positionerProps, children,
 
     if (deltaY > 0) {
       setDragY(deltaY);
+      animate(scope.current, { transform: `translateY(${deltaY}px)` }, { ease: "linear", duration: 0 });
     }
-
-    animate(scope.current, { transform: `translateY(${deltaY}px)` }, { ease: "linear", duration: 0 });
   };
   const handlePointerUp = () => {
     const dropdownHeightQuarter = scope.current ? scope.current.offsetHeight / 4 : 50;
@@ -101,10 +93,6 @@ export default React.memo(function Dropdown({ isOpen, positionerProps, children,
   };
 
   // isMobile
-  useEffect(() => {
-    rootRef.current = document.getElementById("root") as HTMLDivElement;
-    layoutRef.current = document.getElementById("home-layout") as HTMLDivElement;
-  }, []);
   useEffect(() => {
     if (!isAbsolute || !isMobile) return;
 

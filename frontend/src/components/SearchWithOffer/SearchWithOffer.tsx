@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import SelectedItems from "./SelectedItems/SelectedItems";
 import Input from "../Input/Input";
@@ -11,6 +11,7 @@ import type { Option } from "../DropdownSelect/DropdownSelect";
 
 import styles from "./SearchWithOffer.module.scss";
 import { useCallback, useRef } from "react";
+import { useMediaQuery } from "../../app/hooks";
 
 interface SearchWithOfferProps {
   data?: Option[];
@@ -24,9 +25,10 @@ interface SearchWithOfferProps {
 
 export default React.memo(function SearchWithOffer({ data, selectedData = [], inputProps, onSelect, onSetData }: SearchWithOfferProps) {
   const { value, placeholder, name, onChange } = inputProps || {};
+  const isMobile = useMediaQuery("(hover: none)");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const isOfferData = !!data?.length; 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const selectItem = useCallback((ingredient: Option) => {
     if (isSelected(ingredient)) {
@@ -58,6 +60,25 @@ export default React.memo(function SearchWithOffer({ data, selectedData = [], in
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (isMobile) return;
+
+      setIsDropdownOpen(false);
+    }
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    }
+  }, []);
+  useEffect(() => {
+    if (isMobile) return;
+
+    setIsDropdownOpen(!!data?.length);
+  }, [data, isMobile]);
+
   return (
     <div className={styles.search} ref={inputRef}>
       <SelectedItems
@@ -75,19 +96,20 @@ export default React.memo(function SearchWithOffer({ data, selectedData = [], in
         onKeyDown={onKeyDown}
       />
 
-      
-      <DropdownSelect
-        isOpen={isOfferData}
-        options={data}
-        positionerProps={{
-          triggerRef: inputRef,
-          offsetY: 6,
-          matchTriggerWidth: true,
-        }}
-        
-        isSelected={isSelected}
-        onSelect={selectItem}
-      />
+      {!isMobile && (
+        <DropdownSelect
+          isOpen={isDropdownOpen}
+          options={data}
+          positionerProps={{
+            triggerRef: inputRef,
+            offsetY: 6,
+            matchTriggerWidth: true,
+          }}
+          
+          isSelected={isSelected}
+          onSelect={selectItem}
+        />
+      )}
     </div>
   );
 })

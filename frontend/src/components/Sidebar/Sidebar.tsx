@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { useAppSelector } from "../../app/hooks";
+import { selectUserId } from "../../features/auth/authSlice";
 import { useGetCookBooksQuery } from "../../features/api/cookbooksApi/cookbooksApi";
 
 import Logo from "./../Logo/Logo";
@@ -28,11 +30,12 @@ export interface MenuItemData {
 }
 
 export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
+  const userId = useAppSelector(selectUserId);
   const [openMenuPath, setOpenMenuPath] = useState([] as string []);
   const [isOpen, setIsOpen] = useState(true);
   const [isButtonToggleVisible, setIsButtonToggleVisible] = useState(false);
 
-  const { data: cookbooks, isLoading: isCookbooksLoading } = useGetCookBooksQuery({ userId: "author_1" });
+  const { data: cookbooks, isLoading: isCookbooksLoading } = useGetCookBooksQuery({ userId });
 
   const menuData_1 = useMemo<MenuItemData[]>(() => [
     {

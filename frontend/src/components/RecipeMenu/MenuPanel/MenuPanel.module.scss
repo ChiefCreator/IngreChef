@@ -28,9 +28,15 @@
   @media (hover: none) {
     border: 0;
     padding: 0;
+    gap: 10px;
 
     &__list {
       gap: 10px;
+    }
+
+    &__block {
+      border-bottom: none;
+      padding-bottom: 0;
     }
   }
 }

@@ -27,11 +27,11 @@
   }
 
   @media (hover: none) {
-    background-color: var(--color-neutral-main--darken);
+    background-color: var(--color-neutral-main--dark);
     border-radius: 6px;
     padding: 10px;
     &:hover {
-      background-color: var(--color-neutral-main--darken);
+      background-color: var(--color-neutral-main--dark);
     }
   }
 }
