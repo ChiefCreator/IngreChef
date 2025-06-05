@@ -1,5 +1,11 @@
-.cards-list {
+.cards-panel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   margin-top: 20px;
+}
+
+.cards-list {
   display: grid;
   grid-template-columns: repeat(2, 6fr);
   gap: 30px 20px;

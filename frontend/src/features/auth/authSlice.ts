@@ -45,7 +45,7 @@ export const { setUser, setUserIsActivated, clearUser, setAccessToken, clearAcce
 
 export const selectIsAuth = (state: RootState) => state.auth.isAuth;
 export const selectUser = (state: RootState) => state.auth.user;
-export const selectUserId = () => "author_1";
+export const selectUserId = (state: RootState) => state.auth.user?.id!;
 export const selectUserEmail = (state: RootState) => state.auth.user?.email!;
 export const selectAccessToken = (state: RootState) => state.auth.accessToken;
 

@@ -1,7 +1,11 @@
 import React from "react";
 
+import { useAppSelector } from "../../../app/hooks";
+import { selectUserId } from "../../../features/auth/authSlice";
+
 import RecipeCard from "../RecipeCard/RecipeCard";
 import RecipeCardSkeleton from "../RecipeCardSkeleton/RecipeCardSkeleton";
+import RecipesNotFound from "../../../components/RecipesNotFound/RecipesNotFound";
 
 import styles from "./CardsPanel.module.scss";
 
@@ -16,6 +20,8 @@ interface CardsPanelProps {
 }
 
 export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading }: CardsPanelProps) {
+  const userId = useAppSelector(selectUserId);
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -23,13 +29,13 @@ export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isL
           <RecipeCardSkeleton count={4} />
         </div>
       );
-    } else if (isSuccess) {
+    } else if (isSuccess && recipes?.length) {
       return (
         <div className={styles.cardsList}>
-          {recipes?.map(recipe => (
+          {recipes.map(recipe => (
             <RecipeCard
               key={recipe.id}
-              userId="author_1"
+              userId={userId}
               recipeId={recipe.id}
               title={recipe.title}
               description={recipe.description}
@@ -41,8 +47,10 @@ export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isL
           )}
         </div>
       )
+    } else if (isSuccess && !recipes?.length) {
+      return <RecipesNotFound />;
     } else if (isError) {
-      return "Error";
+      return <RecipesNotFound />;
     }
   };
 

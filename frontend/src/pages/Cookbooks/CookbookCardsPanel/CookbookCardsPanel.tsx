@@ -2,6 +2,7 @@ import React from "react";
 
 import CookbookCard from "../CookbookCard/CookbookCard";
 import CookbookCardSkeleton from "../CookbookCardSkeleton/CookbookCardSkeleton";
+import CookbooksNotFound from "../CookbooksNotFound/CookbooksNotFound";
 
 import styles from "./CookbookCardsPanel.module.scss";
 
@@ -13,9 +14,11 @@ interface CookbookCardsPanelProps {
   isError: boolean;
   isLoading: boolean;
   isFetching: boolean;
+
+  openCookbookModal?: () => void;
 }
 
-export default React.memo(function CookbookCardsPanel({ data, isSuccess, isError, isLoading, isFetching }: CookbookCardsPanelProps) {
+export default React.memo(function CookbookCardsPanel({ data, isSuccess, isError, isLoading, isFetching, openCookbookModal }: CookbookCardsPanelProps) {
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -23,10 +26,10 @@ export default React.memo(function CookbookCardsPanel({ data, isSuccess, isError
           <CookbookCardSkeleton count={8} />
         </div>
       );
-    } else if (isSuccess) {
+    } else if (isSuccess && data?.length) {
       return (
         <div className={styles.cardsList}>
-          {data?.map(({ id, name, recipes, colorPalette }) => {
+          {data.map(({ id, name, recipes, colorPalette }) => {
             const recipesCount = recipes?.length;
             const lastImageUrl = recipes[recipesCount - 1]?.imageUrl;
             
@@ -45,8 +48,10 @@ export default React.memo(function CookbookCardsPanel({ data, isSuccess, isError
           )}
         </div>
       )
+    } else if (isSuccess && !data?.length) {
+      return <CookbooksNotFound buttonOnClick={openCookbookModal} />;
     } else if (isError) {
-      return "Error";
+      return <CookbooksNotFound buttonOnClick={openCookbookModal} />;
     }
   };
 

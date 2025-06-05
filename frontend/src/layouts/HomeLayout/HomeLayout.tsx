@@ -27,7 +27,7 @@ export default function HomeLayout() {
         </>
       )}
 
-      <Container>
+      <Container className={styles.layoutContainer}>
         <div className={styles.layoutMainContent}>
           <Sidebar className={styles.layoutSidebar} isDesktop={isDesktop} />
     

@@ -56,6 +56,7 @@ export default function Cookbooks() {
         isError={isError}
         isLoading={isLoading}
         isFetching={isFetching}
+        openCookbookModal={openCookbookModal}
       />
     </div>
   </section>
