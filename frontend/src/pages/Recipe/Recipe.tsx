@@ -34,6 +34,7 @@ export default function Recipe() {
   const cookbookMenuRef = useRef<HTMLDivElement>(null);
   const buttonCookbookRef = useRef<HTMLButtonElement>(null);
   const isDesktop = useMediaQuery("(min-width: 1280px)");
+  const isMobile = useMediaQuery("(hover: none)");
 
   const { data: recipe, isSuccess: isRecipeSuccess, isLoading: isRecipeLoading } = useGetRecipeQuery({ userId, recipeId }, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -57,8 +58,11 @@ export default function Recipe() {
   const openCookbookModal = useCallback(() => {
     setIsCreateCookbookModalOpen(true);
   }, [setIsCreateCookbookModalOpen]);
-  const closeCookbookModal = useCallback(() => {
-    setIsCreateCookbookModalOpen(false);
+  const toggleCookbookModal = useCallback((isOpen?: boolean) => {
+    if (isOpen === undefined) setIsCreateCookbookModalOpen(prev => !prev);
+    else {
+      setIsCreateCookbookModalOpen(isOpen);
+    }
   }, [setIsCreateCookbookModalOpen]);
 
   const handleClickOutsideCookbookMenu = (e: MouseEvent) => {
@@ -204,7 +208,8 @@ export default function Recipe() {
 
       <CreateCookbookModal
         isOpen={isCreateCookbookModalOpen}
-        close={closeCookbookModal}
+        isMobile={isMobile}
+        toggle={toggleCookbookModal}
       />
     </section>
   );

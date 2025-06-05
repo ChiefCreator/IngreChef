@@ -16,14 +16,18 @@ export default function Cookbooks() {
   const userId = useAppSelector(selectUserId);
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1025px)");
+  const isMobile = useMediaQuery("(hover: none)");
 
   const { data: cookbooks, isSuccess, isError, isLoading, isFetching } = useGetCookBooksQuery({ userId }, { skip: !userId });
 
   const openCookbookModal = useCallback(() => {
     setIsCreateCookbookModalOpen(true);
   }, [setIsCreateCookbookModalOpen]);
-  const closeCookbookModal = useCallback(() => {
-    setIsCreateCookbookModalOpen(false);
+  const toggleCookbookModal = useCallback((isOpen?: boolean) => {
+    if (isOpen === undefined) setIsCreateCookbookModalOpen(prev => !prev);
+    else {
+      setIsCreateCookbookModalOpen(isOpen);
+    }
   }, [setIsCreateCookbookModalOpen]);
 
   return (
@@ -47,8 +51,10 @@ export default function Cookbooks() {
 
       <CreateCookbookModal
         isOpen={isCreateCookbookModalOpen}
-        close={closeCookbookModal}
+        isMobile={isMobile}
+        toggle={toggleCookbookModal}
       />
+
     <div className={styles.body}>
       <CookbookCardsPanel
         data={cookbooks}

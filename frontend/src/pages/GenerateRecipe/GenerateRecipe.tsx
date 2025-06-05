@@ -5,10 +5,12 @@ import SelectRecipeModal from "./SelectRecipeModal/SelectRecipeModal";
 
 import styles from "./GenerateRecipe.module.scss";
 import type { Recipe } from "../../types/recipeTypes";
+import { useMediaQuery } from "../../app/hooks";
 
 export default function GenerateRecipe() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isMobile = useMediaQuery("(hover: none)");
 
   const setTempRecipes = useCallback((newRecipes: Recipe[]) => {
     setRecipes(newRecipes);
@@ -16,8 +18,11 @@ export default function GenerateRecipe() {
   const openModal = useCallback(() => {
     setIsModalOpen(true);
   }, [setIsModalOpen]);
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
+  const toggleModal = useCallback((isOpen?: boolean) => {
+    if (isOpen === undefined) setIsModalOpen(prev => !prev);
+    else {
+      setIsModalOpen(isOpen);
+    }
   }, [setIsModalOpen]);
 
   const onSuccessSubmit = useCallback((recipes: Recipe[]) => {
@@ -33,7 +38,8 @@ export default function GenerateRecipe() {
         <SelectRecipeModal
           recipes={recipes}
           isOpen={isModalOpen}
-          onClose={closeModal}
+          isMobile={isMobile}
+          toggle={toggleModal}
         />
       </div>
     </div>

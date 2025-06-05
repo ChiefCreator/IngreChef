@@ -26,6 +26,7 @@ export default function Cookbook() {
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1025px)");
+  const isMobile = useMediaQuery("(hover: none)");
 
   const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId, cookbookId: cookbookId!, ...filters }, { skip: !userId });
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
@@ -47,8 +48,11 @@ export default function Cookbook() {
   const openCookbookModal = useCallback(() => {
     setIsCreateCookbookModalOpen(true);
   }, [setIsCreateCookbookModalOpen]);
-  const closeCookbookModal = useCallback(() => {
-    setIsCreateCookbookModalOpen(false);
+  const toggleCookbookModal = useCallback((isOpen?: boolean) => {
+    if (isOpen === undefined) setIsCreateCookbookModalOpen(prev => !prev);
+    else {
+      setIsCreateCookbookModalOpen(isOpen);
+    }
   }, [setIsCreateCookbookModalOpen]);
 
   const recipeCardsMenuOptions: RecipeCardOfMyRecipesOptions[] | undefined = useMemo(() => recipes?.map(recipe => {
@@ -219,7 +223,8 @@ export default function Cookbook() {
 
       <CreateCookbookModal
         isOpen={isCreateCookbookModalOpen}
-        close={closeCookbookModal}
+        isMobile={isMobile}
+        toggle={toggleCookbookModal}
       />
     </section>
   );

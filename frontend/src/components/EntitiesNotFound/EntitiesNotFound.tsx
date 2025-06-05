@@ -16,7 +16,11 @@ export default function EntitiesNotFound({ illustration, description, controls }
 
       {controls?.length && (
         <div className={styles.controls}>
-          {controls.map(control => control)}
+          {controls.map((control, i) => (
+            <div key={i}>
+              {control}
+            </div>
+          ))}
         </div>
       )}
     </div>
