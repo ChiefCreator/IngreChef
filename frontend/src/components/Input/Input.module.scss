@@ -58,4 +58,10 @@
   &:hover {
     background-color: var(--color-neutral-main--dark);
   }
+
+  @media (hover: none) {
+    &:hover {
+      background-color: initial;
+    }
+  }
 }

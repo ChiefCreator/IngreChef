@@ -8,11 +8,9 @@ export default function AuthLayout() {
 
   return (
     <div className={styles.layout}>
-      <Container>
-        <div className={styles.layoutContainer}>
-          <div className={styles.layoutContent}>
-            <Outlet />
-          </div>
+      <Container className={styles.layoutContainer}>
+        <div className={styles.layoutContent}>
+          <Outlet />
         </div>
       </Container>
     </div>

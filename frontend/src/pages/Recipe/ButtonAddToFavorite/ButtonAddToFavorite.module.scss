@@ -15,12 +15,14 @@
     color: var(--color-neutral-contrast);
   }
 
-  &__title {
-
-  }
-
   &:hover {
     background-color: #d1d8d4;
+  }
+  
+  @media (hover: none) {
+    &:hover {
+      background-color: var(--color-neutral-main--darken);
+    }
   }
 
   &_active {
@@ -37,6 +39,12 @@
 
     &:hover {
       background-color: rgb(255, 197, 197) !important;
+    }
+
+    @media (hover: none) {
+      &:hover {
+        background-color: rgb(255, 207, 207) !important;
+      }
     }
   }
 }

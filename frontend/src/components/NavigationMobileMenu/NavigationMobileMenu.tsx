@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useMediaQuery } from "../../app/hooks";
@@ -31,6 +31,7 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
   const { pathname } = useLocation();
   const [indicatorSize, setIndicatorSize] = useState<IndicatorSize>({ width: 0, left: 0 });
 
+  const menuRef = useRef<HTMLElement>(null);
   const activeItemRef = useRef<HTMLAnchorElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
@@ -62,16 +63,6 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
     },
   ], []);
 
-  const handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const item = (e.target as Element).closest(`.${styles.menuItem}`);
-    const itemRect = item?.getBoundingClientRect();
-
-    setIndicatorSize({
-      width: itemRect?.width || 0,
-      left: itemRect?.left || 0,
-    });
-  }
-
   useLayoutEffect(() => {
     setTimeout(() => {
       if (!activeItemRef.current) return;
@@ -84,18 +75,32 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
       });
     })
   }, [activeItemRef]);
+  useEffect(() => {
+    const activeItem = activeItemRef.current;
+
+    if (activeItem) {
+      const rect = activeItem.getBoundingClientRect();
+  
+      setIndicatorSize({
+        width: rect.width,
+        left: rect.left,
+      });
+    } else {
+      setIndicatorSize({ ...indicatorSize, width: 0 });
+    }
+  }, [pathname]);
 
   if (!isMobile) return null;
 
   return (
-    <nav className={`${styles.menu} ${className}`}>
+    <nav className={`${styles.menu} ${className}`} ref={menuRef}>
       <div className={styles.menuBorder}>
         <div className={styles.menuIndicator} ref={indicatorRef} style={{ width: indicatorSize.width, left: indicatorSize.left }}></div>
       </div>
 
       <div className={styles.menuContainer}>
         {menuData.map(({ id, title, icon, pathname: path }) => (
-          <NavigationItem className={styles.menuItem} key={id} ref={pathname === path ? activeItemRef : undefined} id={id} title={title} icon={icon} to={path ?? "/"} isActive={pathname === path} onClick={handleItemClick} />
+          <NavigationItem className={styles.menuItem} key={id} ref={pathname === path ? activeItemRef : undefined} id={id} title={title} icon={icon} to={path ?? "/"} isActive={pathname === path} />
         ))}
       </div>
     </nav>

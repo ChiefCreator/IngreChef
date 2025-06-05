@@ -1,12 +1,15 @@
 .layout {
-  height: 0;
   min-height: 100vh;
   background-color: var(--color-neutral-main);
+  display: flex;
+  flex-direction: column;
+
   &__container {
-    height: 100%;
+    flex: 1 1 auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px;
   }
   &__content {
     border-radius: 15px;
@@ -14,6 +17,7 @@
     box-shadow: 0 0 15px var(--color-neutral-main--dark);
     background-color: white;
     padding: 25px;
+    height: 100%;
   }
 
   @media (max-width: 600px) {
