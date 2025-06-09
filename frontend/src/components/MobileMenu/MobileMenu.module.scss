@@ -1,9 +1,15 @@
 .menu {
   position: fixed;
+  pointer-events: all;
   left: 0;
   top: 66px;
   width: 100%;
-  min-height: 100vh;
+  height: calc(100% - 66px);
   overflow-y: auto;
   background-color: var(--color-neutral-main);
+
+  &__container {
+    height: auto;
+    padding-bottom: 20px;
+  }
 }

@@ -2,6 +2,8 @@ import { useCallback, useState } from "react";
 
 import GenerateRecipeForm from "./GenerateRecipeForm/GenerateRecipeForm";
 import SelectRecipeModal from "./SelectRecipeModal/SelectRecipeModal";
+import Header from "../../components/Header/Header";
+import Container from "../../components/Container/Container";
 
 import styles from "./GenerateRecipe.module.scss";
 import type { Recipe } from "../../types/recipeTypes";
@@ -11,6 +13,7 @@ export default function GenerateRecipe() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isMobile = useMediaQuery("(hover: none)");
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   const setTempRecipes = useCallback((newRecipes: Recipe[]) => {
     setRecipes(newRecipes);
@@ -32,8 +35,13 @@ export default function GenerateRecipe() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.pageContainer}>
-        <h1 className={styles.pageTitle}>Генерация рецептов</h1>
+      <Container className={styles.pageContainer}>
+        {isDesktop && (
+          <Header
+            className={styles.pageHeader}
+            title="Генерация рецептов"
+          />
+        )}
 
         <GenerateRecipeForm onSuccessSubmit={onSuccessSubmit} />
 
@@ -43,7 +51,7 @@ export default function GenerateRecipe() {
           isMobile={isMobile}
           toggle={toggleModal}
         />
-      </div>
+      </Container>
     </div>
   );
 }

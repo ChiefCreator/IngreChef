@@ -115,6 +115,12 @@
   &:hover {
     background-color: var(--color-neutral-contrast--dark);
   }
+
+  @media (hover: none) {
+    &:hover {
+      background-color: var(--color-neutral-contrast);
+    }
+  }
 }
 
 .recipe-meta-list {

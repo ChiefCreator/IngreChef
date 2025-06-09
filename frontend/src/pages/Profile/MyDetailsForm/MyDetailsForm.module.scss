@@ -1,6 +1,10 @@
 .input-group {
   display: flex;
   gap: 20px 10px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
 }
 
 .button-send {

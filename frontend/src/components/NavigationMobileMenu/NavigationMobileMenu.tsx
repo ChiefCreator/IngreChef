@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useMediaQuery } from "../../app/hooks";
@@ -63,19 +63,7 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
     },
   ], []);
 
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      if (!activeItemRef.current) return;
-
-      const activeItemRect = activeItemRef.current?.getBoundingClientRect();
-
-      setIndicatorSize({
-        width: activeItemRect?.width || 0,
-        left: activeItemRect?.left || 0,
-      });
-    })
-  }, [activeItemRef]);
-  useEffect(() => {
+  const animateIndicator = () => {
     const activeItem = activeItemRef.current;
 
     if (activeItem) {
@@ -88,6 +76,21 @@ export default function NavigationMobileMenu({ className = "" }: NavigationMobil
     } else {
       setIndicatorSize({ ...indicatorSize, width: 0 });
     }
+  }
+
+  useEffect(() => {
+    setTimeout(() => animateIndicator());
+
+    const handleResize = () => {
+      animateIndicator();
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  useEffect(() => {
+    animateIndicator();
   }, [pathname]);
 
   if (!isMobile) return null;

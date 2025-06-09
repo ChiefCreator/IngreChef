@@ -62,7 +62,7 @@ export default function Input({ type = "text" , className = "", id, value = "", 
         value={value}
         placeholder={placeholder}
         name={name}
-        type={(isTypePassword && isPasswordShow) ? "password" : type}
+        type={(isTypePassword && isPasswordShow) ? "text" : type}
 
         onChange={handleChange}
         onFocus={handleFocus}

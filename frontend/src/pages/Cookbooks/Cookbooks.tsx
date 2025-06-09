@@ -30,24 +30,28 @@ export default function Cookbooks() {
     }
   }, [setIsCreateCookbookModalOpen]);
 
+  const buttonOpenCookbookModal = (
+    <Button
+      variant="primary"
+      className={styles.buttonOpenModal}
+      icon={<Plus size={16} />}
+      onClick={openCookbookModal}
+    >
+      Добавить кулинарную книгу
+    </Button>
+  );
+
   return (
     <section className={styles.page}>
       {isDesktop && (
         <Header
           className={styles.header}
           title="Кулинарные книги"
-          controls={[
-            <Button
-              variant="primary"
-              className={styles.recipiesButtonLine}
-              icon={<Plus size={16} />}
-              onClick={openCookbookModal}
-            >
-              Добавить кулинарную книгу
-            </Button>
-          ]}
+          controls={[buttonOpenCookbookModal]}
         />
       )}
+
+      {!isDesktop && buttonOpenCookbookModal}
 
       <CreateCookbookModal
         isOpen={isCreateCookbookModalOpen}

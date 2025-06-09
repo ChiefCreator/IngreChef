@@ -19,7 +19,7 @@ export default function Discover() {
   const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
   const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 769px)");
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters, { skip: !userId });
 

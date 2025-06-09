@@ -1,0 +1,38 @@
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  position: relative;
+}
+
+.link, .indicator {
+  border-radius: 8px;
+}
+
+.link {
+  cursor: pointer;
+  color: var(--color-neutral-contrast);
+  background-color: transparent;
+  padding: 10px 20px;
+  position: relative;
+  z-index: 1;
+  transition: color .3s var(--transition-power--in-out);
+
+  &_active {
+    color: var(--color-primary);
+  }
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+
+  height: 100%;
+
+  background-color: var(--color-neutral-main--dark);
+  transition: transform .3s var(--transition-power--in-out), width .3s var(--transition-power--in-out);
+}

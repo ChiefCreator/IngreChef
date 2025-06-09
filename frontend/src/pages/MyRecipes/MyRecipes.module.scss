@@ -4,13 +4,6 @@
   flex-direction: column;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
 .body {
   margin-top: 30px;
   flex: 1 1 auto;
@@ -24,5 +17,19 @@
 
   @media (max-width: 1024px) {
     margin-top: 0;
+  }
+}
+
+.discover-button {
+  background-color: var(--color-neutral-contrast) !important;
+
+  &:hover {
+    background-color: var(--color-neutral-contrast--dark);
+  }
+
+  @media (hover: none) {
+    &:hover {
+      background-color: var(--color-neutral-contrast);
+    }
   }
 }

@@ -82,7 +82,7 @@ export default class Controller {
   async requestEmailChange(req: Request, res: Response, next: NextFunction) {
     try {
       const { newEmail } = req.body;
-1
+
       const result = await service.requestEmailChange(req.user!.id, newEmail);
 
       res.status(200).json(result);

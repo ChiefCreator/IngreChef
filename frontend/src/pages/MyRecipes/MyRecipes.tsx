@@ -17,8 +17,10 @@ import type { QueryRecipeFilter } from "../../types/queryTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
 import styles from "./MyRecipes.module.scss";
+import { useNavigate } from "react-router-dom";
 
 export default function MyRecipes() {
+  const navigate = useNavigate();
   const userId = useAppSelector(selectUserId);
   const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
   const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
@@ -184,9 +186,10 @@ export default function MyRecipes() {
           title="Мои рецепты"
           controls={[
             <Button
-              variant="outline"
-              className={styles.recipiesButtonLine}
+              variant="primary"
+              className={styles.discoverButton}
               icon={<Compass size={16} />}
+              onClick={() => navigate("/discover")}
             >
               Лента
             </Button>,
@@ -194,6 +197,7 @@ export default function MyRecipes() {
               variant="primary"
               className={styles.recipiesButtonLine}
               icon={<Plus size={16} />}
+              onClick={() => navigate("/generate-recipe")}
             >
               Добавить рецепт
             </Button>

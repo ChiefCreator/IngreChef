@@ -8,3 +8,12 @@
   display: flex;
   flex-direction: column;
 }
+
+.button-open-modal {
+  margin-right: auto;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: center;
+  }
+}
