@@ -11,8 +11,12 @@ model User {
   id              String    @id @default(uuid())
   email           String    @unique
   passwordHash    String    @map("password_hash")
+
   activationCode  String?   @unique @map("activation_code")
   isActivated     Boolean   @default(false) @map("is_activated")
+  pendingEmail    String?   @unique @map("pending_email")
+  emailChangeCode String?   @map("email_change_code")
+
   createdAt       DateTime  @default(now()) @map("created_at")
   lastLogin       DateTime? @map("last_login_at")
 
@@ -29,6 +33,14 @@ model Profile {
   id        String   @id @default(uuid())
   name      String?
   avatarUrl String?  @map("avatar_url")
+
+  gender              Gender?
+  age                 Int?
+  weight              Float?
+  height              Float?
+  cookingLevel        CookingLevel?
+  allergies           String[]
+  dietaryRestrictions String[]
 
   userId    String   @unique @map("user_id")
 
@@ -145,4 +157,16 @@ enum Difficulty {
 enum Cuisine {
   RUSSIAN
   BELARUSIAN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum CookingLevel {
+  NOVICE
+  INTERMEDIATE
+  EXPERT
 }

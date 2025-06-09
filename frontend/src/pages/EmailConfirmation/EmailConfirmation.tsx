@@ -7,10 +7,10 @@ import { useActivateMutation } from "../../features/api/authApi/authApi";
 
 import Button from "../../components/Button/Button";
 
-import styles from "./SuccessEmailConfirm.module.scss";
+import styles from "./EmailConfirmation.module.scss";
 import imgSrc from "./../../assets/images/success-email-confirm.svg";
 
-export default function SuccessEmailConfirm() {
+export default function EmailConfirmation() {
   const { activationCode } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function SuccessEmailConfirm() {
 
   const buttonClick = useCallback(() => {
     navigate("/");
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const activateEmail = async () => {

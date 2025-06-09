@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import Button from "../../components/Button/Button";
 import Link from "../../components/Link/Link";
 
-import styles from "./ConfirmEmail.module.scss";
+import styles from "./EmailConfirmationRequest.module.scss";
 import imgSrc from "./../../assets/images/confirm-email.svg";
 
 export default function ConfirmEmail() {

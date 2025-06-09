@@ -4,10 +4,11 @@
     width: 100%;
     border-radius: 12px;
     overflow: hidden;
+    aspect-ratio: 1/0.8;
   }
   &__image {
     width: 100%;
-    aspect-ratio: 1/0.8;
+    height: 100%;
     object-fit: cover;
   }
 }

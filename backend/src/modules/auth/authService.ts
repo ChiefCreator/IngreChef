@@ -34,13 +34,18 @@ export default class Service {
 
       const passwordHash = await bcrypt.hash(password, 3);
       const activationCode= uuidv4();
-      const activationLink = `${process.env.CLIENT_URL}/auth/activate/${activationCode}`;
+      const activationLink = `${process.env.CLIENT_URL}/auth/email-confirmation/${activationCode}`;
     
       const user = await prisma.user.create({ 
         data: {
           email,
           passwordHash,
-          activationCode
+          activationCode,
+          profile: {
+            create: {
+              name: "",
+            }
+          }
         }
       });
   
@@ -134,6 +139,59 @@ export default class Service {
 
     await tokenService.saveToken(user.id, tokens.refreshToken);
   
+    return { ...tokens, user: userDto };
+  }
+
+  async requestEmailChange(userId: string, newEmail: string) {
+    const existing = await prisma.user.findUnique({ where: { email: newEmail } });
+   
+    if (existing) {
+      throw new AppError({
+        message: "Этот email уже занят",
+        code: ErrorCode.USER_ALREADY_EXISTS_ERROR,
+        statusCode: 409,
+      });
+    }
+   
+    const emailChangeCode = uuidv4();
+    const link = `${process.env.CLIENT_URL}/auth/change-email-confirmation/${emailChangeCode}`;
+   
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        pendingEmail: newEmail,
+        emailChangeCode,
+      },
+    });
+   
+    await mailService.sendMailChangeConfirmation(newEmail, link);
+   
+    return { message: "Письмо для подтверждения отправлено" };
+  }
+  async confirmEmailChange(code: string) {
+    const user = await prisma.user.findFirst({
+      where: { emailChangeCode: code },
+    });
+
+    if (!user || !user.pendingEmail) {
+      throw new NotFoundError("Неверный или устаревший токен смены email");
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: user.pendingEmail,
+        pendingEmail: null,
+        emailChangeCode: null,
+        isActivated: true,
+      },
+    });
+
+    const userDto = new UserDto({ id: updatedUser.id, email: updatedUser.email, isActivated: updatedUser.isActivated });
+    const tokens = tokenService.generateTokens({ ...userDto });
+     
+    await tokenService.saveToken(updatedUser.id, tokens.refreshToken);
+    
     return { ...tokens, user: userDto };
   }
 }

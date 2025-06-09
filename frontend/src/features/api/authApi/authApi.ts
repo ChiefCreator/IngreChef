@@ -24,11 +24,23 @@ export const authApi = clientApi.injectEndpoints({
         method: "POST",
       }),
     }),
+
     activate: builder.mutation<AuthResponse, ActivateParams>({
       query: ({ activationCode }) => ({
         url: `/auth/activate/${activationCode}`,
         method: "GET"
       }),
+    }),
+
+    requestEmailChange: builder.mutation<{ message: string }, { newEmail: string }>({
+      query: ({ newEmail }) => ({
+        url: "/auth/request-email-change",
+        method: "POST",
+        body: { newEmail },
+      }),
+    }),
+    confirmEmailChange: builder.query<AuthResponse, string>({
+      query: (code) => `/auth/confirm-change-email/${code}`,
     }),
   }),
   overrideExisting: false,
@@ -37,5 +49,10 @@ export const authApi = clientApi.injectEndpoints({
 export const {
   useRegisterMutation,
   useLoginMutation,
-  useActivateMutation
+  useLogoutMutation,
+
+  useActivateMutation,
+
+  useRequestEmailChangeMutation,
+  useConfirmEmailChangeQuery,
 } = authApi;

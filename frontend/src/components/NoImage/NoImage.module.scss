@@ -15,4 +15,10 @@
   &:hover {
     scale: 1.05;
   }
+
+  @media (hover: none) {
+    &:hover {
+      scale: 1;
+    }
+  }
 }

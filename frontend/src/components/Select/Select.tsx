@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import DropdownSelect from "../DropdownSelect/DropdownSelect";
 
 import Option from "../DropdownSelect/Option/Option";
@@ -11,34 +11,36 @@ export type Option = {
   value: string | number;
 };
 
-type SelectProps = {
+export interface SelectProps {
   options?: Option[];
-  selectedOption?: Option | Option[];
+  selectedValue?: string | number;
   name?: string;
   placeholder?: string;
   multiple?: boolean;
 
-  onChange: (value?: Option | Option[]) => void;
+  onChange: (value?: Option["value"] | Option["value"][]) => void;
 };
 
-export default function Select({ options, selectedOption, name, onChange, placeholder = "Выберите...", multiple = false }: SelectProps) {
+export default React.memo(function Select({ options, selectedValue, name, onChange, placeholder = "Выберите...", multiple = false }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerElRef = useRef<HTMLButtonElement>(null);
 
-  const isSelected = (option: Option) => {
-    if (multiple && Array.isArray(selectedOption)) {
-      return selectedOption.some(v => v.value === option.value);
+  const isSelectedValueArray = Array.isArray(selectedValue);
+
+  const isSelected = (value: Option["value"]) => {
+    if (multiple && isSelectedValueArray) {
+      return selectedValue.some(v => v === value);
     }
 
-    return (selectedOption as Option)?.value === option.value;
+    return value === selectedValue;
   };
-  const displayValue = () => {
-    if (multiple && Array.isArray(selectedOption)) {
-      return selectedOption.map(v => v.label).join(", ");
+  const displayLabel = () => {
+    if (multiple && isSelectedValueArray) {
+      return options?.filter(o => o.value === selectedValue).map(o => o.label).join(", ");
     }
 
-    return (selectedOption as Option)?.label || null;
+    return options?.find(o => o.value === selectedValue)?.label;
   };
   const toggleDropdown = useCallback((isOpen?: boolean) => {
     if (typeof isOpen === "undefined") {
@@ -53,24 +55,24 @@ export default function Select({ options, selectedOption, name, onChange, placeh
 
     setIsOpen(prev => !prev);
   }
-  const handleSelect = (option: Option) => {
+  const handleSelect = (value: Option["value"]) => {
     if (multiple) {
-      if (!Array.isArray(selectedOption)) return;
+      if (!isSelectedValueArray) return;
 
-      if (isSelected(option)) {
-        onChange(selectedOption.filter(v => v.value !== option.value));
+      if (isSelected(value)) {
+        onChange(selectedValue.filter(v => v !== value));
       } else {
-        onChange([...selectedOption, option]);
+        onChange([...selectedValue, value]);
       }
     } else {
-      onChange(option);
+      onChange(value);
       setIsOpen(false);
     }
   };
 
   useEffect(() => {
     const handlerClickOutside = (e: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -81,10 +83,10 @@ export default function Select({ options, selectedOption, name, onChange, placeh
   }, []);
 
   return (
-    <div className={`${styles.select} ${isOpen ? styles.selectActive : ""}`} ref={selectRef}>
+    <div className={`${styles.select} ${isOpen ? styles.selectActive : ""}`}>
       <button className={styles.trigger} type="button" onClick={handleTriggerClick} ref={triggerElRef}>
         <span className={styles.triggerSelectedValue}>
-          {displayValue() || placeholder}
+          {displayLabel() || placeholder}
         </span>
 
         <ChevronDown className={styles.triggerArrow} size={14} />
@@ -102,10 +104,11 @@ export default function Select({ options, selectedOption, name, onChange, placeh
             offsetY: 6,
             matchTriggerWidth: true,
           }}
+          ref={dropdownRef}
 
           isSelected={isSelected}
           onSelect={handleSelect}
         />
     </div>
   );
-}
+})

@@ -13,8 +13,12 @@ import Cookbooks from "../pages/Cookbooks/Cookbooks";
 import Recipe from "../pages/Recipe/Recipe";
 import Cookbook from "../pages/Cookbook/Cookbook";
 import GenerateRecipe from "../pages/GenerateRecipe/GenerateRecipe";
-import ConfirmEmail from "../pages/ConfirmEmail/ConfirmEmail";
-import SuccessEmailConfirm from "../pages/SuccessEmailConfirm/SuccessEmailConfirm";
+import EmailConfirmationRequest from "../pages/EmailConfirmationRequest/EmailConfirmationRequest";
+import EmailConfirmation from "../pages/EmailConfirmation/EmailConfirmation";
+import SettingsLayout from "../layouts/SettingsLayout/SettingsLayout";
+import Profile from "../pages/Profile/Profile";
+import Preferences from "../pages/Preferences/Preferences";
+import ChangeEmailConfirmation from "../pages/ChangeEmailConfirmation/ChangeEmailConfirmation";
 
 function ProtectedRoute() {
   const isAuth = useAppSelector(selectIsAuth);
@@ -30,7 +34,6 @@ function ProtectedRoute() {
 export default function Router() {
   return (
     <Routes>
-
       <Route path="/" element={<HomeLayout />}>
         <Route element={<ProtectedRoute />}>
           <Route index element={<MyRecipes />} />
@@ -42,6 +45,12 @@ export default function Router() {
           <Route path="recipes/:recipeId" element={<Recipe />} />
           <Route path="cookbooks/:cookbookId" element={<Cookbook />} />
           <Route path="discover" element={<Discover />} />
+          <Route path="settings" element={<SettingsLayout />}>
+            <Route index element={<Navigate to="profile" />} />
+
+            <Route path="profile" element={<Profile />} />
+            <Route path="preferences" element={<Preferences />} />
+          </Route>
         </Route>
       </Route>
 
@@ -50,8 +59,10 @@ export default function Router() {
 
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="confirm-email" element={<ConfirmEmail />} />
-        <Route path="activate/:activationCode" element={<SuccessEmailConfirm />} />
+
+        <Route path="email-confirmation-request" element={<EmailConfirmationRequest />} />
+        <Route path="email-confirmation/:activationCode" element={<EmailConfirmation />} />
+        <Route path="change-email-confirmation/:activationCode" element={<ChangeEmailConfirmation />} />
       </Route>
 
     </Routes>

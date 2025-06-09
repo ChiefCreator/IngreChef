@@ -1,4 +1,5 @@
 import Skeleton from 'react-loading-skeleton';
+import ImageSkeleton from '../../../components/ImageSkeleton/ImageSkeleton';
 import { ChefHat } from 'lucide-react';
 
 import styles from "./MyRecipeCardSkeleton.module.scss";
@@ -12,10 +13,7 @@ export default function MyRecipeCardSkeleton({ count = 1 }: MyRecipeCardSkeleton
   return Array(count).fill(0).map((_, i) => (
     <div className={styles.card} key={i}>
       <div className={styles.cardImgWrapper}>
-        <div className={styles.illustration}>
-          <Skeleton containerClassName={styles.illustrationSkeleton} className={styles.illustrationSkeleton} />
-          <ChefHat className={styles.illustrationIcon} size={"50%"} />
-        </div>
+        <ImageSkeleton Icon={ChefHat} />
       </div>
   
       <div className={styles.body}>

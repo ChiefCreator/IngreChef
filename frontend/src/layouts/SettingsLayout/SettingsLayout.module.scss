@@ -1,0 +1,15 @@
+.layout {
+  &__container {
+    max-width: 650px;
+  }
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+.page {
+  margin-top: 20px;
+}

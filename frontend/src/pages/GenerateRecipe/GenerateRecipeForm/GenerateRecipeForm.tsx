@@ -1,13 +1,14 @@
 import { useForm, Controller } from "react-hook-form";
 
 import { useGenerateRecipeMutation } from "../../../features/api/recipesApi/recipesApi";
+import { selectIngredients } from "../../../features/ingredients/ingredientsSlice";
 
-import Fieldset from "./Fieldset/Fieldset";
 import Textarea from "../../../components/Textarea/Textarea";
 import Select from "../../../components/Select/Select";
 import RangeSlider from "../../../components/RangeSlider/RangeSlider";
-import SearchIngredients from "./SearchIngredients/SearchIngredients";
+import SearchIngredients from "../../../components/SearchIngredients/SearchIngredients";
 import ButtonSend from "../../../components/ButtonSend/ButtonSend";
+import ControlField from "../../../components/ControlField/ControlField";
 
 import { recipeDifficultyOptions, recipeCategoryOptions, recipeCuisineOptions } from "../../../data/selectedRecipeData";
 
@@ -22,30 +23,15 @@ import { useCallback, useEffect, useState } from "react";
 
 interface RecipeFormData {
   description?: string;
-  ingredients?: Option[];
-  cookingTime?: number;
-  category?: Option;
-  difficulty?: Option;
-  cuisine?: Option;
-};
-
-interface GenerateRecipeFormData {
-  description?: string;
-  ingredients?: string[];
+  ingredients?: Option["value"][];
   cookingTime?: number;
   category?: Category;
   difficulty?: Difficulty;
   cuisine?: Cuisine;
-}
+};
 
-const transformFormData = (data: RecipeFormData): GenerateRecipeFormData => {
-  return {
-    ...data,
-    ingredients: data?.ingredients?.map(i => i.label),
-    category: data.category?.value as Category,
-    difficulty: data.difficulty?.value as Difficulty,
-    cuisine: data.cuisine?.value as Cuisine,
-  }
+interface GenerateRecipeFormData extends Omit<RecipeFormData, "ingredients"> {
+  ingredients: string[];
 }
 
 interface GenerateRecipeFormProps {
@@ -64,8 +50,11 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
       cuisine: undefined,
     },
   });
+  const ingredients = useAppSelector(selectIngredients);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>("idle");
+
   const [generateRecipes, { isLoading, isSuccess, isError }] = useGenerateRecipeMutation();
+  
   const values = watch();
 
   const updateButtonStatus = useCallback((status: LoadingStatus) => {
@@ -74,7 +63,10 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
   const onSubmit = async (data: RecipeFormData) => {
     if (loadingStatus !== "idle") return;
 
-    const transformedData = transformFormData(data);
+    const transformedData: GenerateRecipeFormData = {
+      ...data,
+      ingredients: ingredients.filter(ingredient => data?.ingredients?.includes(ingredient.id)).map(ingredient => ingredient.title),
+    }
     const generateRecipeParams = { ...transformedData, authorId: userId };
 
     const generateRecipeResponse = await generateRecipes(generateRecipeParams);
@@ -98,7 +90,7 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
     <form className={`${styles.form}`} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.formBody}>
         <div className={styles.formFieldsets}>
-          <Fieldset title="Вдохновите шеф-повара на то, какие вкусы вам нравятся или что вы хотели бы приготовить">
+          <ControlField label="Вдохновите шеф-повара на то, какие вкусы вам нравятся или что вы хотели бы приготовить">
             <Controller
               name="description"
               control={control}
@@ -113,14 +105,14 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
                 />
               }
             />
-          </Fieldset>
-          <Fieldset title="Какое блюдо вы хотите приготовить?">
+          </ControlField>
+          <ControlField label="Какое блюдо вы хотите приготовить?">
             <Controller
               name="category"
               control={control}
               render={({ field }) => 
                 <Select
-                  selectedOption={field.value}
+                  selectedValue={field.value}
                   name={field.name}
                   options={recipeCategoryOptions}
                   placeholder={"Выберите категорию"}
@@ -128,14 +120,15 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
                 />
               }
             />
-          </Fieldset>
-          <Fieldset title="Какой уровень сложности следует выбрать?">
+          </ControlField>
+
+          <ControlField label="Какой уровень сложности следует выбрать?">
             <Controller
               name="difficulty"
               control={control}
               render={({ field }) => 
                 <Select
-                  selectedOption={field.value}
+                  selectedValue={field.value}
                   name={field.name}
                   options={recipeDifficultyOptions}
                   placeholder={"Выберите сложность"}
@@ -143,14 +136,14 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
                 />
               }
             />
-          </Fieldset>
-          <Fieldset title="Какую кухню вы предпочитаете?">
+          </ControlField>
+          <ControlField label="Какую кухню вы предпочитаете?">
             <Controller
               name="cuisine"
               control={control}
               render={({ field }) => 
                 <Select
-                  selectedOption={field.value}
+                  selectedValue={field.value}
                   name={field.name}
                   options={recipeCuisineOptions}
                   placeholder={"Выберите кухню"}
@@ -158,8 +151,8 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
                 />
               }
             />
-          </Fieldset>
-          <Fieldset title="Сколько у вас есть времени?" className={styles.cookingTimeFielset}>
+          </ControlField>
+          <ControlField label="Сколько у вас есть времени?">
             <Controller
               name="cookingTime"
               control={control}
@@ -173,21 +166,21 @@ export default function GenerateRecipeForm({ onSuccessSubmit }: GenerateRecipeFo
               }
             />
             <span className={styles.cookingTimeFielsetVal}>{values.cookingTime || 0} мин.</span>
-          </Fieldset>
-          <Fieldset title="Какие ингредиенты у вас есть?" className={styles.cookingTimeFielset}>
+          </ControlField>
+          <ControlField label="Какие ингредиенты у вас есть?">
             <Controller
               name="ingredients"
               control={control}
               render={({ field }) => 
                 <SearchIngredients
-                  selectedIngredients={field.value ?? []}
-                  onSelectIngredient={(options: Option[]) => {
-                    field.onChange(options);
+                  selectedValues={field.value ?? []}
+                  onSelectIngredient={(values: Option["value"][]) => {
+                    field.onChange(values);
                   }}
                 />
               }
             />
-          </Fieldset>
+          </ControlField>
         </div>
 
         <ButtonSend

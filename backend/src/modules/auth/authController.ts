@@ -78,4 +78,24 @@ export default class Controller {
       next(error);
     }
   }
+
+  async requestEmailChange(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { newEmail } = req.body;
+1
+      const result = await service.requestEmailChange(req.user!.id, newEmail);
+
+      res.status(200).json(result);
+    } catch(error) {
+      next(error);
+    }
+  }
+  async confirmEmailChange(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await service.confirmEmailChange(req.params.code);
+      res.status(200).json(result);
+    } catch(error) {
+      next(error);
+    }
+  }
 }

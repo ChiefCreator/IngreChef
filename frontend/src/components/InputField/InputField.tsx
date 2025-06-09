@@ -1,5 +1,5 @@
 import Input from "../Input/Input";
-import styles from "./InputField.module.scss";
+import ControlField from "../ControlField/ControlField";
 
 import type { InputProps } from "../Input/Input";
 
@@ -13,12 +13,8 @@ export default function InputField({ label, error, inputProps }: InputFieldProps
   const { id } = inputProps;
 
   return (
-    <div className={styles.field}>
-      <label className={styles.fieldLabel} htmlFor={id}>{label}</label>
-
-      <Input className={styles.fieldInput} {...inputProps} error={error} />
-
-      {error && <span className={styles.fieldErrorText}>{error}</span>}
-    </div>
+    <ControlField label={label} error={error} controlId={id}>
+      <Input {...inputProps} error={error} />
+    </ControlField>
   );
 }

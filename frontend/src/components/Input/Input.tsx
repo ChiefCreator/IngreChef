@@ -6,22 +6,22 @@ import { Eye, EyeOff } from "lucide-react";
 import styles from "./Input.module.scss";
 
 export interface InputProps {
-  type?: "base" | "password";
+  type?: "text" | "password" | "number";
   className?: string;
   id?: string;
-  value?: string;
+  value?: string | number;
   placeholder?: string;
   name?: string;
 
   error?: string;
   ref?: RefCallBack;
   
-  onChange?: (value: string) => void;
+  onChange?: (value: string | number) => void;
   onBlur?: () => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({ type = "base" , className = "", id, value = "", placeholder = "Введите", name, error, onChange, onKeyDown }: InputProps) {
+export default function Input({ type = "text" , className = "", id, value = "", placeholder = "Введите", name, error, onChange, onKeyDown }: InputProps) {
   const [isFocesed, setIsFocused] = useState(false);
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -29,6 +29,13 @@ export default function Input({ type = "base" , className = "", id, value = "", 
 
   const isTypePassword = type === "password";
     
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (type === "number") {
+      onChange?.(+e.target.value)
+    } else {
+      onChange?.(e.target.value as string)
+    }
+  }
   const handleFocus = () => {
     setIsFocused(true);
   }
@@ -55,9 +62,9 @@ export default function Input({ type = "base" , className = "", id, value = "", 
         value={value}
         placeholder={placeholder}
         name={name}
-        type={isTypePassword && isPasswordShow ? "password" : "text"}
+        type={(isTypePassword && isPasswordShow) ? "password" : type}
 
-        onChange={(e) => onChange?.(e.target.value as string)}
+        onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={onKeyDown}

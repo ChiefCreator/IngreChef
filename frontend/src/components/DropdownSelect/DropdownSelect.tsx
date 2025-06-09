@@ -15,25 +15,26 @@ type SelectProps = {
   options?: Option[];
 
   positionerProps: PositionerProps;
+  ref?: React.RefObject<HTMLDivElement | null>;
 
   toggle?: (isOpen?: boolean) => void;
-  isSelected: (option: Option) => boolean;
-  onSelect: (option: Option) => void;
+  isSelected: (option: string | number) => boolean;
+  onSelect: (option: string | number) => void;
 };
 
-export default function DropdownSelect({ isOpen, options, positionerProps, toggle, isSelected, onSelect }: SelectProps) {
+export default function DropdownSelect({ isOpen, options, positionerProps, ref, toggle, isSelected, onSelect }: SelectProps) {
   
   return (
     <Dropdown positionerProps={positionerProps} isOpen={isOpen} toggle={toggle}>
-      <div className={styles.dropdown}>
+      <div className={styles.dropdown} ref={ref}>
         <ul className={styles.list}>
           {options?.map((option) => (
             <li key={option.value}>
               <Option
                 label={option.label}
                 value={option.value}
-                isSelected={isSelected(option)}
-                onSelect={() => onSelect(option)}
+                isSelected={isSelected(option.value)}
+                onSelect={() => onSelect(option.value)}
               />
             </li>
           ))}

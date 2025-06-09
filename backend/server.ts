@@ -11,6 +11,7 @@ require("./env/env");
 import { logger } from "./logger/index";
 import { errorHandler } from "./src/middleware/errorHandler";
 import authRouter from "./src/modules/auth/authRouter";
+import userRouter from "./src/modules/user/userRouter";
 import recipeRouter from "./src/modules/recipe/recipieRouter";
 import cookbookRouter from "./src/modules/cookbook/cookbookRouter";
 import favoriteRouter from "./src/modules/favorite/favoriteRouter";
@@ -46,6 +47,7 @@ app.use(morgan("combined", {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 app.use("/api/recipes", recipeRouter);
 app.use("/api/favorites", favoriteRouter);
 app.use("/api/cookbooks", cookbookRouter);

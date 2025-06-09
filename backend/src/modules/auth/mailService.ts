@@ -39,6 +39,23 @@ class MailService {
       throwError(error, new AppError({ message: "Неправильный адрес электронной почты. Ошибка отправки электронного письма", cause: error }));
     }
   }
+  async sendMailChangeConfirmation(email: string, link: string) {
+    try {
+      this.transporter.sendMail({
+        from : process.env.SMTP_USER,
+        to: email,
+        subject: `Подтвердите смену email`,
+        text: `Для активации перейдите по ссылке ${link}`,
+        html: `<div>
+                <h1>Подтвердите смену email</h1>
+                <p>Перейдите по ссылке, чтобы подтвердить новый адрес:</p>
+                <a href="${link}">${link}</a>
+              </div>`
+      });
+    } catch(error) {
+      throwError(error, new AppError({ message: "Неправильный адрес электронной почты. Ошибка отправки электронного письма", cause: error }));
+    }
+  }
 }
 
 export default new MailService();

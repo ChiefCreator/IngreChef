@@ -5,7 +5,7 @@ import RecipeService from './recipeService';
 
 const recipeService = new RecipeService();
 
-import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
+import { denormalizeEnumFields } from '../../middleware/normalizeEnumFields';
 import BadRequestError from '../../../errors/BadRequestError';
 
 export default class RecipeController {
@@ -44,7 +44,9 @@ export default class RecipeController {
       };
 
       const recipes = await recipeService.getAllRecipes(filters);
-      res.status(200).json(recipes);
+      const transformedRecipes = recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
+
+      res.status(200).json(transformedRecipes);
     } catch(error) {
       next(error);
     }
@@ -82,7 +84,9 @@ export default class RecipeController {
       };
 
       const userRecipes = await recipeService.getUserRecipes(filters);
-      res.status(200).json(userRecipes);
+      const transformedRecipes = userRecipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
+
+      res.status(200).json(transformedRecipes);
     } catch(error) {
       next(error);
     }
@@ -97,7 +101,7 @@ export default class RecipeController {
       }
 
       const recipe = await recipeService.getRecipe(userId, recipeId);
-      const transformedRecipe = transformRecipeFromDBToClient(recipe);
+      const transformedRecipe = denormalizeEnumFields(recipe, ["cuisine", "difficulty", "category"]);
 
       res.status(200).json(transformedRecipe);
     } catch(error) {
@@ -114,7 +118,7 @@ export default class RecipeController {
       }
 
       const recipe = await recipeService.selectGeneratedRecipe(userId, recipeId);
-      const transformedRecipe = transformRecipeFromDBToClient(recipe);
+      const transformedRecipe = denormalizeEnumFields(recipe, ["cuisine", "difficulty", "category"]);
 
       res.status(200).json(transformedRecipe);
     } catch(error) {

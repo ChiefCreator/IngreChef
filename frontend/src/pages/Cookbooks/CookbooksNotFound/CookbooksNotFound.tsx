@@ -5,12 +5,15 @@ import EntitiesNotFound from "../../../components/EntitiesNotFound/EntitiesNotFo
 import styles from "./CookbooksNotFound.module.scss";
 
 interface CookbooksNotFoundProps {
+  illustrationClassName?: string;
+  descriptionClassName?: string;
+
   buttonOnClick?: () => void;
 }
 
-export default function CookbooksNotFound({ buttonOnClick }: CookbooksNotFoundProps) {
+export default function CookbooksNotFound({ illustrationClassName = "", descriptionClassName = "", buttonOnClick }: CookbooksNotFoundProps) {
   const illustration = (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${illustrationClassName}`}>
       <div className={styles.cardContainer}>
         <div className={styles.content}>
           <div className={styles.contentImgWrapper}>
@@ -27,18 +30,22 @@ export default function CookbooksNotFound({ buttonOnClick }: CookbooksNotFoundPr
     </div>
   );
 
+  const controls = buttonOnClick ? [
+    <Button
+      className={styles.containerButton}
+      onClick={buttonOnClick}
+    >
+      Создать кулинарную книгу
+    </Button>
+  ] : undefined
+
   return (
     <EntitiesNotFound
       description="Кулинарные книги не найдены. Вы можете создать свою первую кулинарную книгу."
       illustration={illustration}
-      controls={[
-        <Button
-          className={styles.containerButton}
-          onClick={buttonOnClick}
-        >
-          Создать кулинарную книгу
-        </Button>
-      ]}
+      controls={controls}
+
+      descriptionClassName={descriptionClassName}
     />
   );
 }

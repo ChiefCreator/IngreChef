@@ -8,9 +8,13 @@ import Logo from "./../Logo/Logo";
 import Menu from "./Menu/Menu";
 import ButtonToggle from "./ButtonToggle/ButtonToggle";
 import HideElement from "./HideElement/HideElement";
-import { ChefHat, BookMarked, Compass, LayoutList, CookingPot } from "lucide-react";
+import Profile from "./Profile/Profile";
+import CookbooksNotFound from "../../pages/Cookbooks/CookbooksNotFound/CookbooksNotFound";
+import { ChefHat, BookMarked, Compass, LayoutList, CookingPot, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import styles from "./Sidebar.module.scss";
+import { useGetUserQuery } from "../../features/api/userApi/userApi";
 
 interface SidebarProps {
   className?: string;
@@ -26,7 +30,7 @@ export interface MenuItemData {
   icon: React.ReactNode;
   children?: MenuItemData[];
   isChildrenLoading?: boolean;
-  defaultContent?: string;
+  defaultContent?: string | React.ReactNode;
 }
 
 export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
@@ -36,6 +40,7 @@ export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
   const [isButtonToggleVisible, setIsButtonToggleVisible] = useState(false);
 
   const { data: cookbooks, isLoading: isCookbooksLoading } = useGetCookBooksQuery({ userId });
+  const { data: userData, isLoading: isUserDataLoading } = useGetUserQuery({ userId, include: ["profile"] });
 
   const menuData_1 = useMemo<MenuItemData[]>(() => [
     {
@@ -66,7 +71,7 @@ export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
         icon: <BookMarked size={16} />,
       })),
       isChildrenLoading: isCookbooksLoading,
-      defaultContent: "Список книг пуст. Добавьте новую!",
+      defaultContent: <CookbooksNotFound illustrationClassName={styles.cookbooksIllustration} descriptionClassName={styles.cookbooksDescription} />,
     },
     {
       id: "item-7",
@@ -83,6 +88,13 @@ export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
       pathname: "/discover",
       title: "Лента",
       icon: <Compass size={16} />,
+    },
+    {
+      id: "item-100",
+      type: "link",
+      pathname: "/settings",
+      title: "Настройки",
+      icon: <Settings size={16} />,
     },
   ], []);
 
@@ -145,6 +157,12 @@ export default function Sidebar({ className = "", isDesktop }: SidebarProps) {
               />   
             </div>
           </nav>
+
+          <HideElement isOpen={isOpen} className={styles.sidebarProfile}>
+            <Link to="/settings/profile">
+              <Profile imgSrc={userData?.profile?.avatarUrl} email={userData?.email} name={userData?.profile?.name} isLoading={isUserDataLoading} />
+            </Link>
+          </HideElement>
         </div>
 
         {isButtonToggleVisible && <ButtonToggle isOpen={isOpen} setIsOpen={setIsOpen} />}

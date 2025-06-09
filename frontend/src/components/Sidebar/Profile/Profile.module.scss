@@ -1,0 +1,28 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  &__img-wrapper {
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  &__info {
+
+  }
+
+  &__name {
+    font-size: 14px;
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  &__email {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    color: var(--color-neutral-contrast--light);
+  }
+}

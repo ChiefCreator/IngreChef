@@ -1,16 +1,18 @@
 import { Router } from "express";
 
-import { transformQueryGetAllRecipesParams } from "../../middleware/transformQueryGetAllRecipesParams";
+import { createEnumNormalizer } from "../../middleware/normalizeEnumFields";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
 import RecipeController from "./recipeController";
 
+const normalizeRecipe = createEnumNormalizer({ fields: ["category", "difficulty", "cuisine"], sources: ["query"] });
+
 const router = Router();
 const recipeController = new RecipeController();
 
-router.get("/", authMiddleware, transformQueryGetAllRecipesParams, recipeController.getAllRecipes);
-router.get("/:recipeId", authMiddleware, transformQueryGetAllRecipesParams, recipeController.getRecipe);
-router.get("/user/:userId", authMiddleware, transformQueryGetAllRecipesParams, recipeController.getUserRecipes);
+router.get("/", authMiddleware, normalizeRecipe, recipeController.getAllRecipes);
+router.get("/:recipeId", authMiddleware, normalizeRecipe, recipeController.getRecipe);
+router.get("/user/:userId", authMiddleware, normalizeRecipe, recipeController.getUserRecipes);
 
 router.post("/select", authMiddleware, recipeController.selectGeneratedRecipe);
 

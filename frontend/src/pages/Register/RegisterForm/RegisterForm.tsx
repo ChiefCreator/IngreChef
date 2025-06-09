@@ -54,13 +54,7 @@ export default function RegisterForm() {
     const response = await register(data);
 
     if (!response.error) {
-      setNotificationData({
-        type: "success",
-        title: "Регистрация выполнена",
-        message: "Вы успешно зарегистрировали аккаунт",
-      });
-
-      navigate("/auth/confirm-email", { state: { email: data.email } });
+      navigate("/auth/email-confirmation-request", { state: { email: data.email } });
 
       reset();
       clearErrors();

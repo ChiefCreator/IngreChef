@@ -1,11 +1,8 @@
 import { ChefHat } from "lucide-react";
+import NoImage from "../NoImage/NoImage";
 
-import styles from "./NoRecipeImage.module.scss";
-
-export default function NoRecipeImage({ className }: { className?: string }) {
+export default function NoRecipeImage({ className = "" }: { className?: string }) {
   return (
-    <div className={`${styles.noImage} ${className}`}>
-      <ChefHat className={styles.noImageIcon} size={"50%"} />
-    </div>
+    <NoImage className={className} Icon={ChefHat} />
   );
 }

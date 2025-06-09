@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import GenerateRecipeService from './generateRecipeService';
 import BadRequestError from '../../../errors/BadRequestError';
 
-import { transformRecipeFromDBToClient } from '../../middleware/transformQueryGetAllRecipesParams';
+import { denormalizeEnumFields } from '../../middleware/normalizeEnumFields';
 
 import type { GenerateRecipeParams } from './generateRecipeTypes';
 
@@ -30,7 +30,7 @@ export default class GenerateRecipeController {
       } as GenerateRecipeParams;
 
       const tempRecipes = await service.generateRecipes(authorId, recipeParams);
-      const transformedRecipes = tempRecipes?.map(o => transformRecipeFromDBToClient(o));
+      const transformedRecipes = tempRecipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
 
       res.status(200).json(transformedRecipes);
     } catch(error) {

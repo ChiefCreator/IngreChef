@@ -60,7 +60,7 @@ function MenuItem({ isSidebarOpen, data, level, openPath, setOpenPath }: MenuIte
   const { title, icon } = data;
 
   const isButton = data.type === "buttonOpenDropdown";
-  const isLinkActive = pathname === data.pathname;
+  const isLinkActive = data.pathname !== "/" ? pathname.includes(data.pathname!) : pathname === data.pathname;
   const isSubMenuOpen = openPath.includes(data.id);
 
   function toggleSubMenu() {

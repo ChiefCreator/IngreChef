@@ -4,15 +4,17 @@ interface EntitiesNotFoundProps {
   illustration?: React.ReactNode;
   description?: string;
   controls?: React.ReactNode[];
+
+  descriptionClassName?: string;
 }
 
-export default function EntitiesNotFound({ illustration, description, controls }: EntitiesNotFoundProps) {
+export default function EntitiesNotFound({ illustration, description, controls, descriptionClassName }: EntitiesNotFoundProps) {
 
   return (
     <div className={styles.container}>
       {illustration}
 
-      {description && <p className={styles.containerText}>{description}</p>}
+      {description && <p className={`${styles.containerText} ${descriptionClassName}`}>{description}</p>}
 
       {controls?.length && (
         <div className={styles.controls}>

@@ -33,6 +33,8 @@ export default function GenerateRecipe() {
   return (
     <div className={styles.page}>
       <div className={styles.pageContainer}>
+        <h1 className={styles.pageTitle}>Генерация рецептов</h1>
+
         <GenerateRecipeForm onSuccessSubmit={onSuccessSubmit} />
 
         <SelectRecipeModal

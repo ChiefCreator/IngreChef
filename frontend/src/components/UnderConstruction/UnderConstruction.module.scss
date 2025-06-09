@@ -1,0 +1,18 @@
+.underConstruction {
+  width: 100%;
+
+  &__img {
+    width: 100%;
+    object-fit: cover;
+  }
+  &__title {
+    text-align: center;
+    line-height: 130%;
+    margin-top: 20px;
+    font-weight: 500;
+  }
+  &__description {
+    text-align: center;
+    line-height: 130%;
+  }
+}
