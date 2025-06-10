@@ -47,6 +47,7 @@ export default class AppError extends Error {
       code: this.code,
       statusCode: this.statusCode,
       details: this.details,
+      cause: this.cause,
     };
   }
 }
