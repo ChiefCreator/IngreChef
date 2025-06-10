@@ -1,5 +1,4 @@
 import express, { Application } from "express";
-import multer from "multer";
 import { PrismaClient } from '@prisma/client'
 import cors from "cors";
 import path from "path";
@@ -17,20 +16,12 @@ import cookbookRouter from "./src/modules/cookbook/cookbookRouter";
 import favoriteRouter from "./src/modules/favorite/favoriteRouter";
 import ingredientRouter from "./src/modules/ingredient/ingredientRouter";
 import generateRecipeRouter from "./src/modules/generate-recipe/generateRecipeRouter";
+import uploadRouter from "./src/modules/upload/uploadRouter";
+
+import { UPLOAD_DIR } from "./src/config/config";
 
 export const prisma = new PrismaClient();
 const app: Application = express();
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-export const upload = multer({ storage });
 
 app.use(cors({
   origin: process.env.CLIENT_URL, 
@@ -43,8 +34,7 @@ app.use(morgan("combined", {
     write: (message: string) => logger.info(message.trim()),
   },
 }));
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, UPLOAD_DIR)));
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
@@ -54,6 +44,8 @@ app.use("/api/cookbooks", cookbookRouter);
 app.use("/api/generate-recipe", generateRecipeRouter);
 
 app.use("/api/ingredients", ingredientRouter);
+
+app.use("/api/uploads", uploadRouter);
 
 app.use(errorHandler);
 
