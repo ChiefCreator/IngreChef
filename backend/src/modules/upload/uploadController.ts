@@ -1,37 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
+require("./../../../env/env");
 
 import UploadService from './uploadService';
+import AppError from '../../../errors/AppError';
 
 import type { UploadedFile } from './uploadTypes';
-import AppError from '../../../errors/AppError';
 
 const uploadService = new UploadService();
 
 export default class UploadController {
   constructor() {}
 
-  uploadFile = (req: Request, res: Response, next: NextFunction) => {
+  async uploadFile(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.file) {
         throw new AppError({ message: "Файл не был загружен" });
       }
-    
-      res.json({
-        message: "Файл успешно загружен",
-        filename: req.file.filename,
-        url: `/uploads/${req.file.filename}`,
-      });
+
+      const localFilePath = req.file.path;
+
+      const fileUrl = await uploadService.uploadFile(localFilePath, req.file.mimetype);
+
+      fs.unlinkSync(localFilePath);
+
+      res.status(200).json(fileUrl);
     } catch(error) {
       next(error);
     }
   };
-
-  async getUploads(req: Request, res: Response, next: NextFunction) {
-    try {
-      const files: UploadedFile[] = uploadService.getUploads();
-      res.json(files);
-    } catch (error) {
-      next(error);
-    }
-  }
 }

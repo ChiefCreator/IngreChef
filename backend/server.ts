@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import { PrismaClient } from '@prisma/client'
 import cors from "cors";
-import path from "path";
 
 const cookieParser = require("cookie-parser");
 const morgan = require('morgan');
@@ -18,8 +17,6 @@ import ingredientRouter from "./src/modules/ingredient/ingredientRouter";
 import generateRecipeRouter from "./src/modules/generate-recipe/generateRecipeRouter";
 import uploadRouter from "./src/modules/upload/uploadRouter";
 
-import { UPLOAD_DIR } from "./src/config/config";
-
 export const prisma = new PrismaClient();
 const app: Application = express();
 
@@ -34,7 +31,6 @@ app.use(morgan("combined", {
     write: (message: string) => logger.info(message.trim()),
   },
 }));
-app.use("/uploads", express.static(path.join(__dirname, UPLOAD_DIR)));
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);

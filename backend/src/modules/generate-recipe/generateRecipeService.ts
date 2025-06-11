@@ -1,8 +1,8 @@
 import { prisma } from "../../../server";
 import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 import DatabaseError from "../../../errors/DatabaseError";
 import ValidationError from "../../../errors/ValidationError";
@@ -12,12 +12,14 @@ import { v4 } from "uuid";
 import type { GenerateRecipeParams, RecipeImagePromptProps } from "./generateRecipeTypes";
 import { GeneratedRecipesSchema } from "./generateRecipeSchema";
 import AppError from "../../../errors/AppError";
-import { UPLOAD_DIR } from "../../config/config";
-import { ensureDirExists } from "../../utils/fileUtils";
+import { UPLOAD_DIR_PATH } from "../../config/config";
+import UploadService from "../upload/uploadService";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
+
+const uploadService = new UploadService();
 
 export default class GenerateRecipeService {
   constructor() {};
@@ -45,13 +47,13 @@ export default class GenerateRecipeService {
         throw new ValidationError("Сгенерированные рецепты не соответствует схеме");
       }
 
-      const imageNames = await this.generateImages(generatedRecipes.map(({ title, description, ingredients }) => this.createImagePrompt({ title, description, ingredients })));
+      const imageUrls = await this.generateImages(generatedRecipes.map(({ title, description, ingredients }) => this.createImagePrompt({ title, description, ingredients })));
 
       await prisma.tempRecipe.createMany({
         data: generatedRecipes.map((el, i) => ({
           ...el,
           authorId,
-          imageUrl: imageNames?.[i] ? `${process.env.API_URL}/uploads/${imageNames?.[i]}` : undefined
+          imageUrl: imageUrls?.[i] || undefined
         }))
       });
 
@@ -68,8 +70,6 @@ export default class GenerateRecipeService {
   }
   async generateImages(prompts: string[]) {
     try {
-      ensureDirExists(UPLOAD_DIR);
-
       const results = await Promise.all(
         prompts.map(async (prompt) => {
           const result = await client.images.generate({
@@ -86,11 +86,15 @@ export default class GenerateRecipeService {
           const buffer = Buffer.from(base64Img, "base64");
   
           const uniqueName = `${v4()}.png`;
-          const filePath = path.resolve(__dirname, `./../../../${UPLOAD_DIR}`, uniqueName);
+          const filePath = path.join(UPLOAD_DIR_PATH, uniqueName);
   
           await fs.promises.writeFile(filePath, buffer);
+
+          const imageUrl = await uploadService.uploadFile(filePath, "image/png");
+
+          await fs.promises.unlink(filePath);
   
-          return uniqueName;
+          return imageUrl;
         })
       );
 
