@@ -35,7 +35,9 @@ export default class Service {
       const passwordHash = await bcrypt.hash(password, 3);
       const activationCode= uuidv4();
       const activationLink = `${process.env.CLIENT_URL}/auth/email-confirmation/${activationCode}`;
-    
+  
+      await mailService.sendActivationMail(email, activationLink);
+
       const user = await prisma.user.create({ 
         data: {
           email,
@@ -48,8 +50,6 @@ export default class Service {
           }
         }
       });
-  
-      await mailService.sendActivationMail(email, activationLink);
   
       const userDto = new UserDto({ id: user.id, email: user.email, isActivated: user.isActivated });
       const tokens = tokenService.generateTokens({ ...userDto });
