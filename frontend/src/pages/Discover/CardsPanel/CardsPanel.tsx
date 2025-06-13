@@ -21,6 +21,7 @@ interface CardsPanelProps {
 
 export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading }: CardsPanelProps) {
   const userId = useAppSelector(selectUserId);
+  // console.log(isSuccess, isError, isLoading, recipes?.length)
 
   const renderContent = () => {
     if (isLoading) {

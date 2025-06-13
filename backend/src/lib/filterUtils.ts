@@ -1,7 +1,7 @@
-import type { RecipeFilters } from "./../modules/recipe/recipeTypes";
+import type { QueryRecipeFilter } from "./../modules/recipe/recipeTypes";
 import type { Prisma } from "@prisma/client";
 
-export function buildRecipeWhereClause(filters: RecipeFilters) {
+export function buildRecipeWhereClause(filters: QueryRecipeFilter) {
   const {
     titleStartsWith,
     category,
@@ -58,7 +58,7 @@ export function buildRecipeWhereClause(filters: RecipeFilters) {
   return where;
 }
 
-export function buildSingleCookbookIncludeClause(filters: RecipeFilters): {
+export function buildSingleCookbookIncludeClause(filters: QueryRecipeFilter): {
   recipes: {
     where: {
       recipe: Prisma.RecipeWhereInput

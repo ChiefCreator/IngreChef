@@ -1,70 +1,26 @@
-import { RecipeFilters } from "./recipeTypes";
+import { Filter } from "./recipeTypes";
 import { prisma } from "./../../../server";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
 import { throwError } from "../../lib/error";
+import { buildPrismaRecipeFilter } from "../../utils/filterUtils";
+import type { QueryRecipeFilter } from "./recipeTypes";
 
 export default class RecipeService {
   constructor() {};
 
-  async getAllRecipes(filters: RecipeFilters) {
+  async getAllRecipes(userId: string, filters: QueryRecipeFilter) {
     try {
-      const {
-        userId,
-        page,
-        limit,
-        titleStartsWith,
-        category,
-        difficulty,
-        cuisine,
-        cookingTime,
-        ingredients,
-        isFavorite,
-      } = filters;
+      const { cursor, limit } = filters;
+
+      const take = Number(limit) + 1;  
+      const where: any = buildPrismaRecipeFilter(userId, filters);
   
-      const skip = (page - 1) * limit;
-    
-      const where: any = {};
-  
-      if (titleStartsWith) {
-        where.title = {
-          startsWith: titleStartsWith,
-          mode: "insensitive",
-        };
-      }
-      if (category) {
-        where.category = category;
-      }
-      if (difficulty) {
-        where.difficulty = difficulty;
-      }
-      if (cuisine) {
-        where.cuisine = cuisine;
-      }
-      if (cookingTime) {
-        where.cookingTime = { 
-          gte: cookingTime.from,
-          lte: cookingTime.to,
-        };
-      }
-      if (ingredients && ingredients.length > 0) {
-        where.ingredients = {
-          hasEvery: ingredients,
-        };
-      }
-      if (isFavorite) {
-        where.likedBy = {
-          some: {
-            userId: userId,
-          },
-        };
-      }
-  
-      const recipes = await prisma.recipe.findMany({
+      let recipes = await prisma.recipe.findMany({
         where,
-        skip,
-        take: limit,
+        take,
+        ...(cursor && { skip: 1, cursor: { id: cursor }}),
         orderBy: { createdAt: "desc" },
         include: {
           likedBy: {
@@ -78,75 +34,62 @@ export default class RecipeService {
         }
       });
 
-      return recipes.map(({ likedBy, ...recipe }) => ({
+      recipes.map(({ likedBy, ...recipe }) => ({
         ...recipe,
         isFavorite: likedBy.length > 0,
       }));
+
+      const hasMore = recipes.length > limit;
+      if (hasMore) recipes.pop();
+
+      return {
+        recipes,
+        nextCursor: hasMore ? recipes[recipes.length - 1].id : null,
+      };
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепты", error));
     }
   }
-  async getUserRecipes(filters: RecipeFilters) {
-    const {
-      userId,
-      page = 1,
-      limit = 10,
-      titleStartsWith,
-      category,
-      difficulty,
-      cuisine,
-      cookingTime,
-      ingredients,
-      isFavorite,
-    } = filters;
-
-    const skip = (page - 1) * limit;
-  
-    const where: any = {};
-
-    where.authorId = userId;
-
-    if (titleStartsWith) {
-      where.title = {
-        startsWith: titleStartsWith,
-        mode: "insensitive",
-      };
-    }
-    if (category) {
-      where.category = category;
-    }
-    if (difficulty) {
-      where.difficulty = difficulty;
-    }
-    if (cuisine) {
-      where.cuisine = cuisine;
-    }
-    if (cookingTime) {
-      where.cookingTime = { 
-        gte: cookingTime.from,
-        lte: cookingTime.to,
-      };
-    }
-    if (ingredients && ingredients.length > 0) {
-      where.ingredients = {
-        hasEvery: ingredients,
-      };
-    }
-    if (isFavorite) {
-      where.likedBy = {
-        some: {
-          userId: userId,
-        },
-      };
-    }
-
+  async getUserRecipes(userId: string, filters: QueryRecipeFilter) {
     try {
-      return prisma.recipe.findMany({
+      const { cursor, limit } = filters;
+  
+      const take = Number(limit) + 1;  
+      const where: any = buildPrismaRecipeFilter(userId, filters);
+
+      if (userId) {
+        where.authorId = userId;
+      }
+  
+      let recipes = await prisma.recipe.findMany({
         where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
+        take,
+        ...(cursor && { skip: 1, cursor: { id: cursor }}),
+        orderBy: { createdAt: "desc" },
+        include: {
+          likedBy: {
+            where: {
+              userId,
+            },
+            select: {
+              recipeId: true,
+            }
+          }
+        }
       });
+  
+      recipes.map(({ likedBy, ...recipe }) => ({
+        ...recipe,
+        isFavorite: likedBy.length > 0,
+      }));
+   
+      const hasMore = recipes.length > limit;
+      if (hasMore) recipes.pop();
+
+      return {
+        recipes,
+        nextCursor: hasMore ? recipes[recipes.length - 1].id : null,
+      };
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепты пользователя", error, { userId }));
     }

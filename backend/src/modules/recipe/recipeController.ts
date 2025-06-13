@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { RecipeFilters } from "./recipeTypes";
+import { mapQueryToFilters } from '../../utils/filterUtils';
 
 import RecipeService from './recipeService';
 
@@ -13,80 +13,36 @@ export default class RecipeController {
 
   async getAllRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {
-        userId,
-        page,
-        limit,
-        titleStartsWith,
-        category,
-        difficulty,
-        cuisine,
-        cookingTime,
-        ingredients,
-        isFavorite,
-      } = req.query;
+      const userId = req.query.userId as string;
 
       if (!userId) {
         throw new BadRequestError("Поле userId обязательно", { field: "userId" });
-      }
+      }  
 
-      const filters: RecipeFilters = {
-        userId: userId as string,
-        page: Number(page),
-        limit: Number(limit),
-        titleStartsWith: titleStartsWith as string | undefined,
-        category: category as string | undefined,
-        difficulty: difficulty as string | undefined,
-        cuisine: cuisine as string | undefined,
-        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as RecipeFilters["cookingTime"] : undefined,
-        ingredients: ingredients ? ingredients as string[] : undefined,
-        isFavorite: isFavorite === "true",
-      };
+      const filters = mapQueryToFilters(req.query);
 
-      const recipes = await recipeService.getAllRecipes(filters);
-      const transformedRecipes = recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
+      const result = await recipeService.getAllRecipes(userId, filters);
+      const transformedRecipes = result.recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
 
-      res.status(200).json(transformedRecipes);
+      res.status(200).json({ recipes: transformedRecipes, nextCursor: result.nextCursor });
     } catch(error) {
       next(error);
     }
   }
   async getUserRecipes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {
-        userId,
-        page,
-        limit,
-        titleStartsWith,
-        category,
-        difficulty,
-        cuisine,
-        cookingTime,
-        ingredients,
-        isFavorite,
-      } = req.query;
+      const userId = req.params.userId as string;
 
       if (!userId) {
-        throw new BadRequestError("Поле userId обязательно", { field: "userId" })
-      }
+        throw new BadRequestError("Поле userId обязательно", { field: "userId" });
+      }  
 
-      const filters: RecipeFilters = {
-        userId: userId as string,
-        page: Number(page),
-        limit: Number(limit),
-        titleStartsWith: titleStartsWith as string | undefined,
-        category: category as string | undefined,
-        difficulty: difficulty as string | undefined,
-        cuisine: cuisine as string | undefined,
-        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as RecipeFilters["cookingTime"] : undefined,
-        ingredients: ingredients ? ingredients as string[] : undefined,
-        isFavorite: isFavorite === "true",
-      };
+      const filters = mapQueryToFilters(req.query);
 
-      const userRecipes = await recipeService.getUserRecipes(filters);
-      const transformedRecipes = userRecipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
+      const result = await recipeService.getUserRecipes(userId, filters);
+      const transformedRecipes = result.recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
 
-      res.status(200).json(transformedRecipes);
+      res.status(200).json({ recipes: transformedRecipes, nextCursor: result.nextCursor });
     } catch(error) {
       next(error);
     }

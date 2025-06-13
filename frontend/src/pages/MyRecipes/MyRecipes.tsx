@@ -1,8 +1,9 @@
-import { useState, useCallback, useMemo } from "react";
-import { useGetUserRecipesQuery } from "../../features/api/recipesApi/recipesApi";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLazyGetUserRecipesQuery } from "../../features/api/recipesApi/recipesApi";
 import { useGetCookBooksQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector, useMediaQuery } from "../../app/hooks";
+import { useAppSelector, useMediaQuery, useInfiniteScroll } from "../../app/hooks";
 
 import MyRecipeCardsPanel from "./MyRecipeCardsPanel/MyRecipeCardsPanel";
 import Header from "../../components/Header/Header";
@@ -13,34 +14,44 @@ import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookMarked } from "luci
 
 import type { RecipeCardOfMyRecipesOptions, Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
-import type { QueryRecipeFilter } from "../../types/queryTypes";
+import type { Filter } from "../../types/filtersTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
 import styles from "./MyRecipes.module.scss";
-import { useNavigate } from "react-router-dom";
 
 export default function MyRecipes() {
   const navigate = useNavigate();
   const userId = useAppSelector(selectUserId);
-  const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
-  const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1025px)");
   const isMobile = useMediaQuery("(hover: none)");
 
-  const { data: recipes, isSuccess, isError, isLoading, isFetching } = useGetUserRecipesQuery(filters, { skip: !userId });
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [filters, setFilters] = useState<Filter>({});
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
+
+  const [trigger, { data, isSuccess, isError, isLoading, isFetching }] = useLazyGetUserRecipesQuery();
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
+
+  const recipes = data?.recipes;
 
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
   const [addRecipeToCookbook] = useAddRecipeToCookbookMutation();
+
+  useInfiniteScroll({
+    hasMore: !!cursor,
+    isLoading: isFetching,
+    loadMore: () => {
+      trigger({ userId, pagination: { cursor }, filters });
+    },
+  });
 
   const changeFilter: ChangeFilter = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
   const removeFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, [defaultFilters]);
+    setFilters({});
+  }, []);
   const toggleFiltersPanel = useCallback(() => {
     setIsFiltersPanelOpen(prev => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
@@ -177,6 +188,16 @@ export default function MyRecipes() {
       },
     ]
   ), [filters]);
+
+  useEffect(() => {
+    setCursor(undefined);
+    trigger({ userId, pagination: { cursor: undefined }, filters });
+  }, [filters]);
+  useEffect(() => {
+    if (data?.recipes) {
+      setCursor(data.nextCursor || undefined);
+    }
+  }, [data]);
 
   return (
     <section className={styles.page}>

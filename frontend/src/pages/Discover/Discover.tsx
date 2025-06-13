@@ -1,11 +1,11 @@
-import { useState, useCallback, useMemo } from "react";
-import { useGetRecipesQuery } from "../../features/api/recipesApi/recipesApi";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useLazyGetRecipesQuery } from "../../features/api/recipesApi/recipesApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector, useMediaQuery } from "../../app/hooks";
+import { useAppSelector, useMediaQuery, useInfiniteScroll } from "../../app/hooks";
 
+import type { Filter } from "../../types/filtersTypes";
 import type { Category, Difficulty } from "../../types/recipeTypes";
 import type { ChangeFilter } from "../../types/filtersTypes";
-import type { QueryRecipeFilter } from "../../types/queryTypes";
 import type { FilterListItemProps, FilterItemProps } from "../../components/SearchPanel/FilterItem/FilterItem";
 
 import CardsPanel from "./CardsPanel/CardsPanel";
@@ -16,24 +16,28 @@ import styles from "./Discover.module.scss";
 
 export default function Discover() {
   const userId = useAppSelector(selectUserId);
-  const defaultFilters = useMemo<QueryRecipeFilter>(() => ({ page: 1, limit: 10, userId }), [userId]);
-  const [filters, setFilters] = useState<QueryRecipeFilter>(defaultFilters);
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1025px)");
 
-  const { data: recipes, isSuccess: isRecSuccess, isError: isRecError, isLoading: isRecipesLoading, isFetching: isRecipesFetching } = useGetRecipesQuery(filters, { skip: !userId });
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [filters, setFilters] = useState<Filter>({});
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
 
-  const isSuccess = isRecSuccess;
-  const isError = isRecError;
-  const isLoading = isRecipesLoading;
-  const isFetching = isRecipesFetching;
+  const [trigger, { data, isSuccess, isError, isLoading, isFetching }] = useLazyGetRecipesQuery();
 
+  useInfiniteScroll({
+    hasMore: !!cursor,
+    isLoading: isFetching,
+    loadMore: () => {
+      trigger({ userId, pagination: { cursor }, filters });
+    },
+  });
+  
   const changeFilter: ChangeFilter = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
   const removeFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, [defaultFilters]);
+    setFilters({});
+  }, []);
   const toggleFiltersPanel = useCallback(() => {
     setIsFiltersPanelOpen(prev => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
@@ -119,6 +123,16 @@ export default function Discover() {
     ]
   ), [filters]);
 
+  useEffect(() => {
+    setCursor(undefined);
+    trigger({ userId, pagination: { cursor: undefined }, filters });
+  }, [filters]);
+  useEffect(() => {
+    if (data?.recipes) {
+      setCursor(data.nextCursor || undefined);
+    }
+  }, [data]);
+
   return (
     <section className={styles.page}>
       <div className={styles.body}>
@@ -143,7 +157,7 @@ export default function Discover() {
         </header>
 
         <CardsPanel
-          recipes={recipes}
+          recipes={data?.recipes}
           isSuccess={isSuccess}
           isError={isError}
           isLoading={isLoading}

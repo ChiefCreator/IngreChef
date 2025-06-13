@@ -1,6 +1,6 @@
 import { prisma } from "./../../../server";
 
-import type { RecipeFilters } from '../recipe/recipeTypes';
+import type { QueryRecipeFilter } from '../recipe/recipeTypes';
 import { buildSingleCookbookIncludeClause } from "./../../lib/filterUtils";
 
 import DatabaseError from "../../../errors/DatabaseError";
@@ -30,7 +30,7 @@ export default class CookbookService {
       throwError(error, new DatabaseError("Не удалось получить кулинарные книги", error));
     }
   }
-  async getCookbook(cookbookId: string, filters: RecipeFilters) {
+  async getCookbook(cookbookId: string, filters: QueryRecipeFilter) {
     try {
       const include = buildSingleCookbookIncludeClause(filters);
 

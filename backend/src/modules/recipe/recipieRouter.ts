@@ -11,8 +11,8 @@ const router = Router();
 const recipeController = new RecipeController();
 
 router.get("/", authMiddleware, normalizeRecipe, recipeController.getAllRecipes);
-router.get("/:recipeId", authMiddleware, normalizeRecipe, recipeController.getRecipe);
 router.get("/user/:userId", authMiddleware, normalizeRecipe, recipeController.getUserRecipes);
+router.get("/:recipeId", authMiddleware, normalizeRecipe, recipeController.getRecipe);
 
 router.post("/select", authMiddleware, recipeController.selectGeneratedRecipe);
 

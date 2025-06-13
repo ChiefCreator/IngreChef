@@ -2,13 +2,16 @@ import { clientApi } from "../clientApi";
 
 import type { Recipe } from "../../../types/recipeTypes";
 import type { QueryRecipeFilter } from "../../../types/queryTypes";
-import type { GetRecipeParams, AddRecipeParams, FavoriteRecipeResponse, FavoriteRecipeParams, GenerateRecipeParams } from "./recipesApiTypes";
+import type { RecipesResponse, GetRecipeParams, AddRecipeParams, FavoriteRecipeResponse, FavoriteRecipeParams, GenerateRecipeParams } from "./recipesApiTypes";
 
 export const recipesApi = clientApi.injectEndpoints({
   endpoints: (builder) => ({
-    getRecipes: builder.query<Recipe[], QueryRecipeFilter>({
-      query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
-        let query = `/recipes?userId=${userId}&page=${page}&limit=${limit}`;
+    getRecipes: builder.query<RecipesResponse, QueryRecipeFilter>({
+      query: ({ userId, pagination, filters }) => {
+        const { cursor, limit = 12 } = pagination || {};
+        const { titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite } = filters || {};
+
+        let query = `/recipes?userId=${userId}&cursor=${cursor}&limit=${limit}`;
       
         if (titleStartsWith) {
           query += `&titleStartsWith=${titleStartsWith}`;
@@ -34,16 +37,36 @@ export const recipesApi = clientApi.injectEndpoints({
 
         return query;
       },
-    }),
-    getRecipe: builder.query<Recipe, GetRecipeParams>({
-      query: ({ userId, recipeId }) => {
-        return `/recipes/${recipeId}?userId=${userId}`;
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        return `${endpointName}-${JSON.stringify(queryArgs.filters ?? {})}`;
       },
-    }),
-    getUserRecipes: builder.query<Recipe[], QueryRecipeFilter>({
-      query: ({ userId, page, limit, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
-        let query = `/recipes?userId=${userId}&page=${page}&limit=${limit}`;
+      merge: (currentCache, newData) => {
+        const map = new Map<string, typeof newData.recipes[0]>();
+      
+        currentCache.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
 
+        newData.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
+      
+        currentCache.recipes = Array.from(map.values());
+      
+        currentCache.nextCursor = newData.nextCursor;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return JSON.stringify(currentArg?.filters) !== JSON.stringify(previousArg?.filters);
+      },
+      transformResponse: (response: RecipesResponse) => response,
+    }),
+    getUserRecipes: builder.query<RecipesResponse, QueryRecipeFilter>({
+      query: ({ userId, pagination, filters }) => {
+        const { cursor, limit = 12 } = pagination || {};
+        const { titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite } = filters || {};
+
+        let query = `/recipes/user/${userId}?cursor=${cursor}&limit=${limit}`;
+      
         if (titleStartsWith) {
           query += `&titleStartsWith=${titleStartsWith}`;
         }
@@ -68,10 +91,32 @@ export const recipesApi = clientApi.injectEndpoints({
 
         return query;
       },
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        return `${endpointName}-${JSON.stringify(queryArgs.filters ?? {})}`;
+      },
+      merge: (currentCache, newData) => {
+        const map = new Map<string, typeof newData.recipes[0]>();
+      
+        currentCache.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
+
+        newData.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
+      
+        currentCache.recipes = Array.from(map.values());
+      
+        currentCache.nextCursor = newData.nextCursor;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return JSON.stringify(currentArg?.filters) !== JSON.stringify(previousArg?.filters);
+      },
+      transformResponse: (response: RecipesResponse) => response,
       providesTags: (result, __, ___) => {
         const recipeTag = result ?
           [
-            ...result.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
+            ...result.recipes.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
             { type: "Recipe" as const, id: "List" },
           ] : [{ type: "Recipe" as const, id: "List" }];
 
@@ -79,6 +124,11 @@ export const recipesApi = clientApi.injectEndpoints({
           ...recipeTag,
         ];
       }
+    }),
+    getRecipe: builder.query<Recipe, GetRecipeParams>({
+      query: ({ userId, recipeId }) => {
+        return `/recipes/${recipeId}?userId=${userId}`;
+      },
     }),
 
     selectGeneratedRecipe: builder.mutation<Recipe, AddRecipeParams>({
@@ -110,7 +160,7 @@ export const recipesApi = clientApi.injectEndpoints({
 
         const getRecipesPatchResults = relevantCaches.map((args) =>
           dispatch(recipesApi.util.updateQueryData("getRecipes", args, (draft) => {
-            const recipe = draft.find(r => r.id === recipeId);
+            const recipe = draft.recipes.find(r => r.id === recipeId);
             if (recipe) recipe.isFavorite = true;
           })
         ));
@@ -145,7 +195,7 @@ export const recipesApi = clientApi.injectEndpoints({
 
         const getRecipesPatchResults = relevantCaches.map((args) =>
           dispatch(recipesApi.util.updateQueryData("getRecipes", args, (draft) => {
-            const recipe = draft.find(r => r.id === recipeId);
+            const recipe = draft.recipes.find(r => r.id === recipeId);
             if (recipe) recipe.isFavorite = false;
           })
         ));
@@ -173,8 +223,11 @@ export const recipesApi = clientApi.injectEndpoints({
 
 export const {
   useGetRecipesQuery,
+  useLazyGetRecipesQuery,
   useGetUserRecipesQuery,
+  useLazyGetUserRecipesQuery,
   useGetRecipeQuery,
+
   useSelectGeneratedRecipeMutation,
   useAddRecipeToFavoriteMutation,
   useDeleteRecipeFromFavoriteMutation,

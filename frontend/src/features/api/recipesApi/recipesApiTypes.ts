@@ -1,5 +1,10 @@
 import type { Recipe } from "../../../types/recipeTypes";
 
+export interface RecipesResponse {
+  recipes: Recipe[];
+  nextCursor: string | undefined;
+}
+
 export interface GetRecipeParams {
   userId: string;
   recipeId: string;

@@ -1,12 +1,14 @@
 import { Filter } from "./filtersTypes";
 
 export interface PaginationOptions {
-  page?: number;
+  cursor?: string;
   limit?: number;
 }
 
-export interface QueryRecipeFilter extends PaginationOptions, Filter {
+export interface QueryRecipeFilter {
   userId?: string;
+  pagination: PaginationOptions;
+  filters: Filter;
 }
 
 export interface ApiError {

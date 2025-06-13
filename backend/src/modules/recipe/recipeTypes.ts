@@ -1,8 +1,4 @@
-export interface RecipeFilters {
-  userId: string;
-  page: number;
-  limit: number;
-
+export interface Filter {
   titleStartsWith?: string;
   category?: string;
   difficulty?: string;
@@ -13,4 +9,13 @@ export interface RecipeFilters {
   };
   ingredients?: string[];
   isFavorite?: boolean;
+}
+
+export interface PaginationOptions {
+  cursor?: string;
+  limit: number;
+}
+
+export interface QueryRecipeFilter extends PaginationOptions, Filter {
+  userId?: string;
 }

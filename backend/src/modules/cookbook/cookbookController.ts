@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import type { RecipeFilters } from '../recipe/recipeTypes';
+import type { QueryRecipeFilter } from '../recipe/recipeTypes';
 
 import CookbookService from './cookbookService';
 import BadRequestError from '../../../errors/BadRequestError';
@@ -30,7 +30,7 @@ export default class CookbookController {
 
       const {
         userId,
-        page,
+        cursor,
         limit,
         titleStartsWith,
         category,
@@ -45,15 +45,15 @@ export default class CookbookController {
         throw new BadRequestError("Отсутствуют обязательные поля: cookbookId, userId");
       }
       
-      const filters: RecipeFilters = {
+      const filters: QueryRecipeFilter = {
         userId: userId as string,
-        page: Number(page),
+        cursor: cursor as string,
         limit: Number(limit),
         titleStartsWith: titleStartsWith as string | undefined,
         category: category as string | undefined,
         difficulty: difficulty as string | undefined,
         cuisine: cuisine as string | undefined,
-        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as RecipeFilters["cookingTime"] : undefined,
+        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as QueryRecipeFilter["cookingTime"] : undefined,
         ingredients: ingredients ? ingredients as string[] : undefined,
         isFavorite: isFavorite === "true",
       };
