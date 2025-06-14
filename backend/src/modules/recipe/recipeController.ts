@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { mapQueryToFilters } from '../../utils/filterUtils';
+import { mapQueryToFilters, mapQueryToPaginationOptions } from '../../utils/filterUtils';
 
 import RecipeService from './recipeService';
 
 const recipeService = new RecipeService();
 
-import { denormalizeEnumFields } from '../../middleware/normalizeEnumFields';
 import BadRequestError from '../../../errors/BadRequestError';
 
 export default class RecipeController {
@@ -19,12 +18,12 @@ export default class RecipeController {
         throw new BadRequestError("Поле userId обязательно", { field: "userId" });
       }  
 
+      const pagination = mapQueryToPaginationOptions(req.query);
       const filters = mapQueryToFilters(req.query);
 
-      const result = await recipeService.getAllRecipes(userId, filters);
-      const transformedRecipes = result.recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
+      const result = await recipeService.getAllRecipes(userId, pagination, filters);
 
-      res.status(200).json({ recipes: transformedRecipes, nextCursor: result.nextCursor });
+      res.status(200).json(result);
     } catch(error) {
       next(error);
     }
@@ -37,12 +36,12 @@ export default class RecipeController {
         throw new BadRequestError("Поле userId обязательно", { field: "userId" });
       }  
 
+      const pagination = mapQueryToPaginationOptions(req.query);
       const filters = mapQueryToFilters(req.query);
 
-      const result = await recipeService.getUserRecipes(userId, filters);
-      const transformedRecipes = result.recipes?.map(o => denormalizeEnumFields(o, ["category", "difficulty", "cuisine"]));
-
-      res.status(200).json({ recipes: transformedRecipes, nextCursor: result.nextCursor });
+      const result = await recipeService.getUserRecipes(userId, pagination, filters);
+    
+      res.status(200).json(result); 
     } catch(error) {
       next(error);
     }
@@ -57,9 +56,8 @@ export default class RecipeController {
       }
 
       const recipe = await recipeService.getRecipe(userId, recipeId);
-      const transformedRecipe = denormalizeEnumFields(recipe, ["cuisine", "difficulty", "category"]);
-
-      res.status(200).json(transformedRecipe);
+      
+      res.status(200).json(recipe);
     } catch(error) {
       next(error);
     }
@@ -74,9 +72,8 @@ export default class RecipeController {
       }
 
       const recipe = await recipeService.selectGeneratedRecipe(userId, recipeId);
-      const transformedRecipe = denormalizeEnumFields(recipe, ["cuisine", "difficulty", "category"]);
-
-      res.status(200).json(transformedRecipe);
+      
+      res.status(200).json(recipe);
     } catch(error) {
       next(error);
     }

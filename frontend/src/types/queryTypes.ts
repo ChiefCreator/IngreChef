@@ -7,8 +7,10 @@ export interface PaginationOptions {
 
 export interface QueryRecipeFilter {
   userId?: string;
-  pagination: PaginationOptions;
-  filters: Filter;
+  cookbookId?: string;
+  
+  pagination?: PaginationOptions;
+  filters?: Filter;
 }
 
 export interface ApiError {

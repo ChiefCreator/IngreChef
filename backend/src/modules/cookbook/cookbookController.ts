@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 
-import type { QueryRecipeFilter } from '../recipe/recipeTypes';
-
 import CookbookService from './cookbookService';
 import BadRequestError from '../../../errors/BadRequestError';
+
+import { mapQueryToFilters, mapQueryToPaginationOptions } from '../../utils/filterUtils';
 
 const cookbookService = new CookbookService();
 
@@ -27,38 +27,16 @@ export default class CookbookController {
   async getCookbook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cookbookId = req.params.cookbookId;
-
-      const {
-        userId,
-        cursor,
-        limit,
-        titleStartsWith,
-        category,
-        difficulty,
-        cuisine,
-        cookingTime,
-        ingredients,
-        isFavorite,
-      } = req.query;
+      const userId = req.query.userId as string;
 
       if (!cookbookId || !userId) {
         throw new BadRequestError("Отсутствуют обязательные поля: cookbookId, userId");
       }
-      
-      const filters: QueryRecipeFilter = {
-        userId: userId as string,
-        cursor: cursor as string,
-        limit: Number(limit),
-        titleStartsWith: titleStartsWith as string | undefined,
-        category: category as string | undefined,
-        difficulty: difficulty as string | undefined,
-        cuisine: cuisine as string | undefined,
-        cookingTime: cookingTime ? JSON.parse(cookingTime as string) as QueryRecipeFilter["cookingTime"] : undefined,
-        ingredients: ingredients ? ingredients as string[] : undefined,
-        isFavorite: isFavorite === "true",
-      };
 
-      const cookbook = await cookbookService.getCookbook(cookbookId, filters);
+      const pagination = mapQueryToPaginationOptions(req.query);
+      const filters = mapQueryToFilters(req.query);
+
+      const cookbook = await cookbookService.getCookbook(userId, cookbookId, pagination, filters);
       res.status(200).json(cookbook);
     } catch(error) {
       next(error);

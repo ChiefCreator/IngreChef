@@ -6,7 +6,7 @@ import path from 'path';
 
 import DatabaseError from "../../../errors/DatabaseError";
 import ValidationError from "../../../errors/ValidationError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 import { v4 } from "uuid";
 
 import type { GenerateRecipeParams, RecipeImagePromptProps } from "./generateRecipeTypes";

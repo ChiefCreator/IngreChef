@@ -2,7 +2,8 @@ import { clientApi } from "../clientApi";
 
 import type { Recipe } from "../../../types/recipeTypes";
 import type { Cookbook } from "../../../types/cookBookTypes";
-import type { getCookBooksParams, getCookBookParams, CreateCookbookParams, RemoveRecipeFromCookbookParams, AddRecipeToCookbookParams } from "./cookbooksApiTypes";
+import type { QueryRecipeFilter } from "../../../types/queryTypes";
+import type { getCookbookResponse, getCookBooksParams, CreateCookbookParams, RemoveRecipeFromCookbookParams, AddRecipeToCookbookParams } from "./cookbooksApiTypes";
 
 export const cookbooksApi = clientApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,10 +13,13 @@ export const cookbooksApi = clientApi.injectEndpoints({
       },
       providesTags: (_, __, ___) => ["Cookbook"],
     }),
-    getCookBook: builder.query<Cookbook, getCookBookParams>({
-      query: ({ cookbookId, userId, titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }) => {
-        let query = `/cookbooks/${cookbookId}?userId=${userId}`;
+    getCookBook: builder.query<getCookbookResponse, QueryRecipeFilter>({
+      query: ({ cookbookId, userId, pagination, filters }) => {
+        const { cursor, limit = 12 } = pagination || {};
+        const { titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite } = filters || {};
 
+        let query = `/cookbooks/${cookbookId}?userId=${userId}&cursor=${cursor}&limit=${limit}`;
+      
         if (titleStartsWith) {
           query += `&titleStartsWith=${titleStartsWith}`;
         }
@@ -40,12 +44,40 @@ export const cookbooksApi = clientApi.injectEndpoints({
 
         return query;
       },
-      providesTags: (cookbook, __, { cookbookId }) => {
-        const recipeTag = cookbook && cookbook?.recipes.length ?
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        return `${endpointName}-${JSON.stringify(queryArgs.filters ?? {})}`;
+      },
+      merge: (currentCache, newData) => {
+        const map = new Map<string, typeof newData.cookbook.recipes[0]>();
+      
+        currentCache.cookbook.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
+
+        newData.cookbook.recipes.forEach(recipe => {
+          map.set(recipe.id, recipe);
+        });
+      
+        currentCache.cookbook.recipes = Array.from(map.values());
+      
+        currentCache.nextRecipeCursor = newData.nextRecipeCursor;
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return JSON.stringify(currentArg?.filters) !== JSON.stringify(previousArg?.filters);
+      },
+      transformResponse: (response: getCookbookResponse) => response,
+      providesTags: (cookbookResponse, __, { cookbookId }) => {
+        const cookbook = cookbookResponse?.cookbook;
+        const recipes = cookbook?.recipes ?? [];
+
+        const recipeTag = recipes.length ?
           [
-            ...cookbook.recipes.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
+            ...recipes.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
             { type: "Recipe" as const, id: "List" },
-          ] : [{ type: "Recipe" as const, id: "List" }];
+          ] :
+          [
+            { type: "Recipe" as const, id: "List" }
+          ];
 
         return [
           { type: "Cookbook", id: cookbookId },
@@ -91,7 +123,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
       async onQueryStarted({ userId, cookbookId, recipeId }, lifecycleApi) {
         const getCookBookPatchResult = lifecycleApi.dispatch(
           cookbooksApi.util.updateQueryData("getCookBook", { cookbookId, userId }, draft => {
-            const recipes = draft.recipes;
+            const recipes = draft.cookbook.recipes;
             const deleteRecipeIndex = recipes.findIndex(recipe => recipe.id === recipeId);
 
             if (deleteRecipeIndex !== -1) {
@@ -128,7 +160,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
       async onQueryStarted({ userId, cookbookId, recipe }, lifecycleApi) {
         const getCookBookPatchResult = lifecycleApi.dispatch(
           cookbooksApi.util.updateQueryData("getCookBook", { cookbookId, userId }, draft => {
-            const recipes = draft.recipes as Recipe[];
+            const recipes = draft.cookbook.recipes as Recipe[];
             recipes.push(recipe);
           })
         );
@@ -155,6 +187,7 @@ export const cookbooksApi = clientApi.injectEndpoints({
 export const {
   useGetCookBooksQuery,
   useGetCookBookQuery,
+  useLazyGetCookBookQuery,
   useRemoveRecipeFromCookbookMutation,
   useAddRecipeToCookbookMutation,
   useCreateCookbookMutation,

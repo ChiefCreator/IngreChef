@@ -1,9 +1,9 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { useGetCookBooksQuery, useGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
+import { useGetCookBooksQuery, useLazyGetCookBookQuery, useAddRecipeToCookbookMutation, useRemoveRecipeFromCookbookMutation } from "../../features/api/cookbooksApi/cookbooksApi";
 import { selectUserId } from "../../features/auth/authSlice";
-import { useAppSelector, useMediaQuery } from "../../app/hooks";
+import { useAppSelector, useMediaQuery, useInfiniteScroll } from "../../app/hooks";
 
 import { Compass, Plus, Rocket, ListCheck, Clock, Heart, BookX, BookMarked } from "lucide-react";
 
@@ -22,19 +22,30 @@ import styles from "./Cookbook.module.scss";
 export default function Cookbook() {
   const userId = useAppSelector(selectUserId);
   const { cookbookId } = useParams();
-  const [filters, setFilters] = useState<Filter>({});
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
-  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1025px)");
   const isMobile = useMediaQuery("(hover: none)");
 
-  const { data, isSuccess, isError, isLoading, isFetching } = useGetCookBookQuery({ userId, cookbookId: cookbookId!, ...filters }, { skip: !userId });
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [filters, setFilters] = useState<Filter>({});
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [isCreateCookbookModalOpen, setIsCreateCookbookModalOpen] = useState(false);
+
+  const [trigger, { data, isSuccess, isError, isLoading, isFetching }] = useLazyGetCookBookQuery();
   const { data: cookbooks } = useGetCookBooksQuery({ userId }, { skip: !userId });
 
   const [removeRecipeFromCookbook] = useRemoveRecipeFromCookbookMutation();
   const [addRecipeToCookbook] = useAddRecipeToCookbookMutation();
 
-  const recipes = data?.recipes;
+  useInfiniteScroll({
+    hasMore: !!cursor,
+    isLoading: isFetching,
+    loadMore: () => {
+      trigger({ cookbookId, userId, pagination: { cursor }, filters });
+    },
+  });
+
+  const cookbook = data?.cookbook;
+  const recipes = cookbook?.recipes;
 
   const changeFilter = useCallback<ChangeFilter>((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -189,6 +200,16 @@ export default function Cookbook() {
     [filters]
   );
 
+  useEffect(() => {
+    setCursor(undefined);
+    trigger({ cookbookId, userId, pagination: { cursor: undefined }, filters });
+  }, [filters]);
+  useEffect(() => {
+    if (data?.cookbook?.recipes) {
+      setCursor(data.nextRecipeCursor || undefined);
+    }
+  }, [data]);
+
   const headerControls = isDesktop ?
     [
       <Button variant="outline" className={styles.recipiesButtonLine} icon={<Compass size={16} />}>
@@ -197,13 +218,13 @@ export default function Cookbook() {
       <Button variant="primary" className={styles.recipiesButtonLine} icon={<Plus size={16} />}>
         Добавить рецепт
       </Button>,
-    ] : []
+    ] : [];
 
   return (
     <section className={styles.page}>
       <Header
         className={styles.header}
-        title={data?.name}
+        title={cookbook?.name}
         controls={headerControls}
       />
       <div className={styles.body}>

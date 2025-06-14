@@ -9,7 +9,7 @@ import UserDto from "./userDto";
 import DatabaseError from "../../../errors/DatabaseError";
 import AppError from "../../../errors/AppError";
 import { ErrorCode } from "./../../../errors/AppError"
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 import NotFoundError from "../../../errors/NotFoundError";
 import BadRequestError from "../../../errors/BadRequestError";
 import { UnauthorizedError } from "../../../errors/UnauthorizedError";

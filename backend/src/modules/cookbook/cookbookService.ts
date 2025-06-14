@@ -1,11 +1,12 @@
 import { prisma } from "./../../../server";
 
-import type { QueryRecipeFilter } from '../recipe/recipeTypes';
-import { buildSingleCookbookIncludeClause } from "./../../lib/filterUtils";
+import { buildPrismaRecipeFilter } from "../../utils/filterUtils";
+import type { Filter, PaginationOptions } from '../recipe/recipeTypes';
+import { transformRecipeToClientRecipe } from "../../utils/recipeUtils";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 
 export default class CookbookService {
   constructor() {};
@@ -13,35 +14,59 @@ export default class CookbookService {
   async getCookbooks(userId: string) {
     try {
       const cookbooks = await prisma.cookbook.findMany({
-        where: {
-          userId,
-        },
+        where: { userId },
         include: {
           recipes: {
             select: {
-              recipe: true
+              recipe: {
+                include: {
+                  likedBy: true
+                }
+              }
             },
           },
         }
       });
   
-      return cookbooks.map(cookbook => ({ ...cookbook, recipes: cookbook.recipes.map(rec => rec.recipe)}));
+      return cookbooks.map(cookbook => ({ ...cookbook, recipes: cookbook.recipes.map(rec => transformRecipeToClientRecipe(rec.recipe))}));
     } catch(error) {
       throwError(error, new DatabaseError("Не удалось получить кулинарные книги", error));
     }
   }
-  async getCookbook(cookbookId: string, filters: QueryRecipeFilter) {
+  async getCookbook(userId: string, cookbookId: string, pagination: PaginationOptions, filters: Filter) {
     try {
-      const include = buildSingleCookbookIncludeClause(filters);
+      const { cursor, limit } = pagination;
+
+      const take = limit + 1; 
 
       const cookbook = await prisma.cookbook.findUnique({
-        where: {
-          id: cookbookId,
+        where: { id: cookbookId },
+        include: {
+          recipes: {
+            where: {
+              recipe: buildPrismaRecipeFilter(userId, filters),
+            },
+            take,
+            ...(cursor && { skip: 1, cursor: { id: cursor }}),
+            select: {
+              recipe: {
+                include: {
+                  likedBy: true
+                }
+              }
+            }
+          }
         },
-        include,
       });
+
+      const recipes = cookbook?.recipes.map(rec => transformRecipeToClientRecipe(rec.recipe)).sort((a, b) => new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime()) ?? [];
+
+      const hasMore = recipes.length > limit;
+      if (hasMore) recipes.pop();
+
+      const resCookbook = { ...cookbook, recipes }
   
-      return { ...cookbook, recipes: cookbook?.recipes.map(rec => rec.recipe)};
+      return { cookbook: resCookbook, nextRecipeCursor: hasMore ? recipes[recipes.length - 1].id : null };
     } catch(error) {
       throwError(error, new DatabaseError("Не удалось получить кулинарную книгу", error, { cookbookId }));
     }

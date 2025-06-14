@@ -10,18 +10,19 @@ import RecipesNotFound from "../../../components/RecipesNotFound/RecipesNotFound
 import styles from "./CardsPanel.module.scss";
 
 import type { Recipe } from "../../../types/recipeTypes";
+import type { RecipeCardOfMyRecipesOptions } from "../../../types/recipeTypes";
 
 interface CardsPanelProps {
   recipes: Recipe[] | undefined;
+  menuOptions?: RecipeCardOfMyRecipesOptions[];
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
   isFetching: boolean;
 }
 
-export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isLoading }: CardsPanelProps) {
+export default React.memo(function CardsPanel({ recipes, menuOptions, isSuccess, isError, isLoading }: CardsPanelProps) {
   const userId = useAppSelector(selectUserId);
-  // console.log(isSuccess, isError, isLoading, recipes?.length)
 
   const renderContent = () => {
     if (isLoading) {
@@ -33,7 +34,7 @@ export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isL
     } else if (isSuccess && recipes?.length) {
       return (
         <div className={styles.cardsList}>
-          {recipes.map(recipe => (
+          {recipes.map((recipe, i) => (
             <RecipeCard
               key={recipe.id}
               userId={userId}
@@ -44,6 +45,8 @@ export default React.memo(function CardsPanel({ recipes, isSuccess, isError, isL
               isFavorite={!!recipe.isFavorite}
               authorId={recipe.authorId}
               createdAt={recipe.createdAt}
+
+              menuOptions={menuOptions?.[i]}
             />)
           )}
         </div>

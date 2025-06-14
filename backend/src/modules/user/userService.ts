@@ -4,7 +4,7 @@ import { denormalizeEnumFields } from "../../middleware/normalizeEnumFields";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 
 import type { UserProfileData } from './userTypes';
 import type { Profile } from "@prisma/client";

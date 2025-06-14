@@ -55,9 +55,6 @@ export default function MyRecipes() {
   const toggleFiltersPanel = useCallback(() => {
     setIsFiltersPanelOpen(prev => !prev);
   }, [isFiltersPanelOpen, setIsFiltersPanelOpen]);
-  const openCookbookModal = useCallback(() => {
-    setIsCreateCookbookModalOpen(true);
-  }, [setIsCreateCookbookModalOpen]);
   const toggleCookbookModal = useCallback((isOpen?: boolean) => {
     if (isOpen === undefined) setIsCreateCookbookModalOpen(prev => !prev);
     else {
@@ -99,7 +96,7 @@ export default function MyRecipes() {
                 type: "button",
                 label: "Создать книгу",
                 icon: <Plus size={16} />,
-                onClick: openCookbookModal,
+                onClick: () => toggleCookbookModal(true),
               },
             ],
           }

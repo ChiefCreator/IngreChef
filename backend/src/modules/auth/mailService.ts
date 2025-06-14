@@ -3,7 +3,7 @@ import "./../../../env/env";
 
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import AppError from "../../../errors/AppError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 
 class MailService {
   private transporter: Transporter;

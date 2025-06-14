@@ -113,17 +113,6 @@ export const recipesApi = clientApi.injectEndpoints({
         return JSON.stringify(currentArg?.filters) !== JSON.stringify(previousArg?.filters);
       },
       transformResponse: (response: RecipesResponse) => response,
-      providesTags: (result, __, ___) => {
-        const recipeTag = result ?
-          [
-            ...result.recipes.map(({ id }: { id: string }) => ({ type: "Recipe" as const, id })),
-            { type: "Recipe" as const, id: "List" },
-          ] : [{ type: "Recipe" as const, id: "List" }];
-
-        return [
-          ...recipeTag,
-        ];
-      }
     }),
     getRecipe: builder.query<Recipe, GetRecipeParams>({
       query: ({ userId, recipeId }) => {
@@ -195,8 +184,32 @@ export const recipesApi = clientApi.injectEndpoints({
 
         const getRecipesPatchResults = relevantCaches.map((args) =>
           dispatch(recipesApi.util.updateQueryData("getRecipes", args, (draft) => {
-            const recipe = draft.recipes.find(r => r.id === recipeId);
-            if (recipe) recipe.isFavorite = false;
+            const index = draft.recipes.findIndex(r => r.id === recipeId);
+
+            if (index !== -1) {
+              if (args.filters?.isFavorite) {
+                draft.recipes.splice(index, 1);
+              } else {
+                draft.recipes[index].isFavorite = false;
+              }
+            }
+          })
+        ));
+
+        const allCachedGetUserRecipes = recipesApi.util.selectCachedArgsForQuery(state, "getUserRecipes");
+        const relevantGetUserRecipesCaches = allCachedGetUserRecipes.filter(args => args.userId === userId);
+
+        const getUserRecipesPatchResults = relevantGetUserRecipesCaches.map((args) =>
+          dispatch(recipesApi.util.updateQueryData("getUserRecipes", args, (draft) => {
+            const index = draft.recipes.findIndex(r => r.id === recipeId);
+
+            if (index !== -1) {
+              if (args.filters?.isFavorite) {
+                draft.recipes.splice(index, 1);
+              } else {
+                draft.recipes[index].isFavorite = false;
+              }
+            }
           })
         ));
 
@@ -205,6 +218,7 @@ export const recipesApi = clientApi.injectEndpoints({
         } catch {
           getRecipePatchResult.undo();
           getRecipesPatchResults.forEach(f => f.undo());
+          getUserRecipesPatchResults.forEach(f => f.undo());
         }
       },
       invalidatesTags: (_, __, { recipeId }) => [{ type: "Recipe", id: "List" }, { type: "Recipe", id: recipeId }],

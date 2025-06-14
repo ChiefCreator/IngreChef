@@ -1,7 +1,7 @@
 import { prisma } from "../../../server";
 
 import DatabaseError from "../../../errors/DatabaseError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 
 export default class Service {
   constructor() {};

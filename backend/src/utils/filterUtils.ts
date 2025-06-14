@@ -1,10 +1,8 @@
 import type { ParsedQs } from "qs";
-import type { Filter, QueryRecipeFilter } from "../modules/recipe/recipeTypes";
+import type { Filter, PaginationOptions, QueryRecipeFilter } from "../modules/recipe/recipeTypes";
 
-export function mapQueryToFilters(query: ParsedQs): QueryRecipeFilter {
+export function mapQueryToFilters(query: ParsedQs): Filter {
   const {
-    cursor,
-    limit,
     titleStartsWith,
     category,
     difficulty,
@@ -15,8 +13,6 @@ export function mapQueryToFilters(query: ParsedQs): QueryRecipeFilter {
   } = query;  
   
   return {
-    cursor: (cursor !== "undefined" ? cursor : undefined) as string | undefined,
-    limit: Number(limit),
     titleStartsWith: titleStartsWith as string | undefined,
     category: category as string | undefined,
     difficulty: difficulty as string | undefined,
@@ -26,43 +22,51 @@ export function mapQueryToFilters(query: ParsedQs): QueryRecipeFilter {
     isFavorite: isFavorite === "true",
   };
 }
+export function mapQueryToPaginationOptions(query: ParsedQs): PaginationOptions {
+  const { cursor, limit } = query;  
+  
+  return {
+    cursor: (cursor !== "undefined" ? cursor : undefined) as string | undefined,
+    limit: Number(limit),
+  };
+}
 
 export function buildPrismaRecipeFilter(userId: string, { titleStartsWith, category, difficulty, cuisine, cookingTime, ingredients, isFavorite }: Filter) { 
-  const where: any = {};  
+  const filter: any = {};  
 
   if (titleStartsWith) {
-    where.title = {
+    filter.title = {
       startsWith: titleStartsWith,
       mode: "insensitive",
     };
   }
   if (category) {
-    where.category = category;
+    filter.category = category;
   }
   if (difficulty) {
-    where.difficulty = difficulty;
+    filter.difficulty = difficulty;
   }
   if (cuisine) {
-    where.cuisine = cuisine;
+    filter.cuisine = cuisine;
   }
   if (cookingTime) {
-    where.cookingTime = { 
+    filter.cookingTime = { 
       gte: cookingTime.from,
       lte: cookingTime.to,
     };
   }
   if (ingredients && ingredients.length > 0) {
-    where.ingredients = {
+    filter.ingredients = {
       hasEvery: ingredients,
     };
   }
   if (isFavorite) {
-    where.likedBy = {
+    filter.likedBy = {
       some: {
         userId,
       },
     };
   }
 
-  return where;
+  return filter;
 }

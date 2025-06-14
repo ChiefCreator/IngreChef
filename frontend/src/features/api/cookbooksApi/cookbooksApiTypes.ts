@@ -6,6 +6,11 @@ export interface getCookBooksParams {
   userId: string;
 }
 
+export interface getCookbookResponse {
+  cookbook: Cookbook;
+  nextRecipeCursor?: string;
+}
+
 export interface getCookBookParams extends Filter {
   userId: string;
   cookbookId: string;

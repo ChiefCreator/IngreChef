@@ -1,23 +1,24 @@
-import { Filter } from "./recipeTypes";
 import { prisma } from "./../../../server";
+
+import { transformRecipeToClientRecipe } from "../../utils/recipeUtils";
 
 import DatabaseError from "../../../errors/DatabaseError";
 import NotFoundError from "../../../errors/NotFoundError";
-import { throwError } from "../../lib/error";
+import { throwError } from "../../utils/error";
 import { buildPrismaRecipeFilter } from "../../utils/filterUtils";
-import type { QueryRecipeFilter } from "./recipeTypes";
+import type { PaginationOptions, Filter } from "./recipeTypes";
 
 export default class RecipeService {
   constructor() {};
 
-  async getAllRecipes(userId: string, filters: QueryRecipeFilter) {
+  async getAllRecipes(userId: string, pagination: PaginationOptions, filters: Filter) {
     try {
-      const { cursor, limit } = filters;
+      const { cursor, limit } = pagination;
 
-      const take = Number(limit) + 1;  
+      const take = limit + 1;  
       const where: any = buildPrismaRecipeFilter(userId, filters);
   
-      let recipes = await prisma.recipe.findMany({
+      const recipes = await prisma.recipe.findMany({
         where,
         take,
         ...(cursor && { skip: 1, cursor: { id: cursor }}),
@@ -34,34 +35,31 @@ export default class RecipeService {
         }
       });
 
-      recipes.map(({ likedBy, ...recipe }) => ({
-        ...recipe,
-        isFavorite: likedBy.length > 0,
-      }));
-
-      const hasMore = recipes.length > limit;
-      if (hasMore) recipes.pop();
+      const clientRecipes = recipes.map(transformRecipeToClientRecipe);
+   
+      const hasMore = clientRecipes.length > limit;
+      if (hasMore) clientRecipes.pop();
 
       return {
-        recipes,
-        nextCursor: hasMore ? recipes[recipes.length - 1].id : null,
+        recipes: clientRecipes,
+        nextCursor: hasMore ? clientRecipes[clientRecipes.length - 1].id : null,
       };
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепты", error));
     }
   }
-  async getUserRecipes(userId: string, filters: QueryRecipeFilter) {
+  async getUserRecipes(userId: string, pagination: PaginationOptions, filters: Filter) {
     try {
-      const { cursor, limit } = filters;
+      const { cursor, limit } = pagination;
   
-      const take = Number(limit) + 1;  
+      const take = limit + 1;  
       const where: any = buildPrismaRecipeFilter(userId, filters);
 
       if (userId) {
         where.authorId = userId;
       }
   
-      let recipes = await prisma.recipe.findMany({
+      const recipes = await prisma.recipe.findMany({
         where,
         take,
         ...(cursor && { skip: 1, cursor: { id: cursor }}),
@@ -78,17 +76,14 @@ export default class RecipeService {
         }
       });
   
-      recipes.map(({ likedBy, ...recipe }) => ({
-        ...recipe,
-        isFavorite: likedBy.length > 0,
-      }));
+      const clientRecipes = recipes.map(transformRecipeToClientRecipe);
    
-      const hasMore = recipes.length > limit;
-      if (hasMore) recipes.pop();
+      const hasMore = clientRecipes.length > limit;
+      if (hasMore) clientRecipes.pop();
 
       return {
-        recipes,
-        nextCursor: hasMore ? recipes[recipes.length - 1].id : null,
+        recipes: clientRecipes,
+        nextCursor: hasMore ? clientRecipes[clientRecipes.length - 1].id : null,
       };
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепты пользователя", error, { userId }));
@@ -112,10 +107,8 @@ export default class RecipeService {
       if (!recipe) {
         throw new NotFoundError("Рецепт не найден", { recipeId });
       }
-
-      const recipeWithIsFavorite = { ...recipe, isFavorite: !!recipe?.likedBy.length };
   
-      return recipeWithIsFavorite;
+      return transformRecipeToClientRecipe(recipe);
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось получить рецепт", error, { userId, recipeId }));
     }
@@ -135,6 +128,13 @@ export default class RecipeService {
         data: {
           ...tempRecipe,
           steps: tempRecipe.steps!,
+        },
+        include: {
+          likedBy: {
+            where: {
+              userId
+            }
+          }
         }
       });
 
@@ -142,7 +142,7 @@ export default class RecipeService {
         where: { authorId: userId },
       });
   
-      return recipe;
+      return transformRecipeToClientRecipe(recipe);
     } catch (error) {
       throwError(error, new DatabaseError("Не удалось выбрать рецепт", error));
     }
